@@ -1,0 +1,8 @@
+# Environment files (Tokens privados)
+.env
+.env.local
+
+# Cache temporário
+meta_cache.json
+test_meta.py
+normalize_meta.py

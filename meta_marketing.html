@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meta Marketing API v21.0 | Performance de Anúncios | Festival Iguassu Inova</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- Fallback estático caso executado fora do PHP (ex: GitHub Pages) -->
+  <script src="meta_data.js"></script>
+
+  <style>
+    :root {
+      --bg-body: #0b0f17;
+      --bg-card: #111827;
+      --bg-card-hover: #172033;
+      --bg-header: #070a10;
+      --border-color: #1f293d;
+      --border-subtle: #2d3748;
+      
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --accent-emerald: #10b981;
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-meta: #0081fb;
+      
+      --text-light: #f9fafb;
+      --text-muted: #94a3b8;
+      --text-dark: #64748b;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      
+      --font-heading: 'Plus Jakarta Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-light);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Top Nav */
+    .top-nav {
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #0081fb, #06b6d4);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-light);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      border-color: var(--accent-cyan);
+      background: var(--bg-card-hover);
+      color: #fff;
+    }
+
+    .btn-action.active-meta {
+      background: rgba(0, 129, 251, 0.2);
+      border-color: rgba(0, 129, 251, 0.5);
+      color: #38bdf8;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0081fb, #0284c7);
+      border: none;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      box-shadow: 0 4px 14px rgba(0, 129, 251, 0.4);
+    }
+
+    /* Target Campaign Highlight Box */
+    .target-campaign-banner {
+      background: linear-gradient(180deg, rgba(0, 129, 251, 0.12) 0%, rgba(17, 24, 39, 0.6) 100%);
+      border: 1px solid rgba(0, 129, 251, 0.4);
+      border-left: 6px solid #0081fb;
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin: 24px 0;
+      position: relative;
+    }
+
+    .target-tag {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #38bdf8;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .target-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 12px;
+      word-break: break-word;
+    }
+
+    .target-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+      background: rgba(11, 15, 23, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .target-stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .target-stat-item span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .target-stat-item strong {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    /* Filter Controls Bar */
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-btn {
+      background: var(--bg-body);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+      background: #0081fb;
+      border-color: #0081fb;
+      color: #fff;
+    }
+
+    .search-input {
+      background: var(--bg-body);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      outline: none;
+      min-width: 260px;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    /* Top KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      position: relative;
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .kpi-label {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .kpi-icon.blue { background: rgba(0, 129, 251, 0.15); color: #38bdf8; }
+    .kpi-icon.cyan { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+    .kpi-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+    .kpi-icon.amber { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+    .kpi-icon.purple { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); }
+
+    .kpi-value {
+      font-family: var(--font-heading);
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .kpi-sub {
+      font-size: 0.78rem;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kpi-sub .pos { color: var(--accent-emerald); font-weight: 600; }
+
+    /* Section Title */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 30px 0 16px;
+    }
+
+    .section-title h2 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .section-title .tag {
+      background: rgba(0, 129, 251, 0.2);
+      color: #38bdf8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    /* Table Container */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    table.exec-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    table.exec-table th {
+      background: #0f1523;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.exec-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-light);
+    }
+
+    table.exec-table tr.highlight-row {
+      background: rgba(0, 129, 251, 0.08);
+      border-left: 4px solid #0081fb;
+    }
+
+    table.exec-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-pill.official {
+      background: rgba(0, 129, 251, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(0, 129, 251, 0.4);
+    }
+
+    /* Chart Box */
+    .chart-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 30px;
+    }
+
+    .canvas-box {
+      position: relative;
+      height: 380px;
+      width: 100%;
+    }
+
+    /* Status Pill */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: var(--bg-body);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <header class="top-nav">
+    <div class="container nav-inner">
+      <div class="brand-title">
+        <span class="brand-badge"><i class="fa-brands fa-meta"></i> Meta API v21.0</span>
+        <div class="brand-text">
+          <h1>Festival Iguassu Inova 2026</h1>
+          <p>Meta Marketing API • Conta: act_140031283 • Insights Oficiais</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a href="meta_marketing.html" class="btn-action active-meta">
+          <i class="fa-brands fa-meta"></i> Meta API
+        </a>
+        <a href="respostas_cliente.html" class="btn-action">
+          <i class="fa-solid fa-clipboard-check"></i> Respostas do Cliente
+        </a>
+        <a href="diretoria.html" class="btn-action">
+          <i class="fa-solid fa-briefcase"></i> Diretoria
+        </a>
+        <a href="index.html" class="btn-action">
+          <i class="fa-solid fa-chart-pie"></i> Painel Geral
+        </a>
+        <button id="btnRefresh" onclick="fetchLiveData(true)" class="btn-action btn-primary">
+          <i class="fa-solid fa-arrows-rotate"></i> Atualizar API
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- CAMPANHA EM FOCO (SOLICITADA PELO CLIENTE) -->
+    <section class="target-campaign-banner">
+      <div class="target-tag">
+        <i class="fa-solid fa-star"></i> Campanha Oficial de Ingressos do Festival (Meta Ads)
+      </div>
+      <h2 class="target-title" id="targetCampaignTitle">
+        [TRÁFEGO - FESTIVAL IGUASSU INOVA - ITAIPU PARQUETEC - DIGIMAX/2026] - FACEBOOK E INSTAGRAM
+      </h2>
+      
+      <div class="target-stats-grid">
+        <div class="target-stat-item">
+          <span>Investimento Oficial:</span>
+          <strong id="targetSpend" style="color: #38bdf8;">R$ 19.422,10</strong>
+        </div>
+        <div class="target-stat-item">
+          <span>Impressões:</span>
+          <strong id="targetImpressions">4.237.439</strong>
+        </div>
+        <div class="target-stat-item">
+          <span>Cliques no Link:</span>
+          <strong id="targetLinkClicks" style="color: var(--accent-emerald);">121.092</strong>
+        </div>
+        <div class="target-stat-item">
+          <span>Custo por Clique (CPC):</span>
+          <strong id="targetCpc" style="color: var(--accent-emerald);">R$ 0,14</strong>
+        </div>
+        <div class="target-stat-item">
+          <span>Taxa de Cliques (CTR):</span>
+          <strong id="targetCtr">3,31%</strong>
+        </div>
+        <div class="target-stat-item">
+          <span>Visitas na Landing Page:</span>
+          <strong id="targetLpv" style="color: var(--accent-amber);">49.600</strong>
+        </div>
+        <div class="target-stat-item">
+          <span>Inscrições Pixel Yazo:</span>
+          <strong id="targetConversions" style="color: var(--accent-emerald);">284</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- BARRA DE STATUS E FILTROS -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <div class="status-badge" id="apiStatusBadge">
+          <div class="status-dot"></div>
+          <span id="apiStatusText">Meta API v21.0 Conectada</span>
+        </div>
+        <span style="font-size: 0.8rem; color: var(--text-dark);" id="lastUpdatedText">Atualizado: 06/11/2026</span>
+      </div>
+
+      <div class="filter-group">
+        <button class="filter-btn active" id="btnFilterOfficial" onclick="setFilter('official')">
+          <i class="fa-solid fa-star"></i> Festival Iguassu Inova
+        </button>
+        <button class="filter-btn" id="btnFilterAll" onclick="setFilter('all')">
+          <i class="fa-solid fa-layer-group"></i> Todas as Campanhas da Conta
+        </button>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nome da campanha..." oninput="handleSearch()">
+      </div>
+    </div>
+
+    <!-- CARDS DE KPI DINÂMICOS -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Investimento Total</span>
+          <div class="kpi-icon blue"><i class="fa-solid fa-dollar-sign"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiSpend">R$ 19.422,10</div>
+        <div class="kpi-sub"><span id="kpiSpendSub">Campanha Oficial do Festival</span></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Total de Impressões</span>
+          <div class="kpi-icon cyan"><i class="fa-solid fa-eye"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiImpressions">4.237.439</div>
+        <div class="kpi-sub"><span>Alcance no feed e stories</span></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Cliques no Link</span>
+          <div class="kpi-icon green"><i class="fa-solid fa-arrow-pointer"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiClicks">121.092</div>
+        <div class="kpi-sub"><span class="pos" id="kpiTotalClicksSub">140.387 cliques totais</span></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">CPC Médio</span>
+          <div class="kpi-icon amber"><i class="fa-solid fa-coins"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiCpc">R$ 0,14</div>
+        <div class="kpi-sub"><span class="pos">Ultra eficiente (Benchmark R$ 1,20)</span></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">CTR Médio</span>
+          <div class="kpi-icon purple"><i class="fa-solid fa-chart-line"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiCtr">3,31%</div>
+        <div class="kpi-sub"><span class="pos">+230% acima da média</span></div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Conversões Pixel Yazo</span>
+          <div class="kpi-icon green"><i class="fa-solid fa-id-card-clip"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiConversions">284</div>
+        <div class="kpi-sub"><span>Registros diretos via Pixel</span></div>
+      </div>
+    </section>
+
+    <!-- GRÁFICO COMPARATIVO -->
+    <div class="chart-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #fff;">
+            Comparativo de Campanhas: Investimento (R$) vs Cliques no Link
+          </h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+            Visualização das principais campanhas ordenadas pelo volume investido
+          </p>
+        </div>
+      </div>
+      <div class="canvas-box">
+        <canvas id="chartMetaCampaigns"></canvas>
+      </div>
+    </div>
+
+    <!-- TABELA COMPLETA DE CAMPANHAS NORMALIZADAS -->
+    <div class="section-title">
+      <h2>Tabela de Performance de Campanhas (Meta Marketing API)</h2>
+      <span class="tag">JSON Normalizado</span>
+    </div>
+
+    <div class="table-container">
+      <table class="exec-table">
+        <thead>
+          <tr>
+            <th>Campanha</th>
+            <th>Investimento</th>
+            <th>Impressões</th>
+            <th>Cliques Totais</th>
+            <th>Cliques Link</th>
+            <th>CTR</th>
+            <th>CPC Médio</th>
+            <th>Conversões (Pixel)</th>
+            <th>CPA Médio</th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyCampaigns">
+          <!-- Linhas renderizadas dinamicamente via JS -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    /**
+     * Interface TypeScript em JSDoc para tipagem completa dos dados normalizados:
+     * 
+     * @typedef {Object} NormalizedCampaign
+     * @property {string} campaign_name
+     * @property {number} spend
+     * @property {number} impressions
+     * @property {number} clicks
+     * @property {number} link_clicks
+     * @property {number} ctr
+     * @property {number} cpc
+     * @property {number} leads
+     * @property {number} purchases
+     * @property {number} complete_registrations
+     * @property {number} conversions
+     * @property {number} landing_page_views
+     * @property {number} cpa
+     * @property {boolean} is_festival_official
+     */
+
+    let allCampaigns = [];
+    let currentFilter = 'official';
+    let chartInstance = null;
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchLiveData(false);
+    });
+
+    async function fetchLiveData(forceRefresh = false) {
+      const btn = document.getElementById('btnRefresh');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Conectando...';
+
+      try {
+        const url = forceRefresh ? 'api_meta.php?refresh=1' : 'api_meta.php';
+        const response = await fetch(url);
+        
+        if (!response.ok) throw new Error('API offline ou erro HTTP ' + response.status);
+        const json = await response.json();
+        
+        if (json && json.data) {
+          allCampaigns = json.data;
+          document.getElementById('apiStatusText').innerText = 'Meta API v21.0 (Live Backend PHP)';
+          document.getElementById('lastUpdatedText').innerText = 'Atualizado agora: ' + new Date().toLocaleTimeString();
+        } else {
+          throw new Error('Formato inválido retornado');
+        }
+      } catch (err) {
+        console.warn('Backend PHP não acessível diretamente, usando fallback estático:', err);
+        if (window.META_MARKETING_DATA && window.META_MARKETING_DATA.data) {
+          allCampaigns = window.META_MARKETING_DATA.data;
+          document.getElementById('apiStatusText').innerText = 'Meta API v21.0 (Dados Normalizados)';
+          document.getElementById('lastUpdatedText').innerText = 'Base consolidada Meta API';
+        }
+      } finally {
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Atualizar API';
+        renderDashboard();
+      }
+    }
+
+    function setFilter(filterType) {
+      currentFilter = filterType;
+      document.getElementById('btnFilterOfficial').classList.toggle('active', filterType === 'official');
+      document.getElementById('btnFilterAll').classList.toggle('active', filterType === 'all');
+      renderDashboard();
+    }
+
+    function handleSearch() {
+      renderDashboard();
+    }
+
+    function renderDashboard() {
+      const term = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      let filtered = allCampaigns;
+
+      if (currentFilter === 'official') {
+        filtered = filtered.filter(c => 
+          c.campaign_name.toLowerCase().includes('festival iguassu inova') ||
+          c.campaign_name.toLowerCase().includes('festival')
+        );
+      }
+
+      if (term) {
+        filtered = filtered.filter(c => c.campaign_name.toLowerCase().includes(term));
+      }
+
+      renderKpis(filtered);
+      renderTable(filtered);
+      renderChart(filtered);
+    }
+
+    function renderKpis(campaigns) {
+      let totalSpend = 0;
+      let totalImpressions = 0;
+      let totalClicks = 0;
+      let totalLinkClicks = 0;
+      let totalConversions = 0;
+
+      campaigns.forEach(c => {
+        totalSpend += c.spend;
+        totalImpressions += c.impressions;
+        totalClicks += c.clicks;
+        totalLinkClicks += c.link_clicks;
+        totalConversions += c.conversions;
+      });
+
+      const avgCpc = totalClicks > 0 ? (totalSpend / totalClicks) : 0;
+      const avgCtr = totalImpressions > 0 ? ((totalClicks / totalImpressions) * 100) : 0;
+      const avgCpa = totalConversions > 0 ? (totalSpend / totalConversions) : 0;
+
+      document.getElementById('kpiSpend').innerText = totalSpend.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      document.getElementById('kpiImpressions').innerText = totalImpressions.toLocaleString('pt-BR');
+      document.getElementById('kpiClicks').innerText = totalLinkClicks.toLocaleString('pt-BR');
+      document.getElementById('kpiTotalClicksSub').innerText = totalClicks.toLocaleString('pt-BR') + ' cliques totais';
+      document.getElementById('kpiCpc').innerText = avgCpc.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      document.getElementById('kpiCtr').innerText = avgCtr.toFixed(2) + '%';
+      document.getElementById('kpiConversions').innerText = totalConversions.toLocaleString('pt-BR');
+
+      document.getElementById('kpiSpendSub').innerText = currentFilter === 'official' 
+        ? 'Campanha Oficial do Festival' 
+        : campaigns.length + ' campanhas listadas';
+    }
+
+    function renderTable(campaigns) {
+      const tbody = document.getElementById('tableBodyCampaigns');
+      tbody.innerHTML = '';
+
+      if (campaigns.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 24px; color: var(--text-dark);">Nenhuma campanha encontrada com o filtro atual.</td></tr>';
+        return;
+      }
+
+      campaigns.forEach(c => {
+        const isTarget = c.campaign_name.toLowerCase().includes('festival iguassu inova');
+        const tr = document.createElement('tr');
+        if (isTarget) tr.className = 'highlight-row';
+
+        tr.innerHTML = `
+          <td>
+            <div style="font-weight: 700; color: #fff; margin-bottom: 2px;">
+              ${c.campaign_name}
+            </div>
+            ${isTarget ? '<span class="badge-pill official"><i class="fa-solid fa-star"></i> Oficial Festival Iguassu Inova</span>' : ''}
+          </td>
+          <td style="font-weight: 700; color: #38bdf8;">
+            ${c.spend.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+          </td>
+          <td>${c.impressions.toLocaleString('pt-BR')}</td>
+          <td>${c.clicks.toLocaleString('pt-BR')}</td>
+          <td style="font-weight: 700; color: var(--accent-emerald);">${c.link_clicks.toLocaleString('pt-BR')}</td>
+          <td>${c.ctr.toFixed(2)}%</td>
+          <td>${c.cpc.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+          <td><span class="badge-pill" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">${c.conversions.toLocaleString('pt-BR')}</span></td>
+          <td>${c.cpa > 0 ? c.cpa.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderChart(campaigns) {
+      const ctx = document.getElementById('chartMetaCampaigns').getContext('2d');
+      const topCampaigns = campaigns.slice(0, 7); // Top 7
+
+      const labels = topCampaigns.map(c => {
+        const name = c.campaign_name;
+        return name.length > 32 ? name.substring(0, 30) + '...' : name;
+      });
+      const dataSpend = topCampaigns.map(c => c.spend);
+      const dataLinkClicks = topCampaigns.map(c => c.link_clicks);
+
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Investimento (R$)',
+              data: dataSpend,
+              backgroundColor: '#0081fb',
+              borderRadius: 6,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Cliques no Link',
+              data: dataLinkClicks,
+              backgroundColor: '#10b981',
+              borderRadius: 6,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  if (context.datasetIndex === 0) {
+                    return 'Investimento: ' + context.parsed.y.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                  } else {
+                    return 'Cliques no Link: ' + context.parsed.y.toLocaleString('pt-BR') + ' cliques';
+                  }
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#94a3b8', font: { family: 'Inter', size: 11 } },
+              grid: { color: '#1f293d' }
+            },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              ticks: {
+                color: '#94a3b8',
+                callback: value => 'R$ ' + value.toLocaleString('pt-BR')
+              },
+              grid: { color: '#1f293d' }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              ticks: {
+                color: '#10b981',
+                callback: value => value.toLocaleString('pt-BR')
+              },
+              grid: { drawOnChartArea: false }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
