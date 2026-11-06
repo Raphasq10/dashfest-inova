@@ -1,0 +1,3 @@
+@echo off
+echo Abrindo Dashboard de Performance Festival Iguassu Inova 2026...
+start "" "index.html"

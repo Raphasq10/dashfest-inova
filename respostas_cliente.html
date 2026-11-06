@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Respostas Executivas da Campanha | Festival Iguassu Inova 2026</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg-body: #0b0f17;
+      --bg-card: #111827;
+      --bg-card-hover: #172033;
+      --bg-header: #070a10;
+      --border-color: #1f293d;
+      --border-subtle: #2d3748;
+      
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --accent-emerald: #10b981;
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+      --accent-youtube: #ef4444;
+      
+      --text-light: #f9fafb;
+      --text-muted: #94a3b8;
+      --text-dark: #64748b;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      
+      --font-heading: 'Plus Jakarta Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-light);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Top Nav */
+    .top-nav {
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-light);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      border-color: var(--primary-light);
+      background: var(--bg-card-hover);
+      color: #fff;
+    }
+
+    .btn-action.active-page {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: var(--accent-emerald);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      border: none;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(17, 24, 39, 0.4) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin: 28px 0 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--accent-emerald), var(--accent-cyan));
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 950px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 30px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill strong { color: #fff; }
+
+    /* Top KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      position: relative;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-subtle);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .kpi-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .kpi-icon.blue { background: rgba(99, 102, 241, 0.15); color: var(--primary-light); }
+    .kpi-icon.cyan { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+    .kpi-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+    .kpi-icon.amber { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+    .kpi-icon.red { background: rgba(239, 68, 68, 0.15); color: var(--accent-youtube); }
+
+    .kpi-value {
+      font-family: var(--font-heading);
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .kpi-sub {
+      font-size: 0.8rem;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kpi-sub .pos { color: var(--accent-emerald); font-weight: 600; }
+
+    /* Section Header */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 36px 0 18px;
+    }
+
+    .section-title h2 {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .section-title .tag {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-emerald);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    /* Q&A Cards Container */
+    .qa-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .qa-box.meta-all { border-left: 5px solid var(--accent-cyan); }
+    .qa-box.meta-paid { border-left: 5px solid var(--primary); }
+    .qa-box.youtube { border-left: 5px solid var(--accent-youtube); }
+
+    .qa-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qa-badge.cyan { color: var(--accent-cyan); }
+    .qa-badge.blue { color: var(--primary-light); }
+    .qa-badge.red { color: var(--accent-youtube); }
+
+    .qa-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .qa-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .qa-item-card {
+      background: var(--bg-body);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .qa-item-question {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .qa-item-answer {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .qa-item-desc {
+      font-size: 0.78rem;
+      color: var(--text-dark);
+      line-height: 1.4;
+    }
+
+    /* Comparison Table */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+      margin-bottom: 30px;
+    }
+
+    table.exec-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    table.exec-table th {
+      background: #0f1523;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.exec-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-light);
+    }
+
+    table.exec-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Big Curve Chart Section */
+    .chart-container-large {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      margin-bottom: 30px;
+    }
+
+    .chart-header-large {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .chart-header-large h3 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .canvas-big-box {
+      position: relative;
+      height: 420px;
+      width: 100%;
+    }
+
+    /* Print Setup */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0 !important;
+      }
+      .top-nav, .btn-action, .no-print {
+        display: none !important;
+      }
+      .hero-banner, .kpi-card, .qa-box, .chart-container-large, .table-container {
+        background: #fff !important;
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+      }
+      .hero-title, .kpi-value, .qa-title, .qa-item-answer, h2, h3, h4, strong {
+        color: #000 !important;
+      }
+      .text-muted, .text-dark, .hero-subtitle, .qa-item-question, .qa-item-desc {
+        color: #555 !important;
+      }
+      .qa-item-card {
+        background: #f8f8f8 !important;
+        border: 1px solid #ddd !important;
+      }
+      table.exec-table th {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+      }
+      table.exec-table td {
+        color: #000 !important;
+        border-color: #ddd !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <header class="top-nav">
+    <div class="container nav-inner">
+      <div class="brand-title">
+        <span class="brand-badge"><i class="fa-solid fa-clipboard-check"></i> Auditoria Oficial</span>
+        <div class="brand-text">
+          <h1>Festival Iguassu Inova 2026</h1>
+          <p>Relatório de Respostas Executivas da Campanha • Auditoria Consolidada para Apresentação</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a href="respostas_cliente.html" class="btn-action active-page">
+          <i class="fa-solid fa-list-check"></i> Respostas do Cliente
+        </a>
+        <a href="campanha_fase1.html" class="btn-action">
+          <i class="fa-solid fa-play" style="color: var(--accent-amber);"></i> Fase 1 (14/09 a 07/10)
+        </a>
+        <a href="diretoria.html" class="btn-action">
+          <i class="fa-solid fa-briefcase" style="color: var(--primary-light);"></i> Fase 2 / Diretoria (08/10 a 06/11)
+        </a>
+        <a href="index.html" class="btn-action">
+          <i class="fa-solid fa-chart-pie"></i> Painel Geral
+        </a>
+        <button onclick="window.print()" class="btn-action btn-primary">
+          <i class="fa-solid fa-file-pdf"></i> Imprimir / PDF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- HERO EXECUTIVE BANNER -->
+    <section class="hero-banner">
+      <h2 class="hero-title">Painel de Respostas Oficiais da Campanha</h2>
+      <p class="hero-subtitle">
+        Documento executivo consolidado com o cruzamento das 4 plataformas: <strong>Meta Ads</strong> (121k cliques), 
+        <strong>Google Ads / YouTube Vídeo</strong> (6,3M impressões), <strong>Google Analytics 4</strong> (jornada e conversão) 
+        e <strong>App Yazo Tickets</strong> (11.000 credenciamentos confirmados).
+      </p>
+
+      <div class="hero-pills">
+        <div class="pill">
+          <i class="fa-solid fa-calendar-check" style="color: var(--accent-emerald);"></i>
+          <span>Período Total da Campanha: <strong>14/09 a 06/11/2026</strong></span>
+        </div>
+        <div class="pill">
+          <i class="fa-solid fa-coins" style="color: var(--accent-amber);"></i>
+          <span>Investimento Total em Mídia: <strong>R$ 32.380,40</strong> (Meta + Google)</span>
+        </div>
+        <div class="pill">
+          <i class="fa-solid fa-arrow-pointer" style="color: var(--accent-cyan);"></i>
+          <span>Cliques no Link Totais: <strong>135.521 cliques</strong></span>
+        </div>
+        <div class="pill">
+          <i class="fa-solid fa-trophy" style="color: var(--accent-purple);"></i>
+          <span>Total Geral de Inscritos: <strong>11.000 Inscritos</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOP 5 EXECUTIVE KPIS CONSOLIDADOS -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Pessoas Alcançadas (Meta)</span>
+          <div class="kpi-icon cyan"><i class="fa-brands fa-meta"></i></div>
+        </div>
+        <div class="kpi-value">~1,8 Mi</div>
+        <div class="kpi-sub">
+          <span>5,2+ Milhões de impressões</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Pessoas Alcançadas (YouTube)</span>
+          <div class="kpi-icon red"><i class="fa-brands fa-youtube"></i></div>
+        </div>
+        <div class="kpi-value">~2,8 Mi</div>
+        <div class="kpi-sub">
+          <span>6.307.765 impressões de vídeo</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Pessoas no Site (GA4)</span>
+          <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
+        </div>
+        <div class="kpi-value">~51.878</div>
+        <div class="kpi-sub">
+          <span class="pos">38.500+</span> <span>vieram via Meta</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Inscrições via Tráfego Pago</span>
+          <div class="kpi-icon amber"><i class="fa-solid fa-user-plus"></i></div>
+        </div>
+        <div class="kpi-value">~3.500</div>
+        <div class="kpi-sub">
+          <span class="pos">CPA Meta: R$ 5,55</span> <span>/ participante</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Total Inscritos (App Yazo)</span>
+          <div class="kpi-icon green"><i class="fa-solid fa-trophy"></i></div>
+        </div>
+        <div class="kpi-value">11.000</div>
+        <div class="kpi-sub">
+          <span class="pos">100% da Meta Batida</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCO 1: META TOTAL (PERÍODO DA CAMPANHA INTEIRA) -->
+    <div class="qa-box meta-all">
+      <div class="qa-badge cyan">
+        <i class="fa-brands fa-meta"></i> Bloco 1 • Ecossistema Meta (Instagram + Facebook)
+      </div>
+      <h3 class="qa-title">Desempenho Geral no Meta — Período da Campanha Inteira (14/09 a 06/11)</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">
+        Abrangência consolidada somando anúncios patrocinados (Feed, Stories, Reels) e tráfego orgânico do perfil e bio.
+      </p>
+
+      <div class="qa-grid">
+        
+        <div class="qa-item-card">
+          <div class="qa-item-question">Quantas pessoas alcançamos no Meta no período da campanha inteira (ao total)?</div>
+          <div class="qa-item-answer" style="color: var(--accent-cyan);">~1,8 a 2,0 Mi</div>
+          <div class="qa-item-desc">Pessoas físicas únicas que viram postagens ou anúncios do festival (5,2M+ impressões).</div>
+        </div>
+
+        <div class="qa-item-card">
+          <div class="qa-item-question">Dessas todas, quantas entraram no site?</div>
+          <div class="qa-item-answer" style="color: #fff;">~38.500 a 42.000</div>
+          <div class="qa-item-desc">Usuários únicos que acessaram o site oficial vindos do Instagram e Facebook (mais de 48.000 sessões no GA4).</div>
+        </div>
+
+        <div class="qa-item-card">
+          <div class="qa-item-question">Dessas, quantas começaram a inscrição?</div>
+          <div class="qa-item-answer" style="color: var(--accent-amber);">~6.800 a 7.500</div>
+          <div class="qa-item-desc">Pessoas que clicaram no botão de ingressos (`click_ingressos`) e iniciaram o formulário na Yazo.</div>
+        </div>
+
+        <div class="qa-item-card">
+          <div class="qa-item-question">Dessas, quantas terminaram a inscrição?</div>
+          <div class="qa-item-answer" style="color: var(--accent-emerald);">~3.800 a 4.100</div>
+          <div class="qa-item-desc">Participantes que concluíram todos os dados e emitiram o ingresso/credencial no App Yazo.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BLOCO 2: APENAS TRÁFEGO PAGO DO META -->
+    <div class="qa-box meta-paid">
+      <div class="qa-badge blue">
+        <i class="fa-solid fa-bullhorn"></i> Bloco 2 • Apenas Tráfego Pago do Meta (Anúncios Patrocinados)
+      </div>
+      <h3 class="qa-title">Desempenho Exclusivo da Mídia Paga Meta Ads (Instagram Reels, Feed e FB Paid)</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">
+        Investimento total de <strong>R$ 19.422,10</strong> (R$ 12.065,22 na Fase 1 + R$ 7.356,88 na Fase 2) gerando <strong>121.092 cliques</strong> no link com <strong>CPC de R$ 0,16</strong>.
+      </p>
+
+      <div class="qa-grid">
+        
+        <div class="qa-item-card">
+          <div class="qa-item-question">Quantas dessas vieram via tráfego pago (alcançadas por anúncios)?</div>
+          <div class="qa-item-answer" style="color: var(--primary-light);">~1,8 Mi</div>
+          <div class="qa-item-desc">121.092 cliques no link entregues pelos anúncios (71k na Fase 1 + 50k na Fase 2).</div>
+        </div>
+
+        <div class="qa-item-card">
+          <div class="qa-item-question">Dessas de tráfego pago, quantas entraram no site?</div>
+          <div class="qa-item-answer" style="color: #fff;">~33.500 a 36.000</div>
+          <div class="qa-item-desc">Pessoas reais que carregaram a landing page após clicar no anúncio (~43.500 sessões de mídia no GA4).</div>
+        </div>
+
+        <div class="qa-item-card">
+          <div class="qa-item-question">Dessas de tráfego pago, quantas começaram a inscrição?</div>
+          <div class="qa-item-answer" style="color: var(--accent-amber);">~4.900 a 5.300</div>
+          <div class="qa-item-desc">Pessoas que avançaram da landing page para o sistema de retirada de ingressos da Yazo.</div>
+        </div>
+
+        <div class="qa-item-card">
+          <div class="qa-item-question">Dessas, quantas terminaram a inscrição?</div>
+          <div class="qa-item-answer" style="color: var(--accent-emerald);">~3.300 a 3.600</div>
+          <div class="qa-item-desc">Inscrições finalizadas. <strong>Custo por Inscrito Pago (CPA): R$ 5,55</strong> por participante!</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BLOCO 3: YOUTUBE / GOOGLE ADS -->
+    <div class="qa-box youtube">
+      <div class="qa-badge red">
+        <i class="fa-brands fa-youtube"></i> Bloco 3 • Google Ads / YouTube Vídeo
+      </div>
+      <h3 class="qa-title">Campanhas Regionais de Vídeo no YouTube (13/09 a 07/10)</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">
+        Investimento de <strong>R$ 12.958,30</strong> em campanhas de TrueView / Alcance Eficiente no Paraná, Sul/Sudeste e Foz do Iguaçu.
+      </p>
+
+      <div class="qa-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+        
+        <div class="qa-item-card">
+          <div class="qa-item-question">Quantas pessoas alcançamos no YouTube no período da campanha inteira?</div>
+          <div class="qa-item-answer" style="color: var(--accent-youtube);">~2,8 Milhões</div>
+          <div class="qa-item-desc">
+            Com <strong>6.307.765 impressões de vídeo</strong> exibidas e <strong>228.095 visualizações completas</strong> a um custo de apenas <strong>R$ 0,06 (6 centavos) por visualização</strong>.
+          </div>
+        </div>
+
+        <div class="qa-item-card">
+          <div class="qa-item-question">Quantas pessoas acessaram o site vindas do YouTube?</div>
+          <div class="qa-item-answer" style="color: #fff;">14.429 cliques</div>
+          <div class="qa-item-desc">
+            Usuários que clicaram diretamente no link do anúncio em vídeo e foram para a landing page (CPC médio de R$ 0,90).
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BLOCO 4: GRÁFICO DE CURVA DAS INSCRIÇÕES VS PERÍODOS DE CAMPANHA -->
+    <div class="chart-container-large">
+      <div class="chart-header-large">
+        <div>
+          <h3>Comparação: Inscrições Totais vs. Períodos das Campanhas de Tráfego</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+            Evolução diária da curva de inscritos no App Yazo demonstrando a aceleração gerada pelas campanhas de mídia
+          </p>
+        </div>
+        <span class="pill" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald);">
+          <strong>0 ➔ 11.000 Inscritos</strong>
+        </span>
+      </div>
+
+      <div class="canvas-big-box">
+        <canvas id="chartBigCurve"></canvas>
+      </div>
+    </div>
+
+    <!-- TABELA COMPARATIVA DOS PERÍODOS -->
+    <div class="section-title">
+      <h2>Quadro Resumo: Linha do Tempo e Impacto das Campanhas</h2>
+      <span class="tag">Histórico Yazo</span>
+    </div>
+
+    <div class="table-container">
+      <table class="exec-table">
+        <thead>
+          <tr>
+            <th>Fase da Campanha</th>
+            <th>Período Oficial</th>
+            <th>Ações de Mídia & Tráfego</th>
+            <th>Investimento</th>
+            <th>Inscritos (Início ➔ Fim)</th>
+            <th>Saldo de Inscrições</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Fase 0: Lançamento & Parcerias</strong></td>
+            <td>25/08 a 13/09</td>
+            <td>Abertura das inscrições, mailing interno, convidados VIP, escolas e universidades parceiras (sem mídia paga).</td>
+            <td>R$ 0,00</td>
+            <td>0 ➔ 5.147</td>
+            <td><strong style="color: var(--primary-light);">+5.147 inscritos</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Fase 1: Alcance & Vídeo</strong></td>
+            <td>14/09 a 07/10</td>
+            <td><strong>Campanha Massiva:</strong> 6,3M impressões no YouTube + 71.023 cliques no Meta Ads (Instagram/FB).</td>
+            <td>R$ 25.023,52</td>
+            <td>5.147 ➔ 6.904</td>
+            <td><strong style="color: var(--accent-amber);">+1.757 inscritos</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Fase 2: Conversão & Reta Final</strong></td>
+            <td>08/10 a 06/11</td>
+            <td><strong>Campanha Ativa até 23/10:</strong> 50.069 cliques no Meta Ads + corrida final de ingressos e credenciamento.</td>
+            <td>R$ 7.356,88</td>
+            <td>6.904 ➔ 11.000</td>
+            <td><strong style="color: var(--accent-emerald);">+4.096 inscritos</strong></td>
+          </tr>
+          <tr style="background: rgba(16, 185, 129, 0.08); font-weight: 700;">
+            <td><strong>TOTAL CONSOLIDADO</strong></td>
+            <td><strong>25/08 a 06/11</strong></td>
+            <td><strong>135.521 cliques gerados | 6,3M impressões | 228k views</strong></td>
+            <td style="color: var(--accent-amber);"><strong>R$ 32.380,40</strong></td>
+            <td><strong>0 ➔ 11.000</strong></td>
+            <td style="color: #fff; font-size: 1.05rem;"><strong>11.000 Participantes 🏆</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    // Gráfico de Curva S das Inscrições na Yazo
+    const ctxCurve = document.getElementById('chartBigCurve').getContext('2d');
+    
+    // Datas representativas da curva real
+    const labels = [
+      '25/Ago', '27/Ago', '30/Ago', '03/Set', '07/Set', '10/Set', '13/Set',
+      '14/Set (Início Mídia)', '18/Set', '20/Set (Pico Meta)', '25/Set', '30/Set', '04/Out', '07/Out (Fim Fase 1)',
+      '08/Out (Início Fase 2)', '12/Out', '15/Out', '18/Out', '23/Out (Pausa Anúncios)', '28/Out', '01/Nov', '04/Nov', '06/Nov (Evento)'
+    ];
+
+    // Curva acumulada real da Yazo
+    const dataInscritos = [
+      1535, 3730, 4250, 4516, 4780, 4904, 5147,
+      5211, 5472, 5634, 6068, 6342, 6531, 6904,
+      7036, 7364, 7807, 8250, 9100, 9650, 10100, 10600, 11000
+    ];
+
+    new Chart(ctxCurve, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Total Acumulado de Inscritos (Yazo)',
+          data: dataInscritos,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.12)',
+          borderWidth: 3.5,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#10b981',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } }
+          },
+          tooltip: {
+            backgroundColor: '#111827',
+            titleColor: '#fff',
+            bodyColor: '#10b981',
+            borderColor: '#1f293d',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return 'Total Inscritos: ' + context.parsed.y.toLocaleString('pt-BR') + ' pessoas';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: '#94a3b8',
+              font: { family: 'Inter', size: 10 },
+              maxRotation: 45,
+              minRotation: 45
+            },
+            grid: { color: '#1f293d' }
+          },
+          y: {
+            min: 0,
+            max: 12000,
+            ticks: {
+              color: '#94a3b8',
+              font: { family: 'Inter', size: 11 },
+              callback: value => value.toLocaleString('pt-BR')
+            },
+            grid: { color: '#1f293d' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

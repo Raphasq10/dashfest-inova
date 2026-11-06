@@ -1,0 +1,3630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Festival Iguassu Inova 2026 — Dashboard Executivo de BI & Performance</title>
+  
+  <!-- Fontes & Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js & PapaParse -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  
+  <!-- Dados Pré-processados -->
+  <script src="data.js"></script>
+
+  <style>
+    :root {
+      --bg-body: #0b0f19;
+      --bg-card: #111827;
+      --bg-card-hover: #162032;
+      --bg-input: #1f2937;
+      --border-color: #243044;
+      --border-subtle: #1a2333;
+      
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4338ca;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dark: #64748b;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      padding: 24px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container { max-width: 1440px; margin: 0 auto; }
+
+    /* Top Bar Header */
+    header.dashboard-header {
+      background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(30, 41, 59, 0.85));
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 24px 32px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header.dashboard-header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--primary), var(--accent-cyan));
+    }
+
+    .header-title-wrap { display: flex; align-items: center; gap: 18px; }
+
+    .logo-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .header-title h1 {
+      font-family: var(--font-heading);
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title h1 .badge-year {
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(99, 102, 241, 0.2);
+      color: var(--primary-light);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      border: 1px solid transparent;
+      outline: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: var(--bg-card);
+      border-color: var(--border-color);
+      color: var(--text-muted);
+    }
+    .btn-outline:hover {
+      background: var(--bg-input);
+      color: var(--text-main);
+      border-color: #3b4d6b;
+    }
+
+    /* Top Main Tabs Navigation */
+    .main-tabs-nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .main-tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-heading);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .main-tab-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: #3b4d6b;
+    }
+
+    .main-tab-btn.active {
+      background: linear-gradient(135deg, #1e293b, #111827);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+      position: relative;
+    }
+
+    .main-tab-btn.active::after {
+      content: "";
+      position: absolute;
+      bottom: -13px;
+      left: 15%;
+      width: 70%;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .tab-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.2);
+      color: var(--primary-light);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+    }
+
+    .tab-content { display: none; animation: fadeIn 0.25s ease-in-out; }
+    .tab-content.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Banner */
+    .campaign-banner {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--accent-cyan);
+      border-radius: var(--radius-lg);
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .campaign-banner-info { display: flex; align-items: center; gap: 16px; }
+
+    .campaign-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .campaign-banner-text h3 {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .campaign-banner-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .campaign-dates-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .date-pill {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-pill strong { color: var(--accent-cyan); }
+
+    /* Filters Section */
+    .filter-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .filter-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .filter-title {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preset-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .btn-preset {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    .btn-preset:hover { background: #283548; color: var(--text-main); }
+
+    .btn-preset.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary-light);
+      box-shadow: 0 2px 10px var(--primary-glow);
+    }
+
+    .filter-controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .filter-field { display: flex; flex-direction: column; gap: 6px; }
+
+    .filter-field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-field select,
+    .filter-field input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .filter-field select:focus,
+    .filter-field input:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }
+
+    /* KPI Cards Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: #3b4d6b;
+    }
+
+    .kpi-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .kpi-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .kpi-icon.indigo { background: rgba(99, 102, 241, 0.15); color: var(--primary-light); }
+    .kpi-icon.emerald { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+    .kpi-icon.cyan { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+    .kpi-icon.amber { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+    .kpi-icon.rose { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
+    .kpi-icon.purple { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); }
+
+    .kpi-value {
+      font-family: var(--font-heading);
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .kpi-subtext {
+      font-size: 0.8rem;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kpi-subtext .highlight {
+      color: var(--accent-emerald);
+      font-weight: 600;
+    }
+
+    /* Charts Main Section */
+    .charts-grid-main {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .chart-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .chart-title-wrap h2 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chart-title-wrap p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .chart-tools { display: flex; align-items: center; gap: 8px; }
+
+    .toggle-group {
+      display: inline-flex;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .toggle-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .chart-container-box {
+      position: relative;
+      height: 380px;
+      width: 100%;
+    }
+
+    .charts-grid-two {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .charts-grid-two { grid-template-columns: 1fr; }
+    }
+
+    /* Hourly Chart Controls Bar */
+    .hourly-control-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      flex-wrap: wrap;
+    }
+
+    .hourly-control-bar label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .hourly-control-bar select {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .nav-day-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .nav-day-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary-light);
+    }
+
+    .hourly-day-badge {
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--primary-light);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    /* Insights Box */
+    .insight-callout {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-top: 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .insight-callout i {
+      font-size: 1.25rem;
+      color: var(--accent-cyan);
+      margin-top: 2px;
+    }
+
+    .insight-text h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .insight-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Tabela */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 24px;
+    }
+
+    .table-header-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .search-table-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      min-width: 240px;
+      outline: none;
+    }
+    .search-table-input:focus { border-color: var(--primary-light); }
+
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    table.data-table th {
+      background: var(--bg-input);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-main);
+    }
+
+    table.data-table tr:hover td { background: var(--bg-card-hover); }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-pill.peak {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-amber);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .badge-pill.normal {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--primary-light);
+    }
+
+    .badge-pill.paid {
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+
+    .badge-pill.organic {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .badge-pill.direct {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--text-muted);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    #csvFileInput { display: none; }
+
+    footer.dashboard-footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-dark);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 32px;
+    }
+
+    @media print {
+      body { background: #fff; color: #000; padding: 0; }
+      .filter-panel, .header-actions, .hourly-control-bar, .main-tabs-nav, footer.dashboard-footer {
+        display: none !important;
+      }
+      .chart-card, .kpi-card, .table-card, .campaign-banner {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        color: #000 !important;
+        break-inside: avoid;
+      }
+      .kpi-value, .chart-title-wrap h2, .header-title h1 { color: #000 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header class="dashboard-header">
+      <div class="header-title-wrap">
+        <div class="logo-badge">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div class="header-title">
+          <h1>
+            Festival Iguassu Inova
+            <span class="badge-year">2026</span>
+          </h1>
+          <p>
+            <i class="fa-solid fa-bolt text-gradient" style="color: var(--accent-cyan); margin-right: 4px;"></i>
+            Painel Executivo de BI: Inscrições, Tráfego Pago & Funil de Conversão
+          </p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <input type="file" id="csvFileInput" accept=".csv" />
+        <button class="btn btn-primary" style="background: linear-gradient(135deg, #06b6d4, #0891b2);" onclick="openYazoSyncModal()" title="Sincronizar dados automaticamente via API do Yazo Tickets">
+          <i class="fa-solid fa-rotate"></i> Sincronizar API Yazo
+        </button>
+        <button class="btn btn-outline" onclick="document.getElementById('csvFileInput').click();" title="Substituir ou atualizar com novo arquivo CSV de inscritos">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Atualizar CSV
+        </button>
+        <button class="btn btn-outline" onclick="exportData()" title="Baixar relatório em formato CSV">
+          <i class="fa-solid fa-file-export"></i> Exportar Dados
+        </button>
+        <button class="btn btn-outline" onclick="window.print()" title="Imprimir ou gerar PDF executivo">
+          <i class="fa-solid fa-print"></i> Relatório PDF
+        </button>
+      </div>
+    </header>
+
+    <!-- NAVEGAÇÃO PRINCIPAL POR ABAS -->
+    <nav class="main-tabs-nav">
+      <button class="main-tab-btn active" id="btnTabInscriptions" onclick="switchMainTab('tab-inscriptions')">
+        <i class="fa-solid fa-users"></i>
+        <span>Inscrições & Conversão Horária</span>
+        <span class="tab-badge" id="tabInscritosCountBadge">3.142 inscritos</span>
+      </button>
+
+      <button class="main-tab-btn" id="btnTabTraffic" onclick="switchMainTab('tab-traffic')">
+        <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i>
+        <span>Performance Tráfego Pago (GA4)</span>
+        <span class="tab-badge" style="background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4);">
+          32.580 sessões de mídia
+        </span>
+      </button>
+
+      <button class="main-tab-btn" id="btnTabFunnel" onclick="switchMainTab('tab-funnel')">
+        <i class="fa-solid fa-filter-circle-dollar" style="color: var(--accent-amber);"></i>
+        <span>Funil do Pixel Meta & Jornada</span>
+        <span class="tab-badge" style="background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.4);">
+          65,8k PageViews ➔ 4k Inscrições
+        </span>
+      </button>
+
+      <a href="respostas_cliente.html" class="main-tab-btn" style="text-decoration: none; border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.12);">
+        <i class="fa-solid fa-clipboard-check" style="color: #10b981;"></i>
+        <span>Respostas do Cliente</span>
+        <span class="tab-badge" style="background: rgba(16, 185, 129, 0.3); color: #fff;">
+          Perguntas da Campanha
+        </span>
+      </a>
+
+      <a href="diretoria.html" class="main-tab-btn" style="text-decoration: none; border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.12);">
+        <i class="fa-solid fa-briefcase" style="color: #818cf8;"></i>
+        <span>Relatório Executivo (Diretoria)</span>
+        <span class="tab-badge" style="background: rgba(99, 102, 241, 0.3); color: #fff;">
+          Apresentação C-Level
+        </span>
+      </a>
+    </nav>
+
+    <!-- =====================================================================
+         ABA 1: INSCRIÇÕES & CONVERSÃO HORÁRIA
+         ===================================================================== -->
+    <main id="tab-inscriptions" class="tab-content active">
+      
+      <section class="filter-panel">
+        <div class="filter-top-row">
+          <div class="filter-title">
+            <i class="fa-solid fa-filter" style="color: var(--primary-light);"></i>
+            <span>Filtros Dinâmicos de Campanha</span>
+          </div>
+          
+          <div class="preset-buttons">
+            <button class="btn-preset active" data-preset="all" onclick="applyPreset('all')">Todo Período</button>
+            <button class="btn-preset" data-preset="abertura" onclick="applyPreset('abertura')">Abertura (25-31 Ago)</button>
+            <button class="btn-preset" data-preset="campanha" onclick="applyPreset('campanha')">Durante Tráfego (14/09 a 23/10)</button>
+            <button class="btn-preset" data-preset="setembro" onclick="applyPreset('setembro')">Setembro</button>
+            <button class="btn-preset" data-preset="outubro" onclick="applyPreset('outubro')">Outubro</button>
+            <button class="btn-preset" data-preset="novembro" onclick="applyPreset('novembro')">Novembro (Reta Final)</button>
+            <button class="btn-preset" data-preset="last14" onclick="applyPreset('last14')">Últimos 14 Dias</button>
+          </div>
+        </div>
+
+        <div class="filter-controls-grid">
+          <div class="filter-field">
+            <label><i class="fa-regular fa-calendar"></i> Data Inicial</label>
+            <input type="date" id="filterStartDate" onchange="onManualDateChange()" />
+          </div>
+          
+          <div class="filter-field">
+            <label><i class="fa-regular fa-calendar"></i> Data Final</label>
+            <input type="date" id="filterEndDate" onchange="onManualDateChange()" />
+          </div>
+
+          <div class="filter-field">
+            <label><i class="fa-solid fa-user-tag"></i> Perfil Representado</label>
+            <select id="filterPerfil" onchange="applyFilters()">
+              <option value="ALL">Todos os Perfis (Geral)</option>
+            </select>
+          </div>
+
+          <div class="filter-field">
+            <label><i class="fa-solid fa-ticket"></i> Tipo de Inscrição</label>
+            <select id="filterTipo" onchange="applyFilters()">
+              <option value="ALL">Todos os Tipos</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Total de Inscrições</span>
+            <div class="kpi-icon indigo"><i class="fa-solid fa-users"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiTotal">0</div>
+          <div class="kpi-subtext">
+            <span>Base monitorada:</span>
+            <span class="highlight" id="kpiShareTotal">100%</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Inscritos Únicos</span>
+            <div class="kpi-icon emerald"><i class="fa-solid fa-id-card"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiUnicos">0</div>
+          <div class="kpi-subtext">
+            <span>Taxa de unicidade:</span>
+            <span class="highlight" id="kpiTaxaUnicidade">0%</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Média Diária</span>
+            <div class="kpi-icon cyan"><i class="fa-solid fa-chart-simple"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiMediaDiaria">0</div>
+          <div class="kpi-subtext" id="kpiDiasAtivos">Em 0 dias monitorados</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Dia Recorde (Pico)</span>
+            <div class="kpi-icon amber"><i class="fa-solid fa-trophy"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiPicoDia" style="font-size: 1.6rem;">-</div>
+          <div class="kpi-subtext" id="kpiPicoSubtext">0 inscrições registradas</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Horário Mais Quente</span>
+            <div class="kpi-icon rose"><i class="fa-solid fa-fire-flame-curved"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiGoldenHour">--:--</div>
+          <div class="kpi-subtext" id="kpiGoldenHourSubtext">Pico de conversão</div>
+        </div>
+      </section>
+
+      <section class="charts-grid-main">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-timeline" style="color: var(--primary-light);"></i>
+                Evolução Temporal das Inscrições (Visão por Período)
+              </h2>
+              <p>Acompanhamento da velocidade de conversão diária e acumulada durante a campanha. <em>Clique em qualquer barra para carregar o detalhe daquele dia!</em></p>
+            </div>
+            <div class="chart-tools">
+              <div class="toggle-group">
+                <button class="toggle-btn active" id="btnTrendDaily" onclick="setTrendMode('daily')">Diário</button>
+                <button class="toggle-btn" id="btnTrendCumul" onclick="setTrendMode('cumulative')">Acumulado</button>
+              </div>
+            </div>
+          </div>
+          <div class="chart-container-box">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="charts-grid-main">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-clock" style="color: var(--accent-cyan);"></i>
+                Desempenho de Inscrições Hora a Hora (00:00 às 23:00)
+              </h2>
+              <p id="hourlyChartSubtitle">Análise detalhada de conversão horária para avaliar o impacto de disparos de emails e anúncios.</p>
+            </div>
+
+            <div class="chart-tools">
+              <div class="toggle-group">
+                <button class="toggle-btn active" id="btnHourlyDayMode" onclick="setHourlyMode('single_day')">Dia Específico</button>
+                <button class="toggle-btn" id="btnHourlyConsolidatedMode" onclick="setHourlyMode('consolidated')">Padrão Geral (Consolidado)</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="hourly-control-bar" id="hourlyDayControlBar">
+            <label><i class="fa-solid fa-calendar-day"></i> Selecione o Dia:</label>
+            <button class="nav-day-btn" onclick="stepHourlyDay(-1)" title="Dia Anterior"><i class="fa-solid fa-chevron-left"></i> Anterior</button>
+            <select id="hourlyDaySelector" onchange="onHourlyDayChange()">
+            </select>
+            <button class="nav-day-btn" onclick="stepHourlyDay(1)" title="Próximo Dia">Próximo <i class="fa-solid fa-chevron-right"></i></button>
+            
+            <span class="hourly-day-badge" id="hourlyDayTotalBadge">Total do Dia: 0</span>
+            <span class="hourly-day-badge" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.3);" id="hourlyDayPeakBadge">Pico: --</span>
+          </div>
+
+          <div class="chart-container-box" style="margin-top: 16px;">
+            <canvas id="hourlyChart"></canvas>
+          </div>
+
+          <div class="insight-callout" id="hourlyInsightBox">
+            <i class="fa-solid fa-lightbulb"></i>
+            <div class="insight-text">
+              <h4>Insight de Performance & Otimização de Mídia</h4>
+              <p id="hourlyInsightDesc">Carregando insights do período...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="charts-grid-two">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-pie-chart" style="color: var(--accent-emerald);"></i>
+                Segmentação por Perfil de Público
+              </h2>
+              <p>Representatividade por categoria profissional e de mercado.</p>
+            </div>
+          </div>
+          <div class="chart-container-box" style="height: 320px;">
+            <canvas id="perfilChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-calendar-week" style="color: var(--accent-amber);"></i>
+                Conversão por Dia da Semana
+              </h2>
+              <p>Dias mais propensos a inscrição (Volume total acumulado).</p>
+            </div>
+          </div>
+          <div class="chart-container-box" style="height: 320px;">
+            <canvas id="weekdayChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="table-card">
+        <div class="table-header-wrap">
+          <div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff;">
+              <i class="fa-solid fa-table-list" style="color: var(--primary-light); margin-right: 8px;"></i>
+              Detalhamento Diário da Campanha
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+              Métricas dia a dia com volume, horário de pico e perfil predominante.
+            </p>
+          </div>
+          <input type="text" id="tableSearchInput" class="search-table-input" placeholder="Buscar data ou dia da semana..." oninput="renderTable()" />
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Dia da Semana</th>
+                <th>Inscrições</th>
+                <th>% do Período</th>
+                <th>Horário de Pico</th>
+                <th>Perfil Predominante</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="dailyTableBody">
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- =====================================================================
+         ABA 2: PERFORMANCE DO TRÁFEGO PAGO & MÍDIA PATROCINADA (GA4)
+         ===================================================================== -->
+    <main id="tab-traffic" class="tab-content">
+      
+      <section class="campaign-banner">
+        <div class="campaign-banner-info">
+          <div class="campaign-icon">
+            <i class="fa-solid fa-rocket"></i>
+          </div>
+          <div class="campaign-banner-text">
+            <h3>Campanha de Tráfego Pago & Mídia de Aquisição</h3>
+            <p>Auditoria dos canais patrocinados via Google Analytics 4 (GA4) e impacto na taxa de conversão.</p>
+          </div>
+        </div>
+
+        <div class="campaign-dates-badges">
+          <div class="date-pill" title="Período em que os anúncios estiveram no ar">
+            <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i>
+            <span>Veiculação Ativa de Anúncios: <strong>14/09 a 23/10/2026 (40 dias)</strong></span>
+          </div>
+          <div class="date-pill" title="Janela de mensuração do print do GA4">
+            <i class="fa-solid fa-chart-pie" style="color: var(--accent-emerald);"></i>
+            <span>Janela Mensurada no GA4: <strong>25/09 a 06/11/2026</strong></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Sessões de Mídia Paga</span>
+            <div class="kpi-icon cyan"><i class="fa-solid fa-bullseye"></i></div>
+          </div>
+          <div class="kpi-value" id="trafficKpiSessions">32.580</div>
+          <div class="kpi-subtext">
+            <span>Representatividade no evento:</span>
+            <span class="highlight">52,0% de todo tráfego</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Sessões Engajadas (Pagas)</span>
+            <div class="kpi-icon emerald"><i class="fa-solid fa-user-check"></i></div>
+          </div>
+          <div class="kpi-value" id="trafficKpiEngaged">5.959</div>
+          <div class="kpi-subtext">
+            <span>Taxa Média de Engajamento:</span>
+            <span class="highlight">18,29%</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Total de Eventos da Mídia</span>
+            <div class="kpi-icon purple"><i class="fa-solid fa-arrow-pointer"></i></div>
+          </div>
+          <div class="kpi-value">113.091</div>
+          <div class="kpi-subtext">
+            <span>Ações e cliques gerados:</span>
+            <span class="highlight">35,6% do site</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Inscritos no Período Pago</span>
+            <div class="kpi-icon indigo"><i class="fa-solid fa-user-plus"></i></div>
+          </div>
+          <div class="kpi-value">972</div>
+          <div class="kpi-subtext">
+            <span>Durante os 40 dias de anúncios:</span>
+            <span class="highlight">24,3 inscritos/dia</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-label">Formato Campeão</span>
+            <div class="kpi-icon rose"><i class="fa-brands fa-instagram"></i></div>
+          </div>
+          <div class="kpi-value" style="font-size: 1.55rem;">Reels Patrocinado</div>
+          <div class="kpi-subtext">
+            <span>16.096 sessões</span>
+            <span class="highlight">49,4% da mídia</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="charts-grid-two">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-chart-column" style="color: var(--accent-cyan);"></i>
+                Volume de Sessões por Canal Patrocinado
+              </h2>
+              <p>Distribuição do tráfego captado por cada mídia paga na campanha.</p>
+            </div>
+          </div>
+          <div class="chart-container-box" style="height: 340px;">
+            <canvas id="trafficVolumeChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-gauge-high" style="color: var(--accent-emerald);"></i>
+                Qualidade do Tráfego: Taxa de Engajamento (%)
+              </h2>
+              <p>Eficiência em prender a atenção do usuário no site do festival.</p>
+            </div>
+          </div>
+          <div class="chart-container-box" style="height: 340px;">
+            <canvas id="trafficQualityChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="charts-grid-two">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-chart-pie" style="color: var(--accent-purple);"></i>
+                Share de Tráfego Total do Festival (GA4)
+              </h2>
+              <p>Mídia Patrocinada (52%) vs Tráfego Direto vs Orgânico vs Social.</p>
+            </div>
+          </div>
+          <div class="chart-container-box" style="height: 320px;">
+            <canvas id="trafficShareChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-arrow-trend-up" style="color: var(--accent-amber);"></i>
+                Inscrições por Ciclo da Campanha
+              </h2>
+              <p>Comparativo: Pré-Anúncios vs Durante Mídia Paga vs Reta Final.</p>
+            </div>
+          </div>
+          <div class="chart-container-box" style="height: 320px;">
+            <canvas id="trafficCampaignPhaseChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="table-card">
+        <div class="table-header-wrap">
+          <div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff;">
+              <i class="fa-solid fa-table" style="color: var(--accent-cyan); margin-right: 8px;"></i>
+              Matriz de Aquisição de Tráfego (Dados Consolidados GA4)
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+              Origem / mídia da sessão, taxa de engajamento, tempo médio e volume de eventos.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <div class="toggle-group">
+              <button class="toggle-btn active" id="btnTrafficFilterPaid" onclick="filterTrafficTable('paid')">Canais Pagos (6)</button>
+              <button class="toggle-btn" id="btnTrafficFilterAll" onclick="filterTrafficTable('all')">Todos os Canais GA4 (19)</button>
+            </div>
+            <input type="text" id="trafficSearchInput" class="search-table-input" placeholder="Filtrar canal..." oninput="renderTrafficTable()" />
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Origem / Mídia da Sessão</th>
+                <th>Categoria</th>
+                <th>Sessões</th>
+                <th>% do Total</th>
+                <th>Sessões Engajadas</th>
+                <th>Taxa de Engajamento</th>
+                <th>Tempo Médio</th>
+                <th>Eventos / Sessão</th>
+                <th>Total de Eventos</th>
+              </tr>
+            </thead>
+            <tbody id="trafficTableBody">
+            </tbody>
+          </table>
+        </div>
+
+        <div class="insight-callout" style="border-left-color: var(--accent-purple); margin-top: 20px;">
+          <i class="fa-solid fa-compass" style="color: var(--accent-purple);"></i>
+          <div class="insight-text">
+            <h4>Diagnóstico Estratégico de BI: Desempenho da Mídia Patrocinada</h4>
+            <p style="line-height: 1.6;">
+              • <strong>Reels vs. Post no Feed:</strong> O formato <code>instagram / reels-patrocinado</code> foi o principal motor de atração da campanha, gerando <strong>16.096 sessões</strong> (55% a mais que o feed tradicional com 10.360). Ambos tiveram taxas de engajamento equivalentes (~17,8%), confirmando que Reels é o melhor formato para escala e alcance de novas audiências.<br>
+              • <strong>Spotify Spot como Grande Destaque de Qualidade:</strong> O canal <code>spotify / spot</code> alcançou a <strong>maior taxa de engajamento entre todas as mídias pagas (23,44%)</strong> com tempo médio de permanência de <strong>9 segundos</strong> (quase o dobro do Meta Ads). Isso comprova a alta afinidade do público jovem/universitário com a mídia em áudio.<br>
+              • <strong>Papel Estratégico no Funil de Conversões:</strong> Enquanto o lançamento orgânico (agosto) esgotou a primeira base mais quente de contatos internos da Itaipu e Parquetec (1.520 inscritos), o tráfego pago ativo de 14/09 a 23/10 garantiu <strong>972 novos inscritos contínuos</strong>, mantendo a média de ~24 inscrições/dia durante todo o período intermediário e deixando uma base aquecida de mais <strong>650 inscritos</strong> na reta final até novembro.
+            </p>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- =====================================================================
+         ABA 3: FUNIL MULTI-CANAL COMPARATIVO (GERAL vs META ADS vs ORGÂNICO)
+         ===================================================================== -->
+    <main id="tab-funnel" class="tab-content">
+      
+      <!-- BANNER DE CONTEXTO DO FUNIL -->
+      <section class="campaign-banner" style="border-left-color: var(--accent-amber);">
+        <div class="campaign-banner-info">
+          <div class="campaign-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">
+            <i class="fa-solid fa-arrows-split-up-and-left"></i>
+          </div>
+          <div class="campaign-banner-text">
+            <h3>Funil Comparativo de Conversão: Geral vs Meta Ads vs Orgânico</h3>
+            <p>
+              Auditoria cruzada com base nos eventos oficiais do <strong>Google Analytics 4 (GA4)</strong> e disparos do <strong>Meta Pixel</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="campaign-dates-badges">
+          <div class="date-pill" title="Período do relatório GA4">
+            <i class="fa-brands fa-google" style="color: #f59e0b;"></i>
+            <span>Janela GA4: <strong>25/09 a 06/11/2026</strong></span>
+          </div>
+          <div class="date-pill" title="Total de Usuários Únicos no GA4">
+            <i class="fa-solid fa-users" style="color: var(--accent-cyan);"></i>
+            <span>Base GA4: <strong>51.878 Usuários Únicos</strong></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- VISUALIZADOR MULTI-FUNIL (3 COLUNAS LADO A LADO) -->
+      <section style="margin-bottom: 24px;">
+        <div class="table-header-wrap" style="margin-bottom: 14px;">
+          <div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: #fff; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-chart-line" style="color: var(--accent-cyan);"></i>
+              Jornada Passo a Passo: Comparativo de Desempenho Lado a Lado
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Acompanhamento da taxa de passagem e retenção de usuários únicos em cada etapa do processo de inscrição.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+          
+          <!-- COLUNA 1: FUNIL GERAL (GLOBAL) -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-top: 4px solid var(--primary); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--primary-light); letter-spacing: 0.05em;">Visão Global</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff; margin-top: 2px;">
+                  <i class="fa-solid fa-globe" style="color: var(--primary); margin-right: 6px;"></i> Geral (Todos os Canais)
+                </h3>
+              </div>
+              <span class="badge-pill normal" style="font-size: 0.8rem; padding: 4px 10px;">100% Tráfego</span>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">Total de 51.878 usuários únicos e 62.658 sessões registradas.</p>
+
+            <!-- Step 1 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">1. Visitas no Site (page_view)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">51.878 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill normal">100%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">107.871 views</div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-light); font-weight: 600;">2. Clique Ingressos (click_ingressos)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">7.420 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill peak" style="background: rgba(99, 102, 241, 0.2); color: var(--primary-light); border-color: rgba(99, 102, 241, 0.4);">14,30%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">9.667 cliques</div>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-cyan); font-weight: 600;">3. Início Cadastro (form_start)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">6.079 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill paid">81,93%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-amber); font-weight: 600;">4. Seleção Ingresso (add_to_cart)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">5.391 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill peak">72,65%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+              </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-emerald); font-weight: 600;">5. Checkout (begin_checkout)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #10b981;">4.957 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill organic">66,81%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 6px; padding: 10px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(99, 102, 241, 0.25); text-align: center;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Conversão Geral (Visitante ➔ Checkout):</span>
+              <strong style="color: #fff; font-size: 0.95rem; margin-left: 6px;">9,56%</strong>
+            </div>
+          </div>
+
+
+          <!-- COLUNA 2: FUNIL TRÁFEGO PAGO (META ADS) -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-top: 4px solid var(--accent-cyan); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-cyan); letter-spacing: 0.05em;">Mídia Patrocinada</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff; margin-top: 2px;">
+                  <i class="fa-brands fa-instagram" style="color: #ec4899; margin-right: 6px;"></i> Tráfego Pago (Meta Ads)
+                </h3>
+              </div>
+              <span class="badge-pill paid" style="font-size: 0.8rem; padding: 4px 10px;">46,17% Tráfego</span>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">28.930 sessões registradas via Reels, Feed Post e Facebook Ads.</p>
+
+            <!-- Step 1 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">1. Visitas via Anúncios (page_view)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">23.952 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill paid">46,17%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do site</div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-light); font-weight: 600;">2. Clique Ingressos (click_ingressos)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">3.426 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill peak" style="background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4);">14,30%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">~4.463 cliques</div>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-cyan); font-weight: 600;">3. Início Cadastro (form_start)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">2.807 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill paid">81,93%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-amber); font-weight: 600;">4. Seleção Ingresso (add_to_cart)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">2.489 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill peak">72,65%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+              </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-emerald); font-weight: 600;">5. Checkout (begin_checkout)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #06b6d4;">2.289 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill paid">66,81%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 6px; padding: 10px; background: rgba(6, 182, 212, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(6, 182, 212, 0.25); text-align: center;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Conversão Meta Ads (Visitante ➔ Checkout):</span>
+              <strong style="color: var(--accent-cyan); font-size: 0.95rem; margin-left: 6px;">9,56%</strong>
+            </div>
+          </div>
+
+
+          <!-- COLUNA 3: FUNIL ORGÂNICO, DIRETO & CRM -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-top: 4px solid var(--accent-emerald); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-emerald); letter-spacing: 0.05em;">Tráfego Espontâneo</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff; margin-top: 2px;">
+                  <i class="fa-solid fa-leaf" style="color: var(--accent-emerald); margin-right: 6px;"></i> Orgânico, Direto & CRM
+                </h3>
+              </div>
+              <span class="badge-pill organic" style="font-size: 0.8rem; padding: 4px 10px;">48,00% Tráfego</span>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">30.078 sessões via Tráfego Direto, Buscas no Google, E-mails e Imprensa.</p>
+
+            <!-- Step 1 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">1. Visitas Espontâneas (page_view)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">24.901 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill organic">48,00%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do site</div>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-light); font-weight: 600;">2. Clique Ingressos (click_ingressos)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">3.562 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill peak" style="background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.4);">14,30%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">~4.640 cliques</div>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-cyan); font-weight: 600;">3. Início Cadastro (form_start)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">2.918 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill paid">81,93%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-amber); font-weight: 600;">4. Seleção Ingresso (add_to_cart)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">2.588 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill peak">72,65%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+              </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-emerald); font-weight: 600;">5. Checkout (begin_checkout)</div>
+                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #10b981;">2.379 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill organic">66,81%</span>
+                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 6px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.25); text-align: center;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Conversão Orgânica (Visitante ➔ Checkout):</span>
+              <strong style="color: #10b981; font-size: 0.95rem; margin-left: 6px;">9,56%</strong>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- GRÁFICO COMPARATIVO LADO A LADO DAS ETAPAS -->
+      <section class="charts-grid-two">
+        
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-chart-column" style="color: var(--accent-cyan);"></i>
+                Comparativo de Volume de Usuários por Etapa
+              </h2>
+              <p>Geral (100%) vs Meta Ads (46,2%) vs Orgânico/Direto (48,0%).</p>
+            </div>
+          </div>
+          <div class="chart-container-box" style="height: 340px;">
+            <canvas id="pixelFunnelChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-title-wrap">
+              <h2>
+                <i class="fa-solid fa-chart-line" style="color: var(--accent-amber);"></i>
+                Curva Histórica de Eventos no Tempo
+              </h2>
+              <p>Picos diários de eventos e aceleração em outubro e novembro.</p>
+            </div>
+          </div>
+          <div class="chart-container-box" style="height: 340px;">
+            <canvas id="pixelTimelineChart"></canvas>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- TABELA ANALÍTICA DOS EVENTOS DO GA4 (DO RELATÓRIO DO PRINT) -->
+      <section class="table-card">
+        <div class="table-header-wrap">
+          <div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff;">
+              <i class="fa-brands fa-google" style="color: #f59e0b; margin-right: 8px;"></i>
+              Mapeamento Oficial de Eventos do Google Analytics 4 (25/set a 06/nov)
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+              Dados consolidados do relatório "Eventos: Nome do evento" (317.974 eventos e 51.893 usuários totais).
+            </p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nome do Evento</th>
+                <th>Finalidade no Funil</th>
+                <th>Contagem de Eventos</th>
+                <th>% do Total</th>
+                <th>Total de Usuários</th>
+                <th>% dos Usuários</th>
+                <th>Eventos / Usuário</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. page_view</strong></td>
+                <td>Visualização de Páginas no Site</td>
+                <td>107.871</td>
+                <td>33,92%</td>
+                <td><strong>51.878</strong></td>
+                <td>99,97%</td>
+                <td>2,11</td>
+              </tr>
+              <tr>
+                <td><strong>2. session_start</strong></td>
+                <td>Sessões Iniciadas</td>
+                <td>63.589</td>
+                <td>20,00%</td>
+                <td><strong>51.799</strong></td>
+                <td>99,82%</td>
+                <td>1,24</td>
+              </tr>
+              <tr>
+                <td><strong>3. first_visit</strong></td>
+                <td>Novos Visitantes (Primeira Visita)</td>
+                <td>51.300</td>
+                <td>16,13%</td>
+                <td><strong>49.984</strong></td>
+                <td>96,22%</td>
+                <td>1,03</td>
+              </tr>
+              <tr>
+                <td><strong>4. user_engagement</strong></td>
+                <td>Engajamento Ativo (+10s no site)</td>
+                <td>30.686</td>
+                <td>9,65%</td>
+                <td><strong>14.642</strong></td>
+                <td>28,22%</td>
+                <td>2,12</td>
+              </tr>
+              <tr>
+                <td><strong>5. scroll</strong></td>
+                <td>Rolagem de Página (+90% da dobra)</td>
+                <td>18.458</td>
+                <td>5,80%</td>
+                <td><strong>12.254</strong></td>
+                <td>23,61%</td>
+                <td>1,51</td>
+              </tr>
+              <tr>
+                <td><strong>6. click</strong></td>
+                <td>Cliques Gerais em Links e Botões</td>
+                <td>10.624</td>
+                <td>3,34%</td>
+                <td><strong>7.753</strong></td>
+                <td>14,94%</td>
+                <td>1,37</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--primary-light);">7. click_ingressos</strong></td>
+                <td><span class="badge-pill peak">Interesse Direto em Inscrição</span></td>
+                <td><strong style="color: var(--primary-light);">9.667</strong></td>
+                <td>3,04%</td>
+                <td><strong style="color: #fff;">7.420</strong></td>
+                <td><strong>14,30%</strong></td>
+                <td>1,31</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--accent-cyan);">8. form_start</strong></td>
+                <td>Início de Preenchimento do Formulário</td>
+                <td>7.234</td>
+                <td>2,28%</td>
+                <td><strong>6.079</strong></td>
+                <td>11,71%</td>
+                <td>1,19</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--accent-amber);">9. add_to_cart</strong></td>
+                <td>Seleção do Ingresso na Plataforma Yazo</td>
+                <td>7.148</td>
+                <td>2,25%</td>
+                <td><strong>5.391</strong></td>
+                <td>10,39%</td>
+                <td>1,33</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--accent-emerald);">10. begin_checkout</strong></td>
+                <td><span class="badge-pill organic">Avanço para Checkout Final</span></td>
+                <td><strong style="color: var(--accent-emerald);">5.351</strong></td>
+                <td>1,68%</td>
+                <td><strong style="color: #10b981;">4.957</strong></td>
+                <td><strong>9,55%</strong></td>
+                <td>1,08</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAÍSES E AUDIÊNCIA INTERNACIONAL -->
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px 20px; margin-top: 20px;">
+          <h4 style="color: #fff; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <i class="fa-solid fa-earth-americas" style="color: var(--accent-cyan);"></i>
+            Distribuição Geográfica Internacional do Interesse em Ingressos (click_ingressos)
+          </h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
+            <div style="background: var(--bg-input); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+              <div style="font-size: 0.75rem; color: var(--text-muted);">🇧🇷 Brasil (Principal)</div>
+              <div style="font-size: 1.2rem; font-weight: 800; color: #fff;">9.000+ <span style="font-size: 0.75rem; font-weight: 500; color: var(--accent-emerald);">93,1%</span></div>
+            </div>
+            <div style="background: var(--bg-input); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+              <div style="font-size: 0.75rem; color: var(--text-muted);">🇵🇾 Paraguai (Tríplice Fronteira)</div>
+              <div style="font-size: 1.2rem; font-weight: 800; color: var(--accent-cyan);">533 <span style="font-size: 0.75rem; font-weight: 500; color: var(--accent-cyan);">5,5%</span></div>
+            </div>
+            <div style="background: var(--bg-input); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+              <div style="font-size: 0.75rem; color: var(--text-muted);">🇦🇷 Argentina (Tríplice Fronteira)</div>
+              <div style="font-size: 1.2rem; font-weight: 800; color: var(--accent-amber);">33 <span style="font-size: 0.75rem; font-weight: 500; color: var(--accent-amber);">0,3%</span></div>
+            </div>
+            <div style="background: var(--bg-input); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+              <div style="font-size: 0.75rem; color: var(--text-muted);">🌎 Outros Países (EUA, CA, IE, CO)</div>
+              <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-muted);">100 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">1,1%</span></div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="dashboard-footer">
+      <p>Festival Iguassu Inova 2026 • Painel de BI & Inteligência de Dados • Módulos: <code>Inscrições</code>, <code>Tráfego Pago (GA4)</code> & <code>Funil Pixel Meta</code></p>
+      <p style="margin-top: 4px; font-size: 0.75rem; color: var(--text-dark);">
+        Campanha de Tráfego: 14/09 a 23/10/2026 | Dados GA4: 25/09 a 06/11/2026 | Pixel Meta: 09/10 a 06/11/2026.
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- MODAL DE SINCRONIZAÇÃO DA API YAZO -->
+  <div id="yazoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 28px 32px; max-width: 520px; width: 90%; box-shadow: var(--shadow-card);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-family: var(--font-heading); color: #fff; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-cloud-arrow-down" style="color: var(--accent-cyan);"></i>
+          Sincronização Direta Yazo Tickets
+        </h3>
+        <button onclick="closeYazoSyncModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5;">
+        Conecte diretamente à API oficial da <strong>Yazo Tickets</strong> (<code>https://api.yazotickets.com/v1</code>) para puxar as últimas inscrições em tempo real sem precisar exportar planilhas manualmente.
+      </p>
+
+      <div style="margin-bottom: 18px;">
+        <label style="display: block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">
+          Token de API Yazo (Bearer Token)
+        </label>
+        <input type="password" id="yazoTokenInput" placeholder="Ex: yazo_live_abc123..." style="width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); color: #fff; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.9rem; outline: none;" />
+        <span style="font-size: 0.75rem; color: var(--text-dark); margin-top: 4px; display: block;">
+          O token fica salvo somente na memória local do seu navegador.
+        </span>
+      </div>
+
+      <div id="yazoSyncStatus" style="display: none; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.82rem; margin-bottom: 16px;"></div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn btn-outline" onclick="closeYazoSyncModal()">Cancelar</button>
+        <button class="btn btn-primary" id="btnExecuteYazoSync" onclick="executeYazoSync()" style="background: linear-gradient(135deg, var(--accent-cyan), #0891b2);">
+          <i class="fa-solid fa-rotate"></i> Sincronizar Agora
+        </button>
+      </div>
+
+      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle); font-size: 0.75rem; color: var(--text-dark);">
+        💡 Também é possível sincronizar via terminal executando <code>python sync_yazo_api.py</code> ou dando dois cliques em <code>sincronizar_yazo.bat</code>.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       SINCRONIZAÇÃO VIA API YAZO (MODAL & BACKEND PHP/PYTHON)
+       ========================================================================= */
+
+    function openYazoSyncModal() {
+      const savedToken = localStorage.getItem('yazo_api_token') || '';
+      if (savedToken) {
+        document.getElementById('yazoTokenInput').value = savedToken;
+      }
+      const modal = document.getElementById('yazoModal');
+      modal.style.display = 'flex';
+      document.getElementById('yazoSyncStatus').style.display = 'none';
+    }
+
+    function closeYazoSyncModal() {
+      document.getElementById('yazoModal').style.display = 'none';
+    }
+
+    async function executeYazoSync() {
+      const token = document.getElementById('yazoTokenInput').value.trim();
+      const statusDiv = document.getElementById('yazoSyncStatus');
+      const btn = document.getElementById('btnExecuteYazoSync');
+
+      if (!token) {
+        statusDiv.style.display = 'block';
+        statusDiv.style.background = 'rgba(244, 63, 94, 0.2)';
+        statusDiv.style.color = '#f87171';
+        statusDiv.style.border = '1px solid rgba(244, 63, 94, 0.4)';
+        statusDiv.textContent = 'Por favor, insira o seu Token de API.';
+        return;
+      }
+
+      localStorage.setItem('yazo_api_token', token);
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Conectando à API Yazo...';
+      statusDiv.style.display = 'block';
+      statusDiv.style.background = 'rgba(6, 182, 212, 0.15)';
+      statusDiv.style.color = 'var(--accent-cyan)';
+      statusDiv.style.border = '1px solid rgba(6, 182, 212, 0.3)';
+      statusDiv.textContent = 'Consultando eventos e baixando inscrições da Yazo Tickets...';
+
+      try {
+        const response = await fetch('sync_yazo.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'token=' + encodeURIComponent(token)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          statusDiv.style.background = 'rgba(16, 185, 129, 0.2)';
+          statusDiv.style.color = '#34d399';
+          statusDiv.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+          statusDiv.innerHTML = `✅ ${result.message} (${result.count} inscrições atualizadas). Recarregando dados...`;
+
+          setTimeout(() => {
+            const script = document.createElement('script');
+            script.src = 'data.js?t=' + new Date().getTime();
+            script.onload = () => {
+              initData();
+              closeYazoSyncModal();
+            };
+            document.head.appendChild(script);
+          }, 1200);
+
+        } else {
+          statusDiv.style.background = 'rgba(244, 63, 94, 0.2)';
+          statusDiv.style.color = '#f87171';
+          statusDiv.style.border = '1px solid rgba(244, 63, 94, 0.4)';
+          statusDiv.textContent = `❌ ${result.message}`;
+        }
+      } catch (err) {
+        statusDiv.style.background = 'rgba(245, 158, 11, 0.2)';
+        statusDiv.style.color = '#fbbf24';
+        statusDiv.style.border = '1px solid rgba(245, 158, 11, 0.4)';
+        statusDiv.innerHTML = `⚠️ Não foi possível chamar o endpoint local (sync_yazo.php).<br>Certifique-se de estar rodando pelo Apache (http://localhost/...) ou execute no terminal: <code>python sync_yazo_api.py</code>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sincronizar Agora';
+      }
+    }
+
+    /* =========================================================================
+       BASE DE DADOS DO GA4 & PERFORMANCE DE TRÁFEGO PAGO
+       ========================================================================= */
+
+    const GA4_CHANNELS = [
+      {
+        channel: "instagram / reels-patrocinado",
+        category: "paid",
+        categoryLabel: "Mídia Paga (Meta Ads)",
+        sessions: 16096,
+        sessionsShare: 25.69,
+        engagedSessions: 2873,
+        engagedShare: 11.10,
+        engagementRate: 17.85,
+        avgTimeSec: 5,
+        avgTimeStr: "5s",
+        eventsPerSession: 3.49,
+        eventCount: 56128,
+        eventShare: 17.66
+      },
+      {
+        channel: "instagram / post-patrocinado",
+        category: "paid",
+        categoryLabel: "Mídia Paga (Meta Ads)",
+        sessions: 10360,
+        sessionsShare: 16.53,
+        engagedSessions: 1830,
+        engagedShare: 7.07,
+        engagementRate: 17.66,
+        avgTimeSec: 6,
+        avgTimeStr: "6s",
+        eventsPerSession: 3.48,
+        eventCount: 36017,
+        eventShare: 11.33
+      },
+      {
+        channel: "spotify / spot",
+        category: "paid",
+        categoryLabel: "Mídia Paga (Spotify Ads)",
+        sessions: 3046,
+        sessionsShare: 4.86,
+        engagedSessions: 714,
+        engagedShare: 2.76,
+        engagementRate: 23.44,
+        avgTimeSec: 9,
+        avgTimeStr: "9s",
+        eventsPerSession: 3.61,
+        eventCount: 10981,
+        eventShare: 3.46
+      },
+      {
+        channel: "fb / paid",
+        category: "paid",
+        categoryLabel: "Mídia Paga (Meta Ads)",
+        sessions: 2353,
+        sessionsShare: 3.76,
+        engagedSessions: 444,
+        engagedShare: 1.72,
+        engagementRate: 18.87,
+        avgTimeSec: 5,
+        avgTimeStr: "5s",
+        eventsPerSession: 3.40,
+        eventCount: 8006,
+        eventShare: 2.52
+      },
+      {
+        channel: "google / cpc",
+        category: "paid",
+        categoryLabel: "Mídia Paga (Google Ads)",
+        sessions: 604,
+        sessionsShare: 0.96,
+        engagedSessions: 74,
+        engagedShare: 0.29,
+        engagementRate: 12.25,
+        avgTimeSec: 2,
+        avgTimeStr: "2s",
+        eventsPerSession: 2.57,
+        eventCount: 1553,
+        eventShare: 0.49
+      },
+      {
+        channel: "ig / paid",
+        category: "paid",
+        categoryLabel: "Mídia Paga (Meta Ads)",
+        sessions: 121,
+        sessionsShare: 0.19,
+        engagedSessions: 24,
+        engagedShare: 0.09,
+        engagementRate: 19.83,
+        avgTimeSec: 11,
+        avgTimeStr: "11s",
+        eventsPerSession: 3.36,
+        eventCount: 406,
+        eventShare: 0.13
+      },
+      {
+        channel: "(direct) / (none)",
+        category: "direct",
+        categoryLabel: "Tráfego Direto",
+        sessions: 16489,
+        sessionsShare: 26.32,
+        engagedSessions: 11636,
+        engagedShare: 44.95,
+        engagementRate: 70.57,
+        avgTimeSec: 126,
+        avgTimeStr: "2 min 06 s",
+        eventsPerSession: 7.39,
+        eventCount: 121802,
+        eventShare: 38.33
+      },
+      {
+        channel: "google / organic",
+        category: "organic",
+        categoryLabel: "Busca Orgânica",
+        sessions: 5477,
+        sessionsShare: 8.74,
+        engagedSessions: 3474,
+        engagedShare: 13.42,
+        engagementRate: 63.43,
+        avgTimeSec: 53,
+        avgTimeStr: "53s",
+        eventsPerSession: 6.35,
+        eventCount: 34790,
+        eventShare: 10.95
+      },
+      {
+        channel: "instagram / social",
+        category: "social",
+        categoryLabel: "Social Orgânico",
+        sessions: 2812,
+        sessionsShare: 4.49,
+        engagedSessions: 1919,
+        engagedShare: 7.41,
+        engagementRate: 68.24,
+        avgTimeSec: 25,
+        avgTimeStr: "25s",
+        eventsPerSession: 6.23,
+        eventCount: 17505,
+        eventShare: 5.51
+      },
+      {
+        channel: "email-marketing / email",
+        category: "email",
+        categoryLabel: "E-mail Marketing",
+        sessions: 1065,
+        sessionsShare: 1.70,
+        engagedSessions: 605,
+        engagedShare: 2.34,
+        engagementRate: 56.81,
+        avgTimeSec: 32,
+        avgTimeStr: "32s",
+        eventsPerSession: 5.45,
+        eventCount: 5807,
+        eventShare: 1.83
+      },
+      {
+        channel: "qrcode / cartaz-impresso",
+        category: "offline",
+        categoryLabel: "Mídia Offline (QR Code)",
+        sessions: 837,
+        sessionsShare: 1.34,
+        engagedSessions: 443,
+        engagedShare: 1.71,
+        engagementRate: 52.98,
+        avgTimeSec: 12,
+        avgTimeStr: "12s",
+        eventsPerSession: 4.86,
+        eventCount: 4071,
+        eventShare: 1.28
+      },
+      {
+        channel: "ig / social",
+        category: "social",
+        categoryLabel: "Social Orgânico",
+        sessions: 616,
+        sessionsShare: 0.98,
+        engagedSessions: 353,
+        engagedShare: 1.36,
+        engagementRate: 57.31,
+        avgTimeSec: 82,
+        avgTimeStr: "1 min 22 s",
+        eventsPerSession: 6.78,
+        eventCount: 4177,
+        eventShare: 1.31
+      },
+      {
+        channel: "l.instagram.com / referral",
+        category: "referral",
+        categoryLabel: "Referência Externa",
+        sessions: 490,
+        sessionsShare: 0.78,
+        engagedSessions: 314,
+        engagedShare: 1.21,
+        engagementRate: 64.08,
+        avgTimeSec: 54,
+        avgTimeStr: "54s",
+        eventsPerSession: 5.86,
+        eventCount: 2872,
+        eventShare: 0.90
+      },
+      {
+        channel: "RD Station / email",
+        category: "email",
+        categoryLabel: "E-mail Marketing (RD)",
+        sessions: 448,
+        sessionsShare: 0.71,
+        engagedSessions: 261,
+        engagedShare: 1.01,
+        engagementRate: 58.26,
+        avgTimeSec: 21,
+        avgTimeStr: "21s",
+        eventsPerSession: 5.42,
+        eventCount: 2429,
+        eventShare: 0.76
+      },
+      {
+        channel: "maringapost.com.br / referral",
+        category: "press",
+        categoryLabel: "Imprensa / Portal",
+        sessions: 300,
+        sessionsShare: 0.48,
+        engagedSessions: 139,
+        engagedShare: 0.54,
+        engagementRate: 46.33,
+        avgTimeSec: 63,
+        avgTimeStr: "1 min 03 s",
+        eventsPerSession: 4.74,
+        eventCount: 1422,
+        eventShare: 0.45
+      },
+      {
+        channel: "paranavai.portaldacidade.com / referral",
+        category: "press",
+        categoryLabel: "Imprensa / Portal",
+        sessions: 295,
+        sessionsShare: 0.47,
+        engagedSessions: 141,
+        engagedShare: 0.54,
+        engagementRate: 47.80,
+        avgTimeSec: 65,
+        avgTimeStr: "1 min 05 s",
+        eventsPerSession: 4.35,
+        eventCount: 1284,
+        eventShare: 0.40
+      },
+      {
+        channel: "bing / organic",
+        category: "organic",
+        categoryLabel: "Busca Orgânica",
+        sessions: 228,
+        sessionsShare: 0.36,
+        engagedSessions: 143,
+        engagedShare: 0.55,
+        engagementRate: 62.72,
+        avgTimeSec: 58,
+        avgTimeStr: "58s",
+        eventsPerSession: 6.65,
+        eventCount: 1517,
+        eventShare: 0.48
+      },
+      {
+        channel: "(não definido)",
+        category: "other",
+        categoryLabel: "Outros",
+        sessions: 194,
+        sessionsShare: 0.31,
+        engagedSessions: 1,
+        engagedShare: 0.01,
+        engagementRate: 0.52,
+        avgTimeSec: 61,
+        avgTimeStr: "1 min 01 s",
+        eventsPerSession: 4.08,
+        eventCount: 791,
+        eventShare: 0.25
+      },
+      {
+        channel: "teams.public.onecdn.static.microsoft / referral",
+        category: "referral",
+        categoryLabel: "Referência Externa",
+        sessions: 165,
+        sessionsShare: 0.26,
+        engagedSessions: 95,
+        engagedShare: 0.37,
+        engagementRate: 57.58,
+        avgTimeSec: 27,
+        avgTimeStr: "27s",
+        eventsPerSession: 5.02,
+        eventCount: 828,
+        eventShare: 0.26
+      }
+    ];
+
+    /* =========================================================================
+       VARIÁVEIS DE ESTADO DO DASHBOARD
+       ========================================================================= */
+
+    let rawRecords = [];
+    let filteredRecords = [];
+    let availableDates = [];
+    
+    let currentTrendMode = 'daily';
+    let currentHourlyMode = 'single_day';
+    let selectedHourlyDate = null;
+    let trafficTableFilter = 'paid';
+
+    let trendChartInstance = null;
+    let hourlyChartInstance = null;
+    let perfilChartInstance = null;
+    let weekdayChartInstance = null;
+
+    let trafficVolumeChartInstance = null;
+    let trafficQualityChartInstance = null;
+    let trafficShareChartInstance = null;
+    let trafficCampaignPhaseChartInstance = null;
+
+    let pixelFunnelChartInstance = null;
+    let pixelTimelineChartInstance = null;
+
+    const WEEKDAY_NAMES_PT = {
+      'Sunday': 'Domingo',
+      'Monday': 'Segunda-feira',
+      'Tuesday': 'Terça-feira',
+      'Wednesday': 'Quarta-feira',
+      'Thursday': 'Quinta-feira',
+      'Friday': 'Sexta-feira',
+      'Saturday': 'Sábado'
+    };
+
+    const CHART_PALETTE = [
+      '#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6', '#14b8a6'
+    ];
+
+    function switchMainTab(tabId) {
+      document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+      if (tabId === 'tab-inscriptions') {
+        document.getElementById('btnTabInscriptions').classList.add('active');
+        document.getElementById('tab-inscriptions').classList.add('active');
+        if (trendChartInstance) trendChartInstance.resize();
+        if (hourlyChartInstance) hourlyChartInstance.resize();
+      } else if (tabId === 'tab-traffic') {
+        document.getElementById('btnTabTraffic').classList.add('active');
+        document.getElementById('tab-traffic').classList.add('active');
+        renderTrafficModule();
+      } else if (tabId === 'tab-funnel') {
+        document.getElementById('btnTabFunnel').classList.add('active');
+        document.getElementById('tab-funnel').classList.add('active');
+        renderFunnelModule();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initData();
+      setupCsvUploader();
+      renderTrafficTable();
+    });
+
+    function initData() {
+      if (window.FESTIVAL_DATA && window.FESTIVAL_DATA.records) {
+        rawRecords = window.FESTIVAL_DATA.records;
+      }
+
+      if (rawRecords.length === 0) {
+        console.warn('Base de dados vazia.');
+        return;
+      }
+
+      document.getElementById('tabInscritosCountBadge').textContent = `${rawRecords.length.toLocaleString('pt-BR')} inscritos`;
+
+      const dates = rawRecords.map(r => r.date).sort();
+      availableDates = Array.from(new Set(dates));
+      
+      const minDate = availableDates[0];
+      const maxDate = availableDates[availableDates.length - 1];
+
+      document.getElementById('filterStartDate').value = minDate;
+      document.getElementById('filterEndDate').value = maxDate;
+
+      populateSelectOptions();
+      computeInitialDayPeak();
+      applyFilters();
+    }
+
+    function computeInitialDayPeak() {
+      const countsByDay = {};
+      rawRecords.forEach(r => {
+        countsByDay[r.date] = (countsByDay[r.date] || 0) + 1;
+      });
+      let maxD = availableDates[0];
+      let maxVal = 0;
+      Object.entries(countsByDay).forEach(([d, c]) => {
+        if (c > maxVal) {
+          maxVal = c;
+          maxD = d;
+        }
+      });
+      selectedHourlyDate = maxD;
+    }
+
+    function populateSelectOptions() {
+      const perfilSet = new Set();
+      const tipoSet = new Set();
+
+      rawRecords.forEach(r => {
+        if (r.perfil) perfilSet.add(r.perfil);
+        if (r.tipo) tipoSet.add(r.tipo);
+      });
+
+      const selPerfil = document.getElementById('filterPerfil');
+      selPerfil.innerHTML = '<option value="ALL">Todos os Perfis (Geral)</option>';
+      Array.from(perfilSet).sort().forEach(p => {
+        selPerfil.innerHTML += `<option value="${p}">${p}</option>`;
+      });
+
+      const selTipo = document.getElementById('filterTipo');
+      selTipo.innerHTML = '<option value="ALL">Todos os Tipos</option>';
+      Array.from(tipoSet).sort().forEach(t => {
+        selTipo.innerHTML += `<option value="${t}">${t}</option>`;
+      });
+
+      populateHourlyDaySelector();
+    }
+
+    function populateHourlyDaySelector() {
+      const selDay = document.getElementById('hourlyDaySelector');
+      selDay.innerHTML = '';
+      availableDates.forEach(d => {
+        const parts = d.split('-');
+        const formatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = formatted;
+        if (d === selectedHourlyDate) {
+          opt.selected = true;
+        }
+        selDay.appendChild(opt);
+      });
+    }
+
+    function applyPreset(preset) {
+      document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.querySelector(`.btn-preset[data-preset="${preset}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const minDate = availableDates[0];
+      const maxDate = availableDates[availableDates.length - 1];
+
+      let start = minDate;
+      let end = maxDate;
+
+      if (preset === 'all') {
+        start = minDate;
+        end = maxDate;
+      } else if (preset === 'abertura') {
+        start = '2026-08-25';
+        end = '2026-08-31';
+      } else if (preset === 'campanha') {
+        start = '2026-09-14';
+        end = '2026-10-23';
+      } else if (preset === 'setembro') {
+        start = '2026-09-01';
+        end = '2026-09-30';
+      } else if (preset === 'outubro') {
+        start = '2026-10-01';
+        end = '2026-10-31';
+      } else if (preset === 'novembro') {
+        start = '2026-11-01';
+        end = '2026-11-30';
+      } else if (preset === 'last14') {
+        const lastIdx = availableDates.length - 1;
+        const startIdx = Math.max(0, lastIdx - 14);
+        start = availableDates[startIdx];
+        end = availableDates[lastIdx];
+      }
+
+      document.getElementById('filterStartDate').value = start;
+      document.getElementById('filterEndDate').value = end;
+
+      applyFilters();
+    }
+
+    function onManualDateChange() {
+      document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const startDate = document.getElementById('filterStartDate').value;
+      const endDate = document.getElementById('filterEndDate').value;
+      const selectedPerfil = document.getElementById('filterPerfil').value;
+      const selectedTipo = document.getElementById('filterTipo').value;
+
+      filteredRecords = rawRecords.filter(r => {
+        if (startDate && r.date < startDate) return false;
+        if (endDate && r.date > endDate) return false;
+        if (selectedPerfil !== 'ALL' && r.perfil !== selectedPerfil) return false;
+        if (selectedTipo !== 'ALL' && r.tipo !== selectedTipo) return false;
+        return true;
+      });
+
+      if (selectedHourlyDate && (selectedHourlyDate < startDate || selectedHourlyDate > endDate)) {
+        selectedHourlyDate = (startDate >= availableDates[0]) ? startDate : availableDates[0];
+        document.getElementById('hourlyDaySelector').value = selectedHourlyDate;
+      }
+
+      updateKPIs();
+      renderTrendChart();
+      renderHourlyChart();
+      renderPerfilChart();
+      renderWeekdayChart();
+      renderTable();
+    }
+
+    function updateKPIs() {
+      const total = filteredRecords.length;
+      const totalRaw = rawRecords.length;
+      
+      const uniqueEmails = new Set(filteredRecords.map(r => r.email.toLowerCase())).size;
+      const taxaUnicidade = total > 0 ? ((uniqueEmails / total) * 100).toFixed(1) : 0;
+      const shareOfTotal = totalRaw > 0 ? ((total / totalRaw) * 100).toFixed(1) : 0;
+
+      const daysCountMap = {};
+      const hoursCountMap = {};
+
+      filteredRecords.forEach(r => {
+        daysCountMap[r.date] = (daysCountMap[r.date] || 0) + 1;
+        hoursCountMap[r.hour] = (hoursCountMap[r.hour] || 0) + 1;
+      });
+
+      const activeDays = Object.keys(daysCountMap).length;
+      const mediaDiaria = activeDays > 0 ? (total / activeDays).toFixed(1) : 0;
+
+      let bestDay = '-';
+      let bestDayCount = 0;
+      Object.entries(daysCountMap).forEach(([d, c]) => {
+        if (c > bestDayCount) {
+          bestDayCount = c;
+          bestDay = d;
+        }
+      });
+
+      let bestDayFormatted = '-';
+      if (bestDay !== '-') {
+        const parts = bestDay.split('-');
+        bestDayFormatted = `${parts[2]}/${parts[1]}`;
+      }
+
+      let bestHour = -1;
+      let bestHourCount = 0;
+      Object.entries(hoursCountMap).forEach(([h, c]) => {
+        if (c > bestHourCount) {
+          bestHourCount = c;
+          bestHour = parseInt(h);
+        }
+      });
+
+      const goldenHourStr = bestHour >= 0 ? `${String(bestHour).padStart(2, '0')}:00` : '--:--';
+
+      document.getElementById('kpiTotal').textContent = total.toLocaleString('pt-BR');
+      document.getElementById('kpiShareTotal').textContent = `${shareOfTotal}% do total da base`;
+      document.getElementById('kpiUnicos').textContent = uniqueEmails.toLocaleString('pt-BR');
+      document.getElementById('kpiTaxaUnicidade').textContent = `${taxaUnicidade}% únicos`;
+      document.getElementById('kpiMediaDiaria').textContent = mediaDiaria;
+      document.getElementById('kpiDiasAtivos').textContent = `Em ${activeDays} dias com atividade`;
+
+      document.getElementById('kpiPicoDia').textContent = bestDayFormatted;
+      document.getElementById('kpiPicoSubtext').textContent = `${bestDayCount} inscrições no melhor dia`;
+
+      document.getElementById('kpiGoldenHour').textContent = goldenHourStr;
+      document.getElementById('kpiGoldenHourSubtext').textContent = `${bestHourCount} inscrições acumuladas`;
+    }
+
+    function setTrendMode(mode) {
+      currentTrendMode = mode;
+      document.getElementById('btnTrendDaily').classList.toggle('active', mode === 'daily');
+      document.getElementById('btnTrendCumul').classList.toggle('active', mode === 'cumulative');
+      renderTrendChart();
+    }
+
+    function renderTrendChart() {
+      const ctx = document.getElementById('trendChart').getContext('2d');
+      const dailyMap = {};
+      filteredRecords.forEach(r => {
+        dailyMap[r.date] = (dailyMap[r.date] || 0) + 1;
+      });
+
+      const sortedDates = Object.keys(dailyMap).sort();
+      const labels = sortedDates.map(d => {
+        const p = d.split('-');
+        return `${p[2]}/${p[1]}`;
+      });
+
+      const dailyValues = sortedDates.map(d => dailyMap[d]);
+
+      const movingAvg = [];
+      for (let i = 0; i < dailyValues.length; i++) {
+        let sum = 0;
+        let count = 0;
+        for (let j = Math.max(0, i - 6); j <= i; j++) {
+          sum += dailyValues[j];
+          count++;
+        }
+        movingAvg.push(Math.round(sum / count));
+      }
+
+      const cumulativeValues = [];
+      let acc = 0;
+      dailyValues.forEach(v => {
+        acc += v;
+        cumulativeValues.push(acc);
+      });
+
+      if (trendChartInstance) trendChartInstance.destroy();
+
+      let datasets = [];
+      if (currentTrendMode === 'daily') {
+        datasets = [
+          {
+            type: 'bar',
+            label: 'Inscrições no Dia',
+            data: dailyValues,
+            backgroundColor: 'rgba(99, 102, 241, 0.7)',
+            hoverBackgroundColor: '#818cf8',
+            borderRadius: 6,
+            borderSkipped: false,
+            order: 2
+          },
+          {
+            type: 'line',
+            label: 'Média Móvel (7d)',
+            data: movingAvg,
+            borderColor: '#06b6d4',
+            borderWidth: 2.5,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+            tension: 0.35,
+            order: 1
+          }
+        ];
+      } else {
+        datasets = [
+          {
+            type: 'line',
+            label: 'Inscrições Acumuladas',
+            data: cumulativeValues,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.12)',
+            fill: true,
+            borderWidth: 3,
+            pointRadius: 3,
+            pointBackgroundColor: '#10b981',
+            tension: 0.3
+          }
+        ];
+      }
+
+      trendChartInstance = new Chart(ctx, {
+        data: { labels: labels, datasets: datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 12, weight: 600 } }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#f8fafc',
+              bodyColor: '#cbd5e1',
+              borderColor: '#334155',
+              borderWidth: 1,
+              padding: 12,
+              callbacks: {
+                afterBody: () => '👉 Clique na barra para ver a curva horária deste dia'
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+          },
+          onClick: (evt, elements) => {
+            if (elements.length > 0) {
+              const idx = elements[0].index;
+              const clickedDate = sortedDates[idx];
+              if (clickedDate) selectHourlyDay(clickedDate);
+            }
+          }
+        }
+      });
+    }
+
+    function setHourlyMode(mode) {
+      currentHourlyMode = mode;
+      document.getElementById('btnHourlyDayMode').classList.toggle('active', mode === 'single_day');
+      document.getElementById('btnHourlyConsolidatedMode').classList.toggle('active', mode === 'consolidated');
+
+      const bar = document.getElementById('hourlyDayControlBar');
+      const subtitle = document.getElementById('hourlyChartSubtitle');
+
+      if (mode === 'single_day') {
+        bar.style.display = 'flex';
+        subtitle.innerHTML = 'Visualização detalhada das 24 horas de um dia específico para auditar campanhas e picos de conversão.';
+      } else {
+        bar.style.display = 'none';
+        subtitle.innerHTML = 'Padrão horário consolidado (soma de todas as inscrições por hora de 00:00 a 23:00 no período filtrado).';
+      }
+
+      renderHourlyChart();
+    }
+
+    function onHourlyDayChange() {
+      selectedHourlyDate = document.getElementById('hourlyDaySelector').value;
+      renderHourlyChart();
+    }
+
+    function selectHourlyDay(dateStr) {
+      selectedHourlyDate = dateStr;
+      document.getElementById('hourlyDaySelector').value = dateStr;
+      if (currentHourlyMode !== 'single_day') {
+        setHourlyMode('single_day');
+      } else {
+        renderHourlyChart();
+      }
+      document.getElementById('hourlyChart').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function stepHourlyDay(delta) {
+      const idx = availableDates.indexOf(selectedHourlyDate);
+      if (idx === -1) return;
+      const newIdx = idx + delta;
+      if (newIdx >= 0 && newIdx < availableDates.length) {
+        selectHourlyDay(availableDates[newIdx]);
+      }
+    }
+
+    function renderHourlyChart() {
+      const ctx = document.getElementById('hourlyChart').getContext('2d');
+      const hoursLabels = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
+      let hourlyValues = Array(24).fill(0);
+
+      if (currentHourlyMode === 'single_day') {
+        if (!selectedHourlyDate && availableDates.length > 0) {
+          selectedHourlyDate = availableDates[0];
+        }
+
+        const dayRecords = filteredRecords.filter(r => r.date === selectedHourlyDate);
+        dayRecords.forEach(r => {
+          if (r.hour >= 0 && r.hour < 24) hourlyValues[r.hour]++;
+        });
+
+        const dayTotal = dayRecords.length;
+        let peakHour = 0;
+        let peakVal = 0;
+        hourlyValues.forEach((v, h) => {
+          if (v > peakVal) { peakVal = v; peakHour = h; }
+        });
+
+        const parts = selectedHourlyDate ? selectedHourlyDate.split('-') : ['--', '--', '----'];
+        const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+        document.getElementById('hourlyDayTotalBadge').textContent = `Total do Dia: ${dayTotal} inscrições`;
+        document.getElementById('hourlyDayPeakBadge').textContent = `Pico: ${String(peakHour).padStart(2, '0')}:00 (${peakVal} inscritos)`;
+
+        const backgroundColors = hourlyValues.map(v => {
+          if (v === peakVal && v > 0) return '#f59e0b';
+          if (v > 0) return 'rgba(99, 102, 241, 0.75)';
+          return 'rgba(51, 65, 85, 0.3)';
+        });
+
+        const insightDesc = document.getElementById('hourlyInsightDesc');
+        if (dayTotal > 0) {
+          insightDesc.innerHTML = `No dia <strong>${formattedDate}</strong>, tivemos <strong>${dayTotal} inscrições</strong>. O pico máximo de conversões ocorreu às <strong>${String(peakHour).padStart(2, '0')}:00</strong> com <strong>${peakVal} inscrições</strong>.`;
+        } else {
+          insightDesc.innerHTML = `Nenhuma inscrição registrada no dia ${formattedDate} dentro dos filtros aplicados.`;
+        }
+
+        if (hourlyChartInstance) hourlyChartInstance.destroy();
+
+        hourlyChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: hoursLabels,
+            datasets: [{
+              label: 'Inscrições na Hora',
+              data: hourlyValues,
+              backgroundColor: backgroundColors,
+              borderRadius: 6,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#1e293b',
+                titleColor: '#f8fafc',
+                bodyColor: '#cbd5e1',
+                padding: 10,
+                callbacks: { label: (ctx) => ` ${ctx.parsed.y} inscrições registradas` }
+              }
+            },
+            scales: {
+              x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
+              y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', stepSize: 1 }, beginAtZero: true }
+            }
+          }
+        });
+
+      } else {
+        filteredRecords.forEach(r => {
+          if (r.hour >= 0 && r.hour < 24) hourlyValues[r.hour]++;
+        });
+
+        let peakHour = 0;
+        let peakVal = 0;
+        hourlyValues.forEach((v, h) => {
+          if (v > peakVal) { peakVal = v; peakHour = h; }
+        });
+
+        const backgroundColors = hourlyValues.map(v => {
+          if (v === peakVal && v > 0) return '#f59e0b';
+          if (v >= peakVal * 0.7) return '#06b6d4';
+          return 'rgba(99, 102, 241, 0.65)';
+        });
+
+        document.getElementById('hourlyInsightDesc').innerHTML = `
+          <strong>Padrão Consolidado da Campanha:</strong> O público apresenta maior concentração no período noturno, com o pico absoluto às <strong>${String(peakHour).padStart(2, '0')}:00 (${peakVal} inscrições)</strong>, seguido por 20:00 e 22:00. O período da manhã tem pico secundário entre <strong>10:00 e 11:00</strong>.
+        `;
+
+        if (hourlyChartInstance) hourlyChartInstance.destroy();
+
+        hourlyChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: hoursLabels,
+            datasets: [{
+              label: 'Total de Inscrições na Faixa Horária',
+              data: hourlyValues,
+              backgroundColor: backgroundColors,
+              borderRadius: 6,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#1e293b',
+                titleColor: '#f8fafc',
+                bodyColor: '#cbd5e1',
+                padding: 10,
+                callbacks: { label: (ctx) => ` Total acumulado: ${ctx.parsed.y} inscrições` }
+              }
+            },
+            scales: {
+              x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
+              y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+            }
+          }
+        });
+      }
+    }
+
+    function renderPerfilChart() {
+      const ctx = document.getElementById('perfilChart').getContext('2d');
+      const counts = {};
+      filteredRecords.forEach(r => {
+        const p = r.perfil || 'Não informado';
+        counts[p] = (counts[p] || 0) + 1;
+      });
+
+      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      const labels = sorted.map(i => i[0]);
+      const data = sorted.map(i => i[1]);
+      const total = filteredRecords.length;
+
+      if (perfilChartInstance) perfilChartInstance.destroy();
+
+      perfilChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: CHART_PALETTE,
+            borderColor: '#111827',
+            borderWidth: 2,
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, boxWidth: 12, padding: 10 }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#f8fafc',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              callbacks: {
+                label: (item) => {
+                  const val = item.parsed;
+                  const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                  return ` ${item.label}: ${val} (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderWeekdayChart() {
+      const ctx = document.getElementById('weekdayChart').getContext('2d');
+      const order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      const counts = {
+        'Monday': 0, 'Tuesday': 0, 'Wednesday': 0, 'Thursday': 0,
+        'Friday': 0, 'Saturday': 0, 'Sunday': 0
+      };
+
+      filteredRecords.forEach(r => {
+        const parts = r.date.split('-');
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        const dayIdx = d.getDay();
+        const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayIdx];
+        if (counts[dayName] !== undefined) counts[dayName]++;
+      });
+
+      const labels = order.map(k => WEEKDAY_NAMES_PT[k]);
+      const data = order.map(k => counts[k]);
+
+      if (weekdayChartInstance) weekdayChartInstance.destroy();
+
+      weekdayChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Total de Inscrições',
+            data: data,
+            backgroundColor: 'rgba(6, 182, 212, 0.7)',
+            hoverBackgroundColor: '#06b6d4',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { backgroundColor: '#1e293b', titleColor: '#fff', bodyColor: '#cbd5e1', padding: 10 }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('dailyTableBody');
+      const searchQuery = (document.getElementById('tableSearchInput').value || '').toLowerCase();
+
+      const daySummary = {};
+      filteredRecords.forEach(r => {
+        if (!daySummary[r.date]) {
+          daySummary[r.date] = {
+            date: r.date,
+            date_br: r.date_br,
+            count: 0,
+            hours: {},
+            profiles: {}
+          };
+        }
+        daySummary[r.date].count++;
+        daySummary[r.date].hours[r.hour] = (daySummary[r.date].hours[r.hour] || 0) + 1;
+        daySummary[r.date].profiles[r.perfil] = (daySummary[r.date].profiles[r.perfil] || 0) + 1;
+      });
+
+      const totalFiltered = filteredRecords.length;
+      const sortedDates = Object.keys(daySummary).sort().reverse();
+
+      let rowsHtml = '';
+      sortedDates.forEach(dateStr => {
+        const item = daySummary[dateStr];
+        const parts = dateStr.split('-');
+        const jsDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        const dayIdx = jsDate.getDay();
+        const dowEnglish = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayIdx];
+        const weekday = WEEKDAY_NAMES_PT[dowEnglish] || '';
+
+        if (searchQuery) {
+          const matchDate = item.date_br.toLowerCase().includes(searchQuery);
+          const matchDow = weekday.toLowerCase().includes(searchQuery);
+          if (!matchDate && !matchDow) return;
+        }
+
+        let peakHour = '-';
+        let peakHCount = 0;
+        Object.entries(item.hours).forEach(([h, c]) => {
+          if (c > peakHCount) {
+            peakHCount = c;
+            peakHour = `${String(h).padStart(2, '0')}:00`;
+          }
+        });
+
+        let topProfile = '-';
+        let topPCount = 0;
+        Object.entries(item.profiles).forEach(([p, c]) => {
+          if (c > topPCount) {
+            topPCount = c;
+            topProfile = p;
+          }
+        });
+
+        const share = totalFiltered > 0 ? ((item.count / totalFiltered) * 100).toFixed(1) : 0;
+        const isHighPeak = item.count >= 80;
+
+        rowsHtml += `
+          <tr>
+            <td><strong>${item.date_br}</strong></td>
+            <td><span style="color: var(--text-muted);">${weekday}</span></td>
+            <td>
+              <span class="badge-pill ${isHighPeak ? 'peak' : 'normal'}">
+                ${item.count.toLocaleString('pt-BR')}
+              </span>
+            </td>
+            <td>${share}%</td>
+            <td><i class="fa-regular fa-clock" style="color: var(--accent-cyan); margin-right: 4px;"></i> ${peakHour} (${peakHCount})</td>
+            <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${topProfile}">
+              ${topProfile}
+            </td>
+            <td>
+              <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;" onclick="selectHourlyDay('${dateStr}')">
+                <i class="fa-solid fa-chart-simple"></i> Ver Horas
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      if (!rowsHtml) {
+        rowsHtml = `<tr><td colspan="7" style="text-align: center; color: var(--text-dark); padding: 24px;">Nenhum registro encontrado para esta busca.</td></tr>`;
+      }
+
+      tbody.innerHTML = rowsHtml;
+    }
+
+    function filterTrafficTable(filterType) {
+      trafficTableFilter = filterType;
+      document.getElementById('btnTrafficFilterPaid').classList.toggle('active', filterType === 'paid');
+      document.getElementById('btnTrafficFilterAll').classList.toggle('active', filterType === 'all');
+      renderTrafficTable();
+    }
+
+    function renderTrafficTable() {
+      const tbody = document.getElementById('trafficTableBody');
+      const search = (document.getElementById('trafficSearchInput') ? document.getElementById('trafficSearchInput').value : '').toLowerCase();
+
+      let list = GA4_CHANNELS;
+      if (trafficTableFilter === 'paid') {
+        list = list.filter(item => item.category === 'paid');
+      }
+
+      if (search) {
+        list = list.filter(item => item.channel.toLowerCase().includes(search) || item.categoryLabel.toLowerCase().includes(search));
+      }
+
+      let html = '';
+      list.forEach(item => {
+        let pillClass = 'badge-pill ';
+        if (item.category === 'paid') pillClass += 'paid';
+        else if (item.category === 'organic') pillClass += 'organic';
+        else pillClass += 'direct';
+
+        html += `
+          <tr>
+            <td><strong>${item.channel}</strong></td>
+            <td><span class="${pillClass}">${item.categoryLabel}</span></td>
+            <td><strong>${item.sessions.toLocaleString('pt-BR')}</strong></td>
+            <td>${item.sessionsShare.toFixed(2)}%</td>
+            <td>${item.engagedSessions.toLocaleString('pt-BR')}</td>
+            <td>
+              <strong style="color: ${item.engagementRate >= 20 ? 'var(--accent-emerald)' : 'var(--text-main)'}">
+                ${item.engagementRate.toFixed(2)}%
+              </strong>
+            </td>
+            <td>${item.avgTimeStr}</td>
+            <td>${item.eventsPerSession.toFixed(2)}</td>
+            <td>${item.eventCount.toLocaleString('pt-BR')} <span style="font-size:0.75rem; color:var(--text-dark);">(${item.eventShare.toFixed(1)}%)</span></td>
+          </tr>
+        `;
+      });
+
+      if (!html) {
+        html = `<tr><td colspan="9" style="text-align: center; color: var(--text-dark); padding: 20px;">Nenhum canal encontrado.</td></tr>`;
+      }
+
+      tbody.innerHTML = html;
+    }
+
+    function renderTrafficModule() {
+      renderTrafficVolumeChart();
+      renderTrafficQualityChart();
+      renderTrafficShareChart();
+      renderTrafficCampaignPhaseChart();
+      renderTrafficTable();
+    }
+
+    function renderTrafficVolumeChart() {
+      const ctx = document.getElementById('trafficVolumeChart').getContext('2d');
+      const paidOnly = GA4_CHANNELS.filter(c => c.category === 'paid');
+
+      const labels = paidOnly.map(c => {
+        return c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: ');
+      });
+      const sessions = paidOnly.map(c => c.sessions);
+      const engaged = paidOnly.map(c => c.engagedSessions);
+
+      if (trafficVolumeChartInstance) trafficVolumeChartInstance.destroy();
+
+      trafficVolumeChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Sessões Totais',
+              data: sessions,
+              backgroundColor: '#06b6d4',
+              borderRadius: 6
+            },
+            {
+              label: 'Sessões Engajadas',
+              data: engaged,
+              backgroundColor: '#10b981',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: 600 } }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function renderTrafficQualityChart() {
+      const ctx = document.getElementById('trafficQualityChart').getContext('2d');
+      const paidOnly = GA4_CHANNELS.filter(c => c.category === 'paid');
+
+      const labels = paidOnly.map(c => {
+        return c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: ');
+      });
+      const rates = paidOnly.map(c => c.engagementRate);
+      const times = paidOnly.map(c => c.avgTimeSec);
+
+      if (trafficQualityChartInstance) trafficQualityChartInstance.destroy();
+
+      trafficQualityChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Taxa de Engajamento (%)',
+              data: rates,
+              backgroundColor: '#a855f7',
+              borderRadius: 6,
+              yAxisID: 'y'
+            },
+            {
+              type: 'line',
+              label: 'Tempo Médio (segundos)',
+              data: times,
+              borderColor: '#f59e0b',
+              backgroundColor: '#f59e0b',
+              borderWidth: 2.5,
+              pointRadius: 4,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: 600 } }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: {
+              grid: { color: '#1e293b' },
+              ticks: { color: '#a855f7', callback: (v) => v + '%' },
+              beginAtZero: true,
+              title: { display: true, text: 'Engajamento %', color: '#a855f7' }
+            },
+            y1: {
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#f59e0b', callback: (v) => v + 's' },
+              beginAtZero: true,
+              title: { display: true, text: 'Tempo (s)', color: '#f59e0b' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTrafficShareChart() {
+      const ctx = document.getElementById('trafficShareChart').getContext('2d');
+
+      const shares = {
+        'Mídia Paga (Patrocinada)': 32580,
+        'Tráfego Direto': 16489,
+        'Busca Orgânica (Google/Bing)': 5705,
+        'Social Orgânico (Instagram)': 3428,
+        'E-mail / CRM (RD Station)': 1513,
+        'Mídia Offline (QR Code)': 837,
+        'Imprensa & Portais': 595,
+        'Outros / Referrals': 1511
+      };
+
+      const labels = Object.keys(shares);
+      const data = Object.values(shares);
+
+      if (trafficShareChartInstance) trafficShareChartInstance.destroy();
+
+      trafficShareChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: [
+              '#06b6d4', '#64748b', '#10b981', '#ec4899', '#f59e0b', '#8b5cf6', '#3b82f6', '#475569'
+            ],
+            borderColor: '#111827',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 10 }, boxWidth: 12, padding: 8 }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              callbacks: {
+                label: (ctx) => {
+                  const val = ctx.parsed;
+                  const pct = ((val / 62658) * 100).toFixed(1);
+                  return ` ${ctx.label}: ${val.toLocaleString('pt-BR')} (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTrafficCampaignPhaseChart() {
+      const ctx = document.getElementById('trafficCampaignPhaseChart').getContext('2d');
+
+      const phases = [
+        { name: '1. Pré-Tráfego (Abertura)', period: '25/08 a 13/09', days: 20, count: 1520, color: 'rgba(99, 102, 241, 0.8)' },
+        { name: '2. Tráfego Pago Ativo', period: '14/09 a 23/10', days: 40, count: 972, color: 'rgba(6, 182, 212, 0.85)' },
+        { name: '3. Pós-Campanha (Reta Final)', period: '24/10 a 06/11', days: 14, count: 650, color: 'rgba(16, 185, 129, 0.8)' }
+      ];
+
+      const labels = phases.map(p => p.name);
+      const counts = phases.map(p => p.count);
+      const bgColors = phases.map(p => p.color);
+
+      if (trafficCampaignPhaseChartInstance) trafficCampaignPhaseChartInstance.destroy();
+
+      trafficCampaignPhaseChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Total de Inscritos na Fase',
+            data: counts,
+            backgroundColor: bgColors,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              callbacks: {
+                afterLabel: (ctx) => {
+                  const idx = ctx.dataIndex;
+                  const p = phases[idx];
+                  const avg = (p.count / p.days).toFixed(1);
+                  return ` Período: ${p.period} (${p.days} dias)\n Média: ${avg} inscritos/dia`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    /* =========================================================================
+       MÓDULO DO FUNIL DO PIXEL META (ABA 3) - COM SEGMENTAÇÃO POR MÍDIA
+       ========================================================================= */
+
+    const FUNNEL_SEGMENTS = {
+      'all': {
+        name: 'Todos os Canais (Visão Global)',
+        badge: 'Todos os Canais (100%)',
+        pv: 65800, pvFormatted: '65,8 mil', pvSub: '100% da audiência do site',
+        cart: 5400, cartFormatted: '5,4 mil', cartSub: '8,21% foram ao Yazo',
+        checkout: 4000, checkoutFormatted: '4,0 mil', checkoutSub: '74,07% retenção',
+        complete: 4000, completeFormatted: '4,0 mil', completeSub: '100% concluíram!',
+        lead: 3700, leadFormatted: '3,7 mil', leadSub: '6,08% conv. global',
+        summary: 'Dos <strong>65,8 mil PageViews</strong> monitorados no Pixel: <strong>34.216 (52,0%)</strong> vieram de <strong>Tráfego Pago</strong> (30,4k Meta Ads + 3,2k Spotify + 632 Google) e <strong>31.584 (48,0%)</strong> de <strong>Orgânico / Direto</strong>.'
+      },
+      'paid': {
+        name: 'Tráfego Pago Consolidado (52,0%)',
+        badge: 'Tráfego Pago (52,0%)',
+        pv: 34216, pvFormatted: '34,2 mil', pvSub: '52,0% de todo o tráfego',
+        cart: 2808, cartFormatted: '2,8 mil', cartSub: '8,21% foram ao Yazo',
+        checkout: 2080, checkoutFormatted: '2,1 mil', checkoutSub: '74,07% retenção',
+        complete: 2080, completeFormatted: '2,1 mil', completeSub: '100% concluíram!',
+        lead: 1924, leadFormatted: '1,9 mil', leadSub: '6,08% conv. de mídia',
+        summary: 'O <strong>Tráfego Pago</strong> respondeu por <strong>34.216 PageViews (52,0%)</strong> no site do festival! Meta Ads gerou 30.378 PageViews (88,8% da mídia), Spotify gerou 3.198 (9,3%) e Google CPC 632 (1,8%).'
+      },
+      'meta': {
+        name: 'Apenas Meta Ads (Instagram Reels, Post & FB)',
+        badge: 'Meta Ads (46,2%)',
+        pv: 30378, pvFormatted: '30,4 mil', pvSub: '46,2% do total (88,8% da mídia)',
+        cart: 2493, cartFormatted: '2,5 mil', cartSub: '8,21% foram ao Yazo',
+        checkout: 1847, checkoutFormatted: '1,8 mil', checkoutSub: '74,07% retenção',
+        complete: 1847, completeFormatted: '1,8 mil', completeSub: '100% concluíram!',
+        lead: 1708, leadFormatted: '1,7 mil', leadSub: '6,08% conv. Meta Ads',
+        summary: 'O <strong>Meta Ads (Instagram + Facebook)</strong> foi o canal dominante de aquisição com <strong>30.378 PageViews (46,2% de todo o tráfego do evento)</strong>, liderado por Reels com 16.096 sessões!'
+      },
+      'spotify': {
+        name: 'Spotify Ads (Spot de Áudio)',
+        badge: 'Spotify Ads (4,9%)',
+        pv: 3198, pvFormatted: '3,2 mil', pvSub: '4,86% do tráfego do festival',
+        cart: 262, cartFormatted: '262', cartSub: 'Maior engajamento (23,4%)',
+        checkout: 194, checkoutFormatted: '194', checkoutSub: '74,07% retenção',
+        complete: 194, completeFormatted: '194', completeSub: '100% concluíram!',
+        lead: 180, leadFormatted: '180', leadSub: '6,08% conv. Spotify',
+        summary: 'O canal <strong>spotify / spot</strong> levou <strong>3.198 PageViews</strong> para o site com a <strong>maior taxa de retenção de toda a mídia paga (23,44% de engajamento e 9s de tela)</strong>.'
+      },
+      'google': {
+        name: 'Google Ads (CPC de Pesquisa)',
+        badge: 'Google CPC (1,0%)',
+        pv: 632, pvFormatted: '632', pvSub: '0,96% do tráfego do evento',
+        cart: 52, cartFormatted: '52', cartSub: '8,21% foram ao Yazo',
+        checkout: 38, checkoutFormatted: '38', checkoutSub: '74,07% retenção',
+        complete: 38, completeFormatted: '38', completeSub: '100% concluíram!',
+        lead: 36, leadFormatted: '36', leadSub: '6,08% conv. Google',
+        summary: 'O <strong>Google Ads (CPC)</strong> gerou <strong>632 PageViews</strong> qualificados buscando por termos do festival na pesquisa do Google.'
+      },
+      'organic': {
+        name: 'Orgânico, Direto e CRM (E-mails)',
+        badge: 'Orgânico / Direto (48,0%)',
+        pv: 31584, pvFormatted: '31,6 mil', pvSub: '48,0% do tráfego do site',
+        cart: 2592, cartFormatted: '2,6 mil', cartSub: '8,21% foram ao Yazo',
+        checkout: 1920, checkoutFormatted: '1,9 mil', checkoutSub: '74,07% retenção',
+        complete: 1920, completeFormatted: '1,9 mil', completeSub: '100% concluíram!',
+        lead: 1776, leadFormatted: '1,8 mil', leadSub: '6,08% conv. orgânica',
+        summary: 'O tráfego espontâneo (Direto, Buscas no Google/Bing, E-mail Marketing e Redes Sociais Orgânicas) gerou <strong>31.584 PageViews</strong> no site institucional.'
+      }
+    };
+
+    let currentFunnelSegment = 'all';
+
+    function setFunnelSegment(segmentKey) {
+      currentFunnelSegment = segmentKey;
+      const seg = FUNNEL_SEGMENTS[segmentKey] || FUNNEL_SEGMENTS['all'];
+
+      document.querySelectorAll('#tab-funnel .preset-buttons .btn-preset').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('btnFunnel' + segmentKey.charAt(0).toUpperCase() + segmentKey.slice(1));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('funnelKpiPageView').textContent = seg.pvFormatted;
+      document.getElementById('funnelKpiPageViewSub').textContent = seg.pvSub;
+
+      document.getElementById('funnelKpiCart').textContent = seg.cartFormatted;
+      document.getElementById('funnelKpiCartSub').textContent = seg.cartSub;
+
+      document.getElementById('funnelKpiCheckout').textContent = seg.checkoutFormatted;
+      document.getElementById('funnelKpiCheckoutSub').textContent = seg.checkoutSub;
+
+      document.getElementById('funnelKpiComplete').textContent = seg.completeFormatted;
+      document.getElementById('funnelKpiCompleteSub').textContent = seg.completeSub;
+
+      document.getElementById('funnelKpiLead').textContent = seg.leadFormatted;
+      document.getElementById('funnelKpiLeadSub').textContent = seg.leadSub;
+
+      document.getElementById('funnelAttributionSummary').innerHTML = seg.summary;
+      document.getElementById('funnelSegmentBadge').textContent = 'Exibindo: ' + seg.badge;
+
+      renderPixelFunnelChart(segmentKey);
+    }
+
+    function renderFunnelModule() {
+      setFunnelSegment(currentFunnelSegment);
+      renderPixelTimelineChart();
+    }
+
+    function renderPixelFunnelChart(segmentKey = 'all') {
+      const seg = FUNNEL_SEGMENTS[segmentKey] || FUNNEL_SEGMENTS['all'];
+      const ctx = document.getElementById('pixelFunnelChart').getContext('2d');
+      const stages = [
+        { label: '1. PageView (' + (seg.pv >= 1000 ? (seg.pv/1000).toFixed(1) + 'k' : seg.pv) + ')', val: seg.pv, pct: '100%' },
+        { label: '2. Adicionar ao carrinho (' + (seg.cart >= 1000 ? (seg.cart/1000).toFixed(1) + 'k' : seg.cart) + ')', val: seg.cart, pct: '8,21%' },
+        { label: '3. Iniciar finalização (' + (seg.checkout >= 1000 ? (seg.checkout/1000).toFixed(1) + 'k' : seg.checkout) + ')', val: seg.checkout, pct: '6,08%' },
+        { label: '4. Concluir inscrição (' + (seg.complete >= 1000 ? (seg.complete/1000).toFixed(1) + 'k' : seg.complete) + ')', val: seg.complete, pct: '6,08%' },
+        { label: '5. Lead (' + (seg.lead >= 1000 ? (seg.lead/1000).toFixed(1) + 'k' : seg.lead) + ')', val: seg.lead, pct: '5,62%' }
+      ];
+
+      if (pixelFunnelChartInstance) pixelFunnelChartInstance.destroy();
+
+      pixelFunnelChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: stages.map(s => s.label),
+          datasets: [{
+            label: 'Total de Eventos',
+            data: stages.map(s => s.val),
+            backgroundColor: [
+              'rgba(6, 182, 212, 0.85)',
+              'rgba(99, 102, 241, 0.85)',
+              'rgba(245, 158, 11, 0.85)',
+              'rgba(16, 185, 129, 0.85)',
+              'rgba(168, 85, 247, 0.85)'
+            ],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              callbacks: {
+                label: (ctx) => {
+                  const val = ctx.parsed.x;
+                  const idx = ctx.dataIndex;
+                  const s = stages[idx];
+                  return ` ${val.toLocaleString('pt-BR')} eventos (${s.pct} da audiência total)`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { display: false }, ticks: { color: '#fff', font: { family: 'Inter', size: 11, weight: 600 } } }
+          }
+        }
+      });
+    }
+
+    function renderPixelTimelineChart() {
+      const ctx = document.getElementById('pixelTimelineChart').getContext('2d');
+      
+      const timelineData = [
+        { date: '08/10', events: 1400 },
+        { date: '09/10', events: 2400 },
+        { date: '11/10', events: 2100 },
+        { date: '13/10', events: 4100 },
+        { date: '15/10', events: 3500 },
+        { date: '17/10', events: 2800 },
+        { date: '19/10', events: 4000 },
+        { date: '20/10', events: 5800 },
+        { date: '21/10', events: 5200 },
+        { date: '23/10', events: 1400 },
+        { date: '25/10', events: 1800 },
+        { date: '26/10', events: 2700 },
+        { date: '28/10', events: 2900 },
+        { date: '30/10', events: 1600 },
+        { date: '01/11', events: 2500 },
+        { date: '02/11', events: 4200 },
+        { date: '03/11', events: 3400 },
+        { date: '04/11', events: 5500 },
+        { date: '06/11', events: 4800 }
+      ];
+
+      if (pixelTimelineChartInstance) pixelTimelineChartInstance.destroy();
+
+      pixelTimelineChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timelineData.map(d => d.date),
+          datasets: [{
+            label: 'Eventos do Pixel / Dia',
+            data: timelineData.map(d => d.events),
+            borderColor: '#06b6d4',
+            backgroundColor: 'rgba(6, 182, 212, 0.12)',
+            fill: true,
+            borderWidth: 2.5,
+            tension: 0.35,
+            pointRadius: 3,
+            pointBackgroundColor: '#06b6d4',
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              callbacks: {
+                label: (ctx) => ` ~${ctx.parsed.y.toLocaleString('pt-BR')} eventos registrados`
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function exportData() {
+      const activeTab = document.querySelector('.main-tab-btn.active').id;
+      if (activeTab === 'btnTabTraffic') {
+        let csv = 'Canal;Categoria;Sessoes;Share_Sessoes;Sessoes_Engajadas;Taxa_Engajamento;Tempo_Medio;Eventos_Sessao;Contagem_Eventos;Share_Eventos\n';
+        GA4_CHANNELS.forEach(c => {
+          csv += `"${c.channel}";"${c.categoryLabel}";${c.sessions};${c.sessionsShare}%;${c.engagedSessions};${c.engagementRate}%;"${c.avgTimeStr}";${c.eventsPerSession};${c.eventCount};${c.eventShare}%\n`;
+        });
+        downloadCsvBlob(csv, `metricas_trafego_pago_festival_${new Date().toISOString().slice(0,10)}.csv`);
+      } else if (activeTab === 'btnTabFunnel') {
+        let csv = 'Evento_Pixel;Etapa;Local;Total_Eventos;Taxa_Passagem;Conversao_Geral\n';
+        csv += '"PageView";"1. Visita Landing Page";"festivaliguassuinova.com.br";65800;"100%";"100%"\n';
+        csv += '"Adicionar ao carrinho";"2. Escolha Ingresso Gratuito";"festivaliguassuinova.yazotickets.com";5400;"8.21%";"8.21%"\n';
+        csv += '"Iniciar finalização da compra";"3. Abertura Formulário Checkout";"festivaliguassuinova.yazotickets.com";4000;"74.07%";"6.08%"\n';
+        csv += '"Concluir inscrição";"4. Inscrição Concluída";"festivaliguassuinova.yazotickets.com";4000;"100%";"6.08%"\n';
+        csv += '"Lead";"5. Contato Qualificado";"festivaliguassuinova.yazotickets.com";3700;"92.50%";"5.62%"\n';
+        downloadCsvBlob(csv, `funil_pixel_meta_festival_${new Date().toISOString().slice(0,10)}.csv`);
+      } else {
+        if (filteredRecords.length === 0) {
+          alert('Nenhum dado filtrado para exportar.');
+          return;
+        }
+        let csv = 'Data;Hora;Email;Nome;Tipo de Inscrição;Perfil\n';
+        filteredRecords.forEach(r => {
+          const cleanName = (r.name || '').replace(/;/g, ',');
+          const cleanPerfil = (r.perfil || '').replace(/;/g, ',');
+          const cleanTipo = (r.tipo || '').replace(/;/g, ',');
+          csv += `${r.dt};${r.hour}:00;${r.email};${cleanName};${cleanTipo};${cleanPerfil}\n`;
+        });
+        downloadCsvBlob(csv, `performance_inscricoes_festival_${new Date().toISOString().slice(0,10)}.csv`);
+      }
+    }
+
+    function downloadCsvBlob(content, filename) {
+      const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function setupCsvUploader() {
+      const fileInput = document.getElementById('csvFileInput');
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const content = evt.target.result;
+          parseAndLoadCsv(content);
+        };
+        reader.readAsText(file, 'ISO-8859-1');
+      });
+    }
+
+    function parseAndLoadCsv(csvText) {
+      Papa.parse(csvText, {
+        header: false,
+        skipEmptyLines: true,
+        complete: function(results) {
+          const rows = results.data;
+          let headerIdx = -1;
+          for (let i = 0; i < rows.length; i++) {
+            const rowStr = rows[i].join(';');
+            if (rowStr.includes('createdAt')) {
+              headerIdx = i;
+              break;
+            }
+          }
+
+          if (headerIdx === -1) {
+            alert('Não foi possível localizar o cabeçalho "createdAt" no arquivo.');
+            return;
+          }
+
+          const parsedRecords = [];
+          for (let i = headerIdx + 1; i < rows.length; i++) {
+            const r = rows[i];
+            if (!r || r.length < 5) continue;
+            
+            const rawDt = r[0] ? r[0].trim() : '';
+            if (!rawDt || !rawDt.includes('/')) continue;
+
+            const [datePart, timePart] = rawDt.split(' ');
+            if (!datePart || !timePart) continue;
+
+            const [day, month, year] = datePart.split('/');
+            const [hourStr] = timePart.split(':');
+            const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            const dateBr = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+            const hour = parseInt(hourStr, 10);
+
+            parsedRecords.push({
+              dt: rawDt,
+              date: isoDate,
+              date_br: dateBr,
+              hour: isNaN(hour) ? 0 : hour,
+              email: r[1] ? r[1].trim() : '',
+              name: r[2] ? r[2].trim() : '',
+              tipo: r[3] ? r[3].trim() : '',
+              perfil: r[4] ? r[4].trim() : ''
+            });
+          }
+
+          if (parsedRecords.length > 0) {
+            rawRecords = parsedRecords;
+            const dates = rawRecords.map(r => r.date).sort();
+            availableDates = Array.from(new Set(dates));
+            
+            document.getElementById('tabInscritosCountBadge').textContent = `${rawRecords.length.toLocaleString('pt-BR')} inscritos`;
+            document.getElementById('filterStartDate').value = availableDates[0];
+            document.getElementById('filterEndDate').value = availableDates[availableDates.length - 1];
+
+            populateSelectOptions();
+            computeInitialDayPeak();
+            applyFilters();
+            alert(`Sucesso! ${parsedRecords.length} inscrições carregadas no painel.`);
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
