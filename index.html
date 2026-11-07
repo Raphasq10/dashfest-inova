@@ -1209,7 +1209,7 @@
           <h3>As 4.000 Inscrições da Janela 08/10 a 06/11</h3>
           <p>Participação direta da mídia paga vs canais espontâneos na reta final</p>
         </div>
-        <div class="canvas-container">
+        <div class="canvas-container" style="position: relative; height: 320px; min-height: 320px; width: 100%;">
           <canvas id="chartPeriodInscritos"></canvas>
         </div>
       </div>
@@ -1220,7 +1220,7 @@
           <h3>Linha do Tempo das 11.000 Inscrições do Festival</h3>
           <p>Como a base foi construída antes e durante a janela oficial</p>
         </div>
-        <div class="canvas-container">
+        <div class="canvas-container" style="position: relative; height: 320px; min-height: 320px; width: 100%;">
           <canvas id="chartTotalHistory"></canvas>
         </div>
       </div>
@@ -2879,6 +2879,10 @@
         const btn = document.getElementById('btnTabAudit'); if (btn) btn.classList.add('active');
         const tab = document.getElementById('tab-audit'); if (tab) tab.classList.add('active');
         renderAuditCharts();
+      setTimeout(() => {
+        if (chartPeriodInscritosInstance) chartPeriodInscritosInstance.resize();
+        if (chartTotalHistoryInstance) chartTotalHistoryInstance.resize();
+      }, 100);
       } else if (tabId === 'tab-inscriptions') {
         document.getElementById('btnTabInscriptions').classList.add('active');
         document.getElementById('tab-inscriptions').classList.add('active');

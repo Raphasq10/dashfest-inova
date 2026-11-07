@@ -910,7 +910,7 @@
           <h3>As 4.000 Inscrições da Janela 08/10 a 06/11</h3>
           <p>Participação direta da mídia paga vs canais espontâneos na reta final</p>
         </div>
-        <div class="canvas-container">
+        <div class="canvas-container" style="position: relative; height: 320px; min-height: 320px; width: 100%;">
           <canvas id="chartPeriodInscritos"></canvas>
         </div>
       </div>
@@ -921,7 +921,7 @@
           <h3>Linha do Tempo das 11.000 Inscrições do Festival</h3>
           <p>Como a base foi construída antes e durante a janela oficial</p>
         </div>
-        <div class="canvas-container">
+        <div class="canvas-container" style="position: relative; height: 320px; min-height: 320px; width: 100%;">
           <canvas id="chartTotalHistory"></canvas>
         </div>
       </div>
@@ -1180,98 +1180,111 @@
   </div>
 
   <script>
-    // Gráfico 1: As 4.000 Inscrições no Período (08/10 a 06/11)
-    const ctxPeriod = document.getElementById('chartPeriodInscritos').getContext('2d');
-    new Chart(ctxPeriod, {
-      type: 'doughnut',
-      data: {
-        labels: [
-          'Inscrições via Tráfego Pago Meta Ads (~2.400)',
-          'Inscrições via Orgânico/Parcerias (~1.600)'
-        ],
-        datasets: [{
-          data: [2400, 1600],
-          backgroundColor: ['#06b6d4', '#10b981'],
-          borderColor: '#111827',
-          borderWidth: 3,
-          hoverOffset: 6
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 }, padding: 14 }
+    document.addEventListener('DOMContentLoaded', () => {
+      // Gráfico 1: As 4.000 Inscrições no Período (08/10 a 06/11)
+      const elPeriod = document.getElementById('chartPeriodInscritos');
+      if (elPeriod) {
+        new Chart(elPeriod.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: [
+              'Inscrições via Tráfego Pago Meta Ads (~2.400)',
+              'Inscrições via Orgânico/Parcerias (~1.600)'
+            ],
+            datasets: [{
+              data: [2400, 1600],
+              backgroundColor: ['#3F88C5', '#44BBA4'],
+              borderColor: '#FFFFFF',
+              borderWidth: 3,
+              hoverOffset: 6
+            }]
           },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const total = 4000;
-                const val = context.parsed;
-                const pct = ((val / total) * 100).toFixed(1);
-                return context.label.split(' (')[0] + ': ' + val.toLocaleString('pt-BR') + ' pessoas (' + pct + '%)';
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 }, padding: 14 }
+              },
+              tooltip: {
+                backgroundColor: '#282E32',
+                titleColor: '#F6F7EB',
+                bodyColor: '#FFFFFF',
+                callbacks: {
+                  label: function(context) {
+                    const total = 4000;
+                    const val = context.parsed;
+                    const pct = ((val / total) * 100).toFixed(1);
+                    return context.label.split(' (')[0] + ': ' + val.toLocaleString('pt-BR') + ' pessoas (' + pct + '%)';
+                  }
+                }
               }
-            }
-          }
-        },
-        cutout: '65%'
-      }
-    });
-
-    // Gráfico 2: Linha do Tempo das 11.000 Inscrições
-    const ctxTotal = document.getElementById('chartTotalHistory').getContext('2d');
-    new Chart(ctxTotal, {
-      type: 'bar',
-      data: {
-        labels: ['Inscritos até 08/10 (Pré-Janela)', 'Inscritos de 08/10 a 06/11 (Campanha Ativa)'],
-        datasets: [
-          {
-            label: 'Inscritos Orgânicos / Parcerias',
-            data: [7036, 1600],
-            backgroundColor: '#6366f1',
-            borderRadius: 6
-          },
-          {
-            label: 'Inscritos via Tráfego Pago',
-            data: [0, 2400],
-            backgroundColor: '#06b6d4',
-            borderRadius: 6
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.dataset.label + ': ' + context.parsed.y.toLocaleString('pt-BR') + ' pessoas';
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            stacked: true,
-            ticks: { color: '#94a3b8', font: { family: 'Inter' } },
-            grid: { color: '#1f293d' }
-          },
-          y: {
-            stacked: true,
-            ticks: {
-              color: '#94a3b8',
-              callback: value => value.toLocaleString('pt-BR')
             },
-            grid: { color: '#1f293d' }
+            cutout: '65%'
           }
-        }
+        });
+      }
+
+      // Gráfico 2: Linha do Tempo das 11.000 Inscrições
+      const elTotal = document.getElementById('chartTotalHistory');
+      if (elTotal) {
+        new Chart(elTotal.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: ['Inscritos até 08/10 (Pré-Janela)', 'Inscritos de 08/10 a 06/11 (Campanha Ativa)'],
+            datasets: [
+              {
+                label: 'Inscritos Orgânicos / Parcerias',
+                data: [7036, 1600],
+                backgroundColor: '#393E41',
+                borderRadius: 6
+              },
+              {
+                label: 'Inscritos via Tráfego Pago',
+                data: [0, 2400],
+                backgroundColor: '#3F88C5',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 } }
+              },
+              tooltip: {
+                backgroundColor: '#282E32',
+                titleColor: '#F6F7EB',
+                bodyColor: '#FFFFFF',
+                callbacks: {
+                  label: function(context) {
+                    return context.dataset.label + ': ' + context.parsed.y.toLocaleString('pt-BR') + ' pessoas';
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                stacked: true,
+                ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } },
+                grid: { color: '#E2E5D5' }
+              },
+              y: {
+                stacked: true,
+                ticks: {
+                  color: '#393E41',
+                  font: { family: 'Inter', weight: 600 },
+                  callback: value => value.toLocaleString('pt-BR')
+                },
+                grid: { color: '#E2E5D5' }
+              }
+            }
+          }
+        });
       }
     });
   </script>

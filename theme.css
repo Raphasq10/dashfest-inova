@@ -627,3 +627,14 @@ table.data-table tr:hover td {
 [data-theme="dark"] .methodology-box p strong {
   color: #FFFFFF !important;
 }
+
+
+/* Altura obrigatória para containers de gráficos Chart.js */
+.canvas-container,
+.chart-container-box {
+  position: relative !important;
+  height: 320px !important;
+  min-height: 320px !important;
+  width: 100% !important;
+  display: block !important;
+}
