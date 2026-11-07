@@ -853,8 +853,8 @@
       <button class="main-tab-btn" id="btnTabInscriptions" onclick="switchMainTab('tab-inscriptions')">
         <i class="fa-solid fa-clock-rotate-left" style="color: #5A6267;"></i>
         <span>Base Operacional (Curva Horária & Filtros)</span>
-        <span class="tab-badge" style="background: #ECEEDD; color: #5A6267; border-color: #D8DCCB;">
-          Avançado / Técnico
+        <span class="tab-badge" id="tabInscritosCountBadge" style="background: #ECEEDD; color: #5A6267; border-color: #D8DCCB;">
+          3.142 inscritos
         </span>
       </button>
 
@@ -2907,110 +2907,134 @@
     let chartTotalHistoryInstance = null;
 
     function renderAuditCharts() {
-      const elPeriod = document.getElementById('chartPeriodInscritos');
-      if (elPeriod) {
-        if (chartPeriodInscritosInstance) chartPeriodInscritosInstance.destroy();
-        chartPeriodInscritosInstance = new Chart(elPeriod.getContext('2d'), {
-          type: 'doughnut',
-          data: {
-            labels: [
-              'Inscrições via Tráfego Pago Meta Ads (~2.400)',
-              'Inscrições via Orgânico/Parcerias (~1.600)'
-            ],
-            datasets: [{
-              data: [2400, 1600],
-              backgroundColor: ['#3F88C5', '#44BBA4'],
-              borderColor: '#FFFFFF',
-              borderWidth: 3,
-              hoverOffset: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 }, padding: 14 }
-              },
-              tooltip: {
-                backgroundColor: '#282E32',
-                titleColor: '#F6F7EB',
-                bodyColor: '#FFFFFF',
-                callbacks: {
-                  label: function(context) {
-                    const total = 4000;
-                    const val = context.parsed;
-                    const pct = ((val / total) * 100).toFixed(1);
-                    return context.label.split(' (')[0] + ': ' + val.toLocaleString('pt-BR') + ' pessoas (' + pct + '%)';
+      try {
+        const elPeriod = document.getElementById('chartPeriodInscritos');
+        if (elPeriod) {
+          try {
+            if (typeof Chart !== 'undefined' && Chart.getChart) {
+              const existing = Chart.getChart(elPeriod);
+              if (existing) existing.destroy();
+            }
+          } catch(e) {}
+          if (chartPeriodInscritosInstance) {
+            try { chartPeriodInscritosInstance.destroy(); } catch(e) {}
+          }
+          chartPeriodInscritosInstance = new Chart(elPeriod.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+              labels: [
+                'Inscrições via Tráfego Pago Meta Ads (~2.400)',
+                'Inscrições via Orgânico/Parcerias (~1.600)'
+              ],
+              datasets: [{
+                data: [2400, 1600],
+                backgroundColor: ['#3F88C5', '#44BBA4'],
+                borderColor: '#FFFFFF',
+                borderWidth: 3,
+                hoverOffset: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 }, padding: 14 }
+                },
+                tooltip: {
+                  backgroundColor: '#282E32',
+                  titleColor: '#F6F7EB',
+                  bodyColor: '#FFFFFF',
+                  callbacks: {
+                    label: function(context) {
+                      const total = 4000;
+                      const val = context.parsed;
+                      const pct = ((val / total) * 100).toFixed(1);
+                      return context.label.split(' (')[0] + ': ' + val.toLocaleString('pt-BR') + ' pessoas (' + pct + '%)';
+                    }
                   }
                 }
-              }
-            },
-            cutout: '65%'
-          }
-        });
+              },
+              cutout: '65%'
+            }
+          });
+        }
+      } catch(err) {
+        console.error('Erro ao renderizar chartPeriodInscritos:', err);
       }
 
-      const elTotal = document.getElementById('chartTotalHistory');
-      if (elTotal) {
-        if (chartTotalHistoryInstance) chartTotalHistoryInstance.destroy();
-        chartTotalHistoryInstance = new Chart(elTotal.getContext('2d'), {
-          type: 'bar',
-          data: {
-            labels: ['Inscritos até 08/10 (Pré-Janela)', 'Inscritos de 08/10 a 06/11 (Campanha Ativa)'],
-            datasets: [
-              {
-                label: 'Inscritos Orgânicos / Parcerias',
-                data: [7036, 1600],
-                backgroundColor: '#393E41',
-                borderRadius: 6
-              },
-              {
-                label: 'Inscritos via Tráfego Pago',
-                data: [0, 2400],
-                backgroundColor: '#3F88C5',
-                borderRadius: 6
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'top',
-                labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 } }
-              },
-              tooltip: {
-                backgroundColor: '#282E32',
-                titleColor: '#F6F7EB',
-                bodyColor: '#FFFFFF',
-                callbacks: {
-                  label: function(context) {
-                    return context.dataset.label + ': ' + context.parsed.y.toLocaleString('pt-BR') + ' pessoas';
+      try {
+        const elTotal = document.getElementById('chartTotalHistory');
+        if (elTotal) {
+          try {
+            if (typeof Chart !== 'undefined' && Chart.getChart) {
+              const existing = Chart.getChart(elTotal);
+              if (existing) existing.destroy();
+            }
+          } catch(e) {}
+          if (chartTotalHistoryInstance) {
+            try { chartTotalHistoryInstance.destroy(); } catch(e) {}
+          }
+          chartTotalHistoryInstance = new Chart(elTotal.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: ['Inscritos até 08/10 (Pré-Janela)', 'Inscritos de 08/10 a 06/11 (Campanha Ativa)'],
+              datasets: [
+                {
+                  label: 'Inscritos Orgânicos / Parcerias',
+                  data: [7036, 1600],
+                  backgroundColor: '#393E41',
+                  borderRadius: 6
+                },
+                {
+                  label: 'Inscritos via Tráfego Pago',
+                  data: [0, 2400],
+                  backgroundColor: '#3F88C5',
+                  borderRadius: 6
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'top',
+                  labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 } }
+                },
+                tooltip: {
+                  backgroundColor: '#282E32',
+                  titleColor: '#F6F7EB',
+                  bodyColor: '#FFFFFF',
+                  callbacks: {
+                    label: function(context) {
+                      return context.dataset.label + ': ' + context.parsed.y.toLocaleString('pt-BR') + ' pessoas';
+                    }
                   }
                 }
-              }
-            },
-            scales: {
-              x: {
-                stacked: true,
-                ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } },
-                grid: { color: '#E2E5D5' }
               },
-              y: {
-                stacked: true,
-                ticks: {
-                  color: '#393E41',
-                  font: { family: 'Inter', weight: 600 },
-                  callback: value => value.toLocaleString('pt-BR')
+              scales: {
+                x: {
+                  stacked: true,
+                  ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } },
+                  grid: { color: '#E2E5D5' }
                 },
-                grid: { color: '#E2E5D5' }
+                y: {
+                  stacked: true,
+                  ticks: {
+                    color: '#393E41',
+                    font: { family: 'Inter', weight: 600 },
+                    callback: value => value.toLocaleString('pt-BR')
+                  },
+                  grid: { color: '#E2E5D5' }
+                }
               }
             }
-          }
-        });
+          });
+        }
+      } catch(err) {
+        console.error('Erro ao renderizar chartTotalHistory:', err);
       }
     }
 
@@ -3031,7 +3055,7 @@
         return;
       }
 
-      document.getElementById('tabInscritosCountBadge').textContent = `${rawRecords.length.toLocaleString('pt-BR')} inscritos`;
+      const elBadge = document.getElementById('tabInscritosCountBadge'); if (elBadge) elBadge.textContent = `${rawRecords.length.toLocaleString('pt-BR')} inscritos`;
 
       const dates = rawRecords.map(r => r.date).sort();
       availableDates = Array.from(new Set(dates));
@@ -4576,168 +4600,6 @@
       }
     };
 
-    let currentFunnelSegment = 'all';
-
-    function setFunnelSegment(segmentKey) {
-      currentFunnelSegment = segmentKey;
-      const seg = FUNNEL_SEGMENTS[segmentKey] || FUNNEL_SEGMENTS['all'];
-
-      document.querySelectorAll('#tab-funnel .preset-buttons .btn-preset').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById('btnFunnel' + segmentKey.charAt(0).toUpperCase() + segmentKey.slice(1));
-      if (activeBtn) activeBtn.classList.add('active');
-
-      document.getElementById('funnelKpiPageView').textContent = seg.pvFormatted;
-      document.getElementById('funnelKpiPageViewSub').textContent = seg.pvSub;
-
-      document.getElementById('funnelKpiCart').textContent = seg.cartFormatted;
-      document.getElementById('funnelKpiCartSub').textContent = seg.cartSub;
-
-      document.getElementById('funnelKpiCheckout').textContent = seg.checkoutFormatted;
-      document.getElementById('funnelKpiCheckoutSub').textContent = seg.checkoutSub;
-
-      document.getElementById('funnelKpiComplete').textContent = seg.completeFormatted;
-      document.getElementById('funnelKpiCompleteSub').textContent = seg.completeSub;
-
-      document.getElementById('funnelKpiLead').textContent = seg.leadFormatted;
-      document.getElementById('funnelKpiLeadSub').textContent = seg.leadSub;
-
-      document.getElementById('funnelAttributionSummary').innerHTML = seg.summary;
-      document.getElementById('funnelSegmentBadge').textContent = 'Exibindo: ' + seg.badge;
-
-      renderPixelFunnelChart(segmentKey);
-    }
-
-    function renderFunnelModule() {
-      setFunnelSegment(currentFunnelSegment);
-      renderPixelTimelineChart();
-    }
-
-    function renderPixelFunnelChart(segmentKey = 'all') {
-      const seg = FUNNEL_SEGMENTS[segmentKey] || FUNNEL_SEGMENTS['all'];
-      const ctx = document.getElementById('pixelFunnelChart').getContext('2d');
-      const stages = [
-        { label: '1. PageView (' + (seg.pv >= 1000 ? (seg.pv/1000).toFixed(1) + 'k' : seg.pv) + ')', val: seg.pv, pct: '100%' },
-        { label: '2. Adicionar ao carrinho (' + (seg.cart >= 1000 ? (seg.cart/1000).toFixed(1) + 'k' : seg.cart) + ')', val: seg.cart, pct: '8,21%' },
-        { label: '3. Iniciar finalização (' + (seg.checkout >= 1000 ? (seg.checkout/1000).toFixed(1) + 'k' : seg.checkout) + ')', val: seg.checkout, pct: '6,08%' },
-        { label: '4. Concluir inscrição (' + (seg.complete >= 1000 ? (seg.complete/1000).toFixed(1) + 'k' : seg.complete) + ')', val: seg.complete, pct: '6,08%' },
-        { label: '5. Lead (' + (seg.lead >= 1000 ? (seg.lead/1000).toFixed(1) + 'k' : seg.lead) + ')', val: seg.lead, pct: '5,62%' }
-      ];
-
-      if (pixelFunnelChartInstance) pixelFunnelChartInstance.destroy();
-
-      pixelFunnelChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: stages.map(s => s.label),
-          datasets: [{
-            label: 'Total de Eventos',
-            data: stages.map(s => s.val),
-            backgroundColor: [
-              'rgba(6, 182, 212, 0.85)',
-              'rgba(99, 102, 241, 0.85)',
-              'rgba(245, 158, 11, 0.85)',
-              'rgba(16, 185, 129, 0.85)',
-              'rgba(168, 85, 247, 0.85)'
-            ],
-            borderRadius: 6
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10,
-              callbacks: {
-                label: (ctx) => {
-                  const val = ctx.parsed.x;
-                  const idx = ctx.dataIndex;
-                  const s = stages[idx];
-                  return ` ${val.toLocaleString('pt-BR')} eventos (${s.pct} da audiência total)`;
-                }
-              }
-            }
-          },
-          scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
-            y: { grid: { display: false }, ticks: { color: '#fff', font: { family: 'Inter', size: 11, weight: 600 } } }
-          }
-        }
-      });
-    }
-
-    function renderPixelTimelineChart() {
-      const ctx = document.getElementById('pixelTimelineChart').getContext('2d');
-      
-      const timelineData = [
-        { date: '08/10', events: 1400 },
-        { date: '09/10', events: 2400 },
-        { date: '11/10', events: 2100 },
-        { date: '13/10', events: 4100 },
-        { date: '15/10', events: 3500 },
-        { date: '17/10', events: 2800 },
-        { date: '19/10', events: 4000 },
-        { date: '20/10', events: 5800 },
-        { date: '21/10', events: 5200 },
-        { date: '23/10', events: 1400 },
-        { date: '25/10', events: 1800 },
-        { date: '26/10', events: 2700 },
-        { date: '28/10', events: 2900 },
-        { date: '30/10', events: 1600 },
-        { date: '01/11', events: 2500 },
-        { date: '02/11', events: 4200 },
-        { date: '03/11', events: 3400 },
-        { date: '04/11', events: 5500 },
-        { date: '06/11', events: 4800 }
-      ];
-
-      if (pixelTimelineChartInstance) pixelTimelineChartInstance.destroy();
-
-      pixelTimelineChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: timelineData.map(d => d.date),
-          datasets: [{
-            label: 'Eventos do Pixel / Dia',
-            data: timelineData.map(d => d.events),
-            borderColor: '#06b6d4',
-            backgroundColor: 'rgba(6, 182, 212, 0.12)',
-            fill: true,
-            borderWidth: 2.5,
-            tension: 0.35,
-            pointRadius: 3,
-            pointBackgroundColor: '#06b6d4',
-            pointHoverRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10,
-              callbacks: {
-                label: (ctx) => ` ~${ctx.parsed.y.toLocaleString('pt-BR')} eventos registrados`
-              }
-            }
-          },
-          scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
-          }
-        }
-      });
-    }
-
     function exportData() {
       const activeTab = document.querySelector('.main-tab-btn.active').id;
       if (activeTab === 'btnTabTraffic') {
@@ -4850,7 +4712,7 @@
             const dates = rawRecords.map(r => r.date).sort();
             availableDates = Array.from(new Set(dates));
             
-            document.getElementById('tabInscritosCountBadge').textContent = `${rawRecords.length.toLocaleString('pt-BR')} inscritos`;
+            const elBadge = document.getElementById('tabInscritosCountBadge'); if (elBadge) elBadge.textContent = `${rawRecords.length.toLocaleString('pt-BR')} inscritos`;
             document.getElementById('filterStartDate').value = availableDates[0];
             document.getElementById('filterEndDate').value = availableDates[availableDates.length - 1];
 
