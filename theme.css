@@ -569,3 +569,61 @@ table.data-table tr:hover td {
   border-color: var(--steel-blue);
   color: var(--steel-blue);
 }
+
+
+/* ==========================================================================
+   ALINHAMENTO METODOLÓGICO & CAIXAS DE DESTAQUE EXECUTIVO (ALTO CONTRASTE)
+   ========================================================================== */
+.methodology-box {
+  background: #FFFFFF !important;
+  border: 1px solid #D8DCCB !important;
+  border-left: 5px solid var(--steel-blue) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 24px 28px !important;
+  margin-bottom: 32px !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.methodology-box h4 {
+  font-family: var(--font-heading) !important;
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+  color: #1E2326 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 12px !important;
+}
+
+.methodology-box h4 i {
+  color: var(--steel-blue) !important;
+}
+
+.methodology-box p {
+  font-size: 0.92rem !important;
+  color: #393E41 !important;
+  line-height: 1.75 !important;
+}
+
+.methodology-box p strong {
+  color: #1E2326 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .methodology-box {
+  background: #282E32 !important;
+  border-color: #3E464C !important;
+  border-left-color: #5B9DD4 !important;
+}
+
+[data-theme="dark"] .methodology-box h4 {
+  color: #F6F7EB !important;
+}
+
+[data-theme="dark"] .methodology-box p {
+  color: #B2BCC2 !important;
+}
+
+[data-theme="dark"] .methodology-box p strong {
+  color: #FFFFFF !important;
+}
