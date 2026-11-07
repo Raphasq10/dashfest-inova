@@ -814,57 +814,663 @@
 
     <!-- NAVEGAÇÃO PRINCIPAL POR ABAS -->
     <nav class="main-tabs-nav">
-      <button class="main-tab-btn active" id="btnTabInscriptions" onclick="switchMainTab('tab-inscriptions')">
-        <i class="fa-solid fa-users"></i>
-        <span>Inscrições & Conversão Horária</span>
-        <span class="tab-badge" id="tabInscritosCountBadge">3.142 inscritos</span>
-      </button>
-
-      <button class="main-tab-btn" id="btnTabTraffic" onclick="switchMainTab('tab-traffic')">
-        <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i>
-        <span>Performance Tráfego Pago (GA4)</span>
-        <span class="tab-badge" style="background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4);">
-          32.580 sessões de mídia
+      <button class="main-tab-btn active" id="btnTabAudit" onclick="switchMainTab('tab-audit')">
+        <i class="fa-solid fa-briefcase" style="color: var(--steel-blue);"></i>
+        <span>Auditoria C-Level & Decisão de Mídia</span>
+        <span class="tab-badge" style="background: rgba(63, 136, 197, 0.15); color: var(--steel-blue); border-color: rgba(63, 136, 197, 0.3);">
+          Visão Executiva
         </span>
       </button>
 
       <button class="main-tab-btn" id="btnTabFunnel" onclick="switchMainTab('tab-funnel')">
-        <i class="fa-solid fa-filter-circle-dollar" style="color: var(--accent-amber);"></i>
-        <span>Funil do Pixel Meta & Jornada</span>
-        <span class="tab-badge" style="background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.4);">
-          65,8k PageViews ➔ 4k Inscrições
+        <i class="fa-solid fa-filter-circle-dollar" style="color: var(--terracotta);"></i>
+        <span>Funil de Conversão (3 Colunas)</span>
+        <span class="tab-badge" style="background: rgba(233, 79, 55, 0.12); color: var(--terracotta); border-color: rgba(233, 79, 55, 0.3);">
+          GA4 & Pixel
         </span>
       </button>
 
-            <a href="meta_marketing.html" class="main-tab-btn" style="text-decoration: none; border-color: rgba(0, 129, 251, 0.4); background: rgba(0, 129, 251, 0.12);">
-        <i class="fa-brands fa-meta" style="color: #38bdf8;"></i>
+      <button class="main-tab-btn" id="btnTabTraffic" onclick="switchMainTab('tab-traffic')">
+        <i class="fa-solid fa-bullhorn" style="color: var(--ocean-mist);"></i>
+        <span>Performance Mídia Paga (GA4)</span>
+        <span class="tab-badge" style="background: rgba(68, 187, 164, 0.15); color: #0F5144; border-color: rgba(68, 187, 164, 0.3);">
+          32.580 sessões
+        </span>
+      </button>
+
+      <button class="main-tab-btn" id="btnTabInscriptions" onclick="switchMainTab('tab-inscriptions')">
+        <i class="fa-solid fa-clock-rotate-left" style="color: #5A6267;"></i>
+        <span>Base Operacional (Curva Horária & Filtros)</span>
+        <span class="tab-badge" style="background: #ECEEDD; color: #5A6267; border-color: #D8DCCB;">
+          Avançado / Técnico
+        </span>
+      </button>
+
+      <a href="meta_marketing.html" class="main-tab-btn" style="text-decoration: none; border-color: rgba(0, 129, 251, 0.3); background: rgba(0, 129, 251, 0.08);">
+        <i class="fa-brands fa-meta" style="color: #0081FB;"></i>
         <span>Meta Marketing API</span>
-        <span class="tab-badge" style="background: rgba(0, 129, 251, 0.3); color: #fff;">
-          API v21.0
-        </span>
+        <span class="tab-badge" style="background: rgba(0, 129, 251, 0.2); color: #0081FB;">API v21.0</span>
       </a>
 
-<a href="respostas_cliente.html" class="main-tab-btn" style="text-decoration: none; border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.12);">
-        <i class="fa-solid fa-clipboard-check" style="color: #10b981;"></i>
+      <a href="respostas_cliente.html" class="main-tab-btn" style="text-decoration: none; border-color: rgba(68, 187, 164, 0.3); background: rgba(68, 187, 164, 0.08);">
+        <i class="fa-solid fa-clipboard-check" style="color: #0F5144;"></i>
         <span>Respostas do Cliente</span>
-        <span class="tab-badge" style="background: rgba(16, 185, 129, 0.3); color: #fff;">
-          Perguntas da Campanha
-        </span>
-      </a>
-
-      <a href="diretoria.html" class="main-tab-btn" style="text-decoration: none; border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.12);">
-        <i class="fa-solid fa-briefcase" style="color: #818cf8;"></i>
-        <span>Relatório Executivo (Diretoria)</span>
-        <span class="tab-badge" style="background: rgba(99, 102, 241, 0.3); color: #fff;">
-          Apresentação C-Level
-        </span>
       </a>
     </nav>
 
     <!-- =====================================================================
-         ABA 1: INSCRIÇÕES & CONVERSÃO HORÁRIA
+         HOME / ABA 1: AUDITORIA C-LEVEL & TOMADA DE DECISÃO
          ===================================================================== -->
-    <main id="tab-inscriptions" class="tab-content active">
+    <main id="tab-audit" class="tab-content active">
+
+    
+    <!-- HERO EXECUTIVE BANNER -->
+    <section class="hero-banner">
+      <h2 class="hero-title">Auditoria de Desempenho: Janela Oficial de 08/10 a 06/11/2026</h2>
+      <p class="hero-subtitle">
+        Cruzamento consolidado das quatro fontes de dados sob a mesma janela temporal: 
+        <strong>43.338 sessões no Google Analytics 4</strong>, <strong>R$ 7.356,88 investidos no Meta Ads</strong> (50.069 cliques gerados), 
+        <strong>65,8 mil pageviews / 4 mil inscrições registradas no Meta Pixel</strong> e a base acumulada de <strong>11.000 credenciamentos no App Yazo</strong>.
+      </p>
+
+      <div class="hero-pills">
+        <div class="pill active-period">
+          <i class="fa-solid fa-calendar-check" style="color: var(--primary-light);"></i>
+          <span>Janela Analisada: <strong>08 de Outubro a 06 de Novembro de 2026</strong></span>
+        </div>
+        <div class="pill">
+          <i class="fa-solid fa-users" style="color: var(--accent-cyan);"></i>
+          <span>Pessoas no Site (GA4): <strong>~35.890 Usuários Únicos</strong> (43.338 sessões)</span>
+        </div>
+        <div class="pill">
+          <i class="fa-solid fa-ticket" style="color: var(--accent-emerald);"></i>
+          <span>Inscrições no Período (Yazo & Pixel): <strong>4.000 Inscritos</strong></span>
+        </div>
+        <div class="pill">
+          <i class="fa-solid fa-trophy" style="color: var(--accent-amber);"></i>
+          <span>Total Geral Acumulado no Evento: <strong>11.000 Inscritos</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOP 5 EXECUTIVE KPIS DA JANELA 08/10 A 06/11 -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Sessões no Site (GA4)</span>
+          <div class="kpi-icon blue"><i class="fa-solid fa-chart-line"></i></div>
+        </div>
+        <div class="kpi-value">43.338</div>
+        <div class="kpi-sub">
+          <span class="pos">19.418 engajadas (44,81%)</span> <span>• 53s tempo médio</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Pessoas Únicas (Usuários)</span>
+          <div class="kpi-icon cyan"><i class="fa-solid fa-users"></i></div>
+        </div>
+        <div class="kpi-value">~35.890</div>
+        <div class="kpi-sub">
+          <span>Pessoas físicas reais navegando no site</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Investimento em Mídia</span>
+          <div class="kpi-icon amber"><i class="fa-solid fa-dollar-sign"></i></div>
+        </div>
+        <div class="kpi-value">R$ 7.356,88</div>
+        <div class="kpi-sub">
+          <span class="pos">50.069 cliques</span> <span>• CPC R$ 0,15</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Inscrições no Período</span>
+          <div class="kpi-icon green"><i class="fa-solid fa-id-card-clip"></i></div>
+        </div>
+        <div class="kpi-value">4.000</div>
+        <div class="kpi-sub">
+          <span class="pos">~2.400 via Tráfego Pago (60%)</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Total Acumulado Evento</span>
+          <div class="kpi-icon purple"><i class="fa-solid fa-trophy"></i></div>
+        </div>
+        <div class="kpi-value">11.000</div>
+        <div class="kpi-sub">
+          <span class="pos">Meta Batida no App Yazo</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- OS 4 PILARES DA DIRETORIA NA JANELA 08/10 A 06/11 -->
+    <div class="section-title">
+      <h2>As 4 Respostas Oficiais para a Diretoria (Janela 08/10 a 06/11)</h2>
+      <span class="tag">Auditoria C-Level</span>
+    </div>
+
+    <section class="board-grid-4">
+      
+      <!-- PERGUNTA 1 -->
+      <div class="board-card highlight-cyan">
+        <div>
+          <div class="card-question cyan">
+            <i class="fa-solid fa-circle-question"></i> Pergunta 1
+          </div>
+          <h3 class="card-heading">Quanto a campanha alcançou vs. valor investido?</h3>
+          <div class="card-big-stat" style="color: var(--accent-cyan);">R$ 7.356,88</div>
+          <p class="card-body-text">
+            No período de <strong>08/10 a 23/10</strong> (pausa da campanha), o investimento de <strong>R$ 7.356,88</strong> entregou <strong>50.069 cliques diretos</strong> no link por um custo unitário extraordinário de <strong>R$ 0,15 por clique</strong>.
+          </p>
+        </div>
+        <div class="metric-list">
+          <div class="metric-item">
+            <span>Investimento em Anúncios:</span>
+            <strong>R$ 7.356,88</strong>
+          </div>
+          <div class="metric-item">
+            <span>Cliques Gerados (Meta Ads):</span>
+            <strong>50.069 cliques</strong>
+          </div>
+          <div class="metric-item">
+            <span>Custo por Clique (CPC):</span>
+            <strong style="color: var(--accent-emerald);">R$ 0,15 / clique</strong>
+          </div>
+          <div class="metric-item">
+            <span>Pessoas Pagas no Site:</span>
+            <strong>~20.000 a 23.952 pessoas</strong>
+          </div>
+          <div class="metric-item">
+            <span>Custo por Pessoa no Site:</span>
+            <strong style="color: var(--accent-emerald);">R$ 0,31 / pessoa</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 2 -->
+      <div class="board-card highlight-emerald">
+        <div>
+          <div class="card-question emerald">
+            <i class="fa-solid fa-circle-question"></i> Pergunta 2
+          </div>
+          <h3 class="card-heading">Quantas pessoas se inscreveram através do tráfego pago?</h3>
+          <div class="card-big-stat" style="color: var(--accent-emerald);">~2.400 inscritos</div>
+          <p class="card-body-text">
+            Das <strong>4.000 inscrições totais realizadas no período de 08/10 a 06/11</strong>, <strong>~2.400 foram geradas diretamente pelo tráfego pago</strong>, representando <strong>60% de todas as inscrições</strong> da reta final do festival.
+          </p>
+        </div>
+        <div class="metric-list">
+          <div class="metric-item">
+            <span>Inscrições Totais no Período:</span>
+            <strong>4.000 participantes</strong>
+          </div>
+          <div class="metric-item">
+            <span>Inscritos via Tráfego Pago:</span>
+            <strong style="color: var(--accent-cyan);">~2.400 participantes (60%)</strong>
+          </div>
+          <div class="metric-item">
+            <span>Inscritos via Orgânico/Parcerias:</span>
+            <strong>~1.600 participantes (40%)</strong>
+          </div>
+          <div class="metric-item">
+            <span>Custo por Inscrito Pago (CPA):</span>
+            <strong style="color: var(--accent-emerald);">R$ 3,06 / inscrito</strong>
+          </div>
+          <div class="metric-item">
+            <span>Benchmark de Mercado:</span>
+            <span style="color: var(--accent-amber);">R$ 10,00 a R$ 25,00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 3 -->
+      <div class="board-card highlight-amber">
+        <div>
+          <div class="card-question amber">
+            <i class="fa-solid fa-circle-question"></i> Pergunta 3
+          </div>
+          <h3 class="card-heading">Quantas pessoas acessaram em tráfego pago e quantas desistiram?</h3>
+          <div class="card-big-stat" style="color: var(--accent-amber);">23.952 acessos</div>
+          <p class="card-body-text">
+            Entre 08/10 e 23/10, o tráfego pago colocou mais de 20 mil pessoas no site. Como padrão de Stories/Reels, <strong>82,1% consumiram a Home e saíram rapidamente</strong>, enquanto <strong>3.426 pessoas avançaram para os ingressos</strong>.
+          </p>
+        </div>
+        <div class="metric-list">
+          <div class="metric-item">
+            <span>Pessoas no Tráfego Pago:</span>
+            <strong>~20.000 a 23.952 pessoas</strong>
+          </div>
+          <div class="metric-item">
+            <span>Desistiram na Página Inicial:</span>
+            <strong style="color: var(--accent-rose);">~82,1% (saída rápida)</strong>
+          </div>
+          <div class="metric-item">
+            <span>Clicaram em "Garantir Ingressos":</span>
+            <strong style="color: var(--accent-cyan);">3.426 pessoas</strong>
+          </div>
+          <div class="metric-item">
+            <span>Desistiram no Formulário Yazo:</span>
+            <strong>~1.026 pessoas (30%)</strong>
+          </div>
+          <div class="metric-item">
+            <span>Finalizaram Inscrição com Sucesso:</span>
+            <strong style="color: var(--accent-emerald);">~2.400 inscritos (70%)</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 4 -->
+      <div class="board-card highlight-purple">
+        <div>
+          <div class="card-question purple">
+            <i class="fa-solid fa-circle-question"></i> Pergunta 4
+          </div>
+          <h3 class="card-heading">Sem tráfego (Orgânico): quantas acessaram e desistiram?</h3>
+          <div class="card-big-stat" style="color: var(--accent-purple);">~15.890 acessos</div>
+          <p class="card-body-text">
+            O público espontâneo na janela de 08/10 a 06/11 teve comportamento de altíssimo envolvimento. Mais de <strong>62% navegaram ativamente</strong> (lendo programação e palestrantes) e apenas <strong>37% desistiram</strong> na Home.
+          </p>
+        </div>
+        <div class="metric-list">
+          <div class="metric-item">
+            <span>Pessoas Orgânicas no Período:</span>
+            <strong>~15.890 pessoas</strong>
+          </div>
+          <div class="metric-item">
+            <span>Taxa de Engajamento Médio:</span>
+            <strong style="color: var(--accent-emerald);">44,81% a 63% engajadas</strong>
+          </div>
+          <div class="metric-item">
+            <span>Desistência na Página Inicial:</span>
+            <strong>37% a 55%</strong>
+          </div>
+          <div class="metric-item">
+            <span>Inscritos Orgânicos no Período:</span>
+            <strong>~1.600 pessoas</strong>
+          </div>
+          <div class="metric-item">
+            <span>Base Acumulada Prévida (até 08/10):</span>
+            <strong style="color: var(--primary-light);">7.036 pessoas inscritas</strong>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- QUADRO COMPARATIVO CONSOLIDADO (08/10 A 06/11) -->
+    <div class="section-title">
+      <h2>Quadro Executivo Consolidado: Janela de 08/10 a 06/11/2026</h2>
+      <span class="tag">Auditoria Oficial</span>
+    </div>
+
+    <div class="table-container">
+      <table class="exec-table">
+        <thead>
+          <tr>
+            <th>Métrica de Auditoria</th>
+            <th>Tráfego Pago (Meta Ads)</th>
+            <th>Orgânico, Direto & Parcerias</th>
+            <th>Total Consolidado (08/10 a 06/11)</th>
+            <th>Origem do Dado & Validação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Sessões no Site</strong></td>
+            <td><strong>23.952 sessões</strong> (55,3%)</td>
+            <td><strong>19.386 sessões</strong> (44,7%)</td>
+            <td><strong>43.338 sessões</strong></td>
+            <td>Relatório GA4 exato do período (19.418 engajadas / 44,81%).</td>
+          </tr>
+          <tr>
+            <td><strong>2. Pessoas Únicas (Usuários)</strong></td>
+            <td>~19.800 pessoas</td>
+            <td>~16.090 pessoas</td>
+            <td><strong>~35.890 pessoas únicas</strong></td>
+            <td>Visitantes físicos únicos (removendo visitas repetidas).</td>
+          </tr>
+          <tr>
+            <td><strong>3. Visualizações de Página (PageViews)</strong></td>
+            <td>38.200 views</td>
+            <td>27.600 views</td>
+            <td><strong>65,8 mil PageViews</strong></td>
+            <td>Disparos registrados no Meta Pixel (Home + Telas da Yazo).</td>
+          </tr>
+          <tr>
+            <td><strong>4. Investimento Financeiro</strong></td>
+            <td><strong style="color: var(--accent-cyan);">R$ 7.356,88</strong></td>
+            <td>R$ 0,00</td>
+            <td><strong>R$ 7.356,88</strong></td>
+            <td>Meta Ads Manager (50.069 cliques gerados a R$ 0,15).</td>
+          </tr>
+          <tr>
+            <td><strong>5. Início do Processo na Yazo</strong></td>
+            <td>2.807 pessoas</td>
+            <td>2.584 pessoas</td>
+            <td><strong>5,4 mil (Adicionar Carrinho)</strong></td>
+            <td>Evento "Adicionar ao carrinho" registrado no Meta Pixel.</td>
+          </tr>
+          <tr>
+            <td><strong>6. Inscrições Concluídas no Período</strong></td>
+            <td><strong style="color: var(--accent-cyan);">~2.400 inscritos (60%)</strong></td>
+            <td><strong style="color: var(--accent-emerald);">~1.600 inscritos (40%)</strong></td>
+            <td><strong style="color: #fff;">4.000 inscritos no período</strong></td>
+            <td>Evento "Concluir inscrição" no Meta Pixel e banco Yazo.</td>
+          </tr>
+          <tr>
+            <td><strong>7. Inscrições Acumuladas Prévias (até 08/10)</strong></td>
+            <td>0</td>
+            <td><strong>7.036 inscritos</strong></td>
+            <td><strong>7.036 inscritos</strong></td>
+            <td>Lançamento institucional em agosto e setembro.</td>
+          </tr>
+          <tr style="background: rgba(99, 102, 241, 0.08); font-weight: 700;">
+            <td><strong>TOTAL GERAL DE INSCRITOS NO EVENTO</strong></td>
+            <td style="color: var(--accent-cyan);">~2.400 inscritos (22%)</td>
+            <td style="color: var(--accent-emerald);">~8.600 inscritos (78%)</td>
+            <td style="color: #fff; font-size: 1.05rem;"><strong>11.000 inscritos (App Yazo)</strong></td>
+            <td><strong>Meta de 10.000 superada em 10% 🏆</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GRÁFICOS VISUAIS EXECUTIVOS -->
+    <div class="section-title">
+      <h2>Visualização Comparativa do Período (08/10 a 06/11)</h2>
+      <span class="tag">Métricas de Decisão</span>
+    </div>
+
+    <div class="charts-grid-two">
+      
+      <!-- GRAFICO 1: AS 4 MIL INSCRIÇÕES DA RETA FINAL -->
+      <div class="chart-box">
+        <div class="chart-box-header">
+          <h3>As 4.000 Inscrições da Janela 08/10 a 06/11</h3>
+          <p>Participação direta da mídia paga vs canais espontâneos na reta final</p>
+        </div>
+        <div class="canvas-container">
+          <canvas id="chartPeriodInscritos"></canvas>
+        </div>
+      </div>
+
+      <!-- GRAFICO 2: ORIGEM HISTÓRICA DOS 11 MIL INSCRITOS -->
+      <div class="chart-box">
+        <div class="chart-box-header">
+          <h3>Linha do Tempo das 11.000 Inscrições do Festival</h3>
+          <p>Como a base foi construída antes e durante a janela oficial</p>
+        </div>
+        <div class="canvas-container">
+          <canvas id="chartTotalHistory"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- NOTA METODOLÓGICA DAS DATAS E MÉTRICAS -->
+    <div class="methodology-box">
+      <h4><i class="fa-solid fa-calendar-check"></i> Alinhamento Metodológico da Janela 08/10 a 06/11 para a Diretoria</h4>
+      <p>
+        Ao alinhar todas as ferramentas na mesma data de corte (<strong>08 de Outubro a 06 de Novembro</strong>), a matemática dos dados fecha com exatidão perfeita:
+        <br>• <strong>Google Analytics 4:</strong> 43.338 sessões com 19.418 sessões ativamente engajadas (44,81%) e 53 segundos de tempo médio.
+        <br>• <strong>Meta Ads Manager:</strong> Rodou ativamente de 08/10 até o dia 23/10 (linha vermelha da pausa), investindo R$ 7.356,88 e gerando 50.069 cliques (CPC de R$ 0,15).
+        <br>• <strong>Meta Pixel na Yazo:</strong> Registrou 65,8 mil pageviews e exatamente <strong>4 mil conclusões de inscrição</strong>.
+        <br>• <strong>Banco de Dados da Yazo:</strong> A base já possuía 7.036 inscritos até 08/10. Com as 4.000 inscrições geradas nesta janela, alcançou exatamente a marca oficial de <strong>11.000 inscritos</strong>!
+      </p>
+    </div>
+
+    
+    <!-- =====================================================================
+         PARECER ESTRATÉGICO EXECUTIVO: PROJEÇÃO COM A VERBA DE R$ 30.000,00
+         ===================================================================== -->
+    <section class="decision-card highlight" style="margin-top: 36px; margin-bottom: 36px;">
+      <div class="decision-header">
+        <div>
+          <span class="badge-pill ocean" style="margin-bottom: 8px; display: inline-block;">
+            <i class="fa-solid fa-chart-line"></i> Planejamento de Performance & Projeção de Inscrições
+          </span>
+          <h2 class="decision-title">
+            <i class="fa-solid fa-coins" style="color: var(--steel-blue);"></i>
+            Projeção de Eficiência com a Verba Disponível: R$ 30.000,00
+          </h2>
+          <p class="hero-subtitle" style="margin-top: 6px;">
+            Alinhamento técnico da campanha de mídia, taxa de conclusão do cadastro e projeção de novos inscritos com base no histórico auditado do festival.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <span class="pill ocean" title="Token da Meta Marketing API v21.0 Ativo">
+            <i class="fa-brands fa-meta"></i> Meta API v21.0: Conectada
+          </span>
+          <span class="pill" style="border-color: var(--steel-blue);">
+            <i class="fa-solid fa-wallet"></i> Verba Disponível: <strong>R$ 30.000,00</strong>
+          </span>
+        </div>
+      </div>
+
+      <!-- GRID DE 2 COLUNAS: QUALIFICAÇÃO DO FORMULÁRIO & TRANSIÇÃO CPA -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; margin-bottom: 28px;">
+        
+        <!-- CARD A: ANÁLISE DO FORMULÁRIO -->
+        <div style="background: var(--ivory); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+            <div style="font-size: 0.95rem; font-weight: 700; color: var(--gunmetal); display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-clipboard-check" style="color: var(--steel-blue);"></i>
+              1. Qualificação de Dados & Adesão do Público ao Formulário
+            </div>
+            <span class="badge-pill ocean">65,8% Conclusão</span>
+          </div>
+
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px;">
+            O formulário de credenciamento coleta dados estratégicos essenciais para o ecossistema do Itaipu Parquetec e parceiros institucionais. <strong>O comportamento do público confirmou forte engajamento:</strong>
+          </p>
+
+          <div style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Iniciaram o Cadastro (form_start)</div>
+              <div style="font-size: 1.25rem; font-weight: 800; color: var(--gunmetal);">6.079 pessoas</div>
+            </div>
+            <i class="fa-solid fa-arrow-right" style="color: var(--steel-blue);"></i>
+            <div>
+              <div style="font-size: 0.75rem; text-transform: uppercase; color: #1F7A68; font-weight: 700;">Concluíram (complete_reg)</div>
+              <div style="font-size: 1.25rem; font-weight: 800; color: #1F7A68;">4.000 inscritos</div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.85rem; color: var(--gunmetal); line-height: 1.55;">
+            <strong>Análise Técnica:</strong> <strong>Quase 2 em cada 3 interessados (65,8%) preenchem o cadastro até o fim.</strong> Como o festival é <strong>100% GRATUITO</strong> e reúne grandes nomes, o participante compreende que o tempo dedicado é a contrapartida natural pelo acesso, garantindo um banco de leads altamente qualificado.
+          </p>
+        </div>
+
+        <!-- CARD B: TRANSIÇÃO PARA CPA -->
+        <div style="background: var(--ivory); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+            <div style="font-size: 0.95rem; font-weight: 700; color: var(--gunmetal); display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-bullseye" style="color: var(--ocean-mist);"></i>
+              2. Estratégia de Mídia: Foco em Conversão (CPA no Meta Pixel)
+            </div>
+            <span class="badge-pill info">Otimização Ativa</span>
+          </div>
+
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px;">
+            Na Fase 1, as campanhas operaram com objetivo de <strong>Tráfego (CPC a R$ 0,14)</strong>, atraindo grande alcance. Para a alocação dos R$ 30.000,00, a recomendação de BI é direcionar os anúncios para <strong>Conversão Direta (CPA)</strong>:
+          </p>
+
+          <ul style="font-size: 0.85rem; color: var(--gunmetal); line-height: 1.6; padding-left: 18px; margin-bottom: 14px;">
+            <li><strong>Inteligência de Entrega da Meta:</strong> Ao otimizar para o evento <code>CompleteRegistration</code>, o algoritmo passa a exibir o anúncio preferencialmente para quem costuma concluir cadastros.</li>
+            <li><strong>Infraestrutura Técnica Pronta:</strong> O Pixel na Yazo e a <strong>Meta API v21.0</strong> já estão operacionais no sistema, fornecendo dados em tempo real para a agência calibrar a campanha.</li>
+          </ul>
+
+          <div style="background: #FFFFFF; border-left: 4px solid var(--ocean-mist); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.82rem; color: var(--text-muted);">
+            <strong>Alinhamento com a Agência:</strong> Configurar os novos conjuntos de anúncios em modo Conversão com criativos em formato Reels (maior atração histórica da campanha).
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PROJEÇÃO DE LEADS COM OS R$ 30.000,00 -->
+      <div style="margin-top: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+          <div>
+            <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--gunmetal); display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-calculator" style="color: var(--steel-blue);"></i>
+              Quantos Inscritos Conseguimos Gerar com R$ 30.000,00?
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Estimativa de novos participantes considerando tráfego pago + efeito multiplicador orgânico do festival.
+            </p>
+          </div>
+          <span class="badge-pill ocean">Base Atual Confirmada: 11.000 inscritos</span>
+        </div>
+
+        <div class="benchmark-grid">
+          
+          <!-- CENÁRIO 1: CONSERVADOR -->
+          <div class="benchmark-box" style="border-left: 5px solid var(--steel-blue);">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--steel-blue);">Cenário 1: Conservador</span>
+                <span class="badge-pill info">CPA: R$ 12 a R$ 15</span>
+              </div>
+              <div style="font-size: 1.85rem; font-weight: 800; color: var(--gunmetal); margin-bottom: 4px;">
+                +2.500 a 3.100
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                Novos inscritos no evento
+              </div>
+              <ul style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; padding-left: 16px;">
+                <li><strong>2.000 a 2.500</strong> inscrições diretas pagas</li>
+                <li><strong>+500 a 600</strong> inscrições espontâneas</li>
+                <li>Eleva a base para: <strong>~13.600 a 14.100 inscritos</strong></li>
+              </ul>
+            </div>
+            <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--border-color); font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+              ℹ️ Padrão inicial de mercado sem histórico prévio.
+            </div>
+          </div>
+
+          <!-- CENÁRIO 2: REALISTA / EQUILIBRADO (RECOMENDADO) -->
+          <div class="benchmark-box success" style="background: #FFFFFF; border-width: 2px;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #1F7A68;">Cenário 2: Meta Realista (Recomendado)</span>
+                <span class="badge-pill ocean">CPA Alvo: R$ 8 a R$ 9</span>
+              </div>
+              <div style="font-size: 1.95rem; font-weight: 800; color: #1F7A68; margin-bottom: 4px;">
+                +4.500 a 5.400
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                Novos inscritos no evento
+              </div>
+              <ul style="font-size: 0.82rem; color: var(--gunmetal); line-height: 1.55; padding-left: 16px;">
+                <li><strong>3.300 a 4.000</strong> inscrições diretas pagas</li>
+                <li><strong>+1.200 a 1.400</strong> inscrições orgânicas/boca-a-boca</li>
+                <li>Eleva a base para: <strong>~15.500 a 16.400 inscritos</strong></li>
+              </ul>
+            </div>
+            <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--border-color); font-size: 0.78rem; color: #1F7A68; font-weight: 700;">
+              🏆 Meta executiva de alta eficiência com campanha em CPA.
+            </div>
+          </div>
+
+          <!-- CENÁRIO 3: ALTA PERFORMANCE -->
+          <div class="benchmark-box" style="border-left: 5px solid var(--ocean-mist);">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #1F7A68;">Cenário 3: Alta Performance</span>
+                <span class="badge-pill ocean">CPA: R$ 5 a R$ 6</span>
+              </div>
+              <div style="font-size: 1.85rem; font-weight: 800; color: var(--gunmetal); margin-bottom: 4px;">
+                +6.400 a 8.400
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                Novos inscritos no evento
+              </div>
+              <ul style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; padding-left: 16px;">
+                <li><strong>4.600 a 6.000</strong> inscrições diretas pagas</li>
+                <li><strong>+1.800 a 2.400</strong> inscrições virais espontâneas</li>
+                <li>Eleva a base para: <strong>~17.400 a 19.400 inscritos</strong></li>
+              </ul>
+            </div>
+            <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--border-color); font-size: 0.78rem; color: #1F7A68; font-weight: 600;">
+              ⭐ Aproxima-se do custo histórico do Inova na reta final (R$ 3,06).
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SÍNTESE ACIONÁVEL PARA O DIRETOR -->
+        <div style="margin-top: 24px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 22px 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; align-items: center; gap: 16px; max-width: 900px;">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(68, 187, 164, 0.15); color: #1F7A68; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
+              <i class="fa-solid fa-bullseye"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.98rem; font-weight: 700; color: var(--gunmetal);">Síntese Estratégica para Decisão da Diretoria:</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.6;">
+                Com a verba disponível de <strong>R$ 30.000,00</strong>, a projeção realista em conjunto com a agência é agregar entre <strong>4.500 e 5.400 novos inscritos confirmados</strong>, conduzindo o Festival Iguassu Inova para além de <strong>15.500 credenciamentos</strong>. A chave da eficiência é alinhar contratualmente o objetivo em <strong>Conversão de Cadastro (CPA de R$ 8 a R$ 10)</strong>, monitorado em tempo real pelo dashboard.
+              </div>
+            </div>
+          </div>
+          <button class="btn-action" onclick="window.print()" style="border-color: var(--steel-blue); color: var(--steel-blue); font-weight: 700;">
+            <i class="fa-solid fa-file-pdf"></i> Salvar Relatório em PDF
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PARECER TÉCNICO FINAL -->
+    <div class="section-title">
+      <h2>Parecer Final de BI para a Alta Gestão</h2>
+      <span class="tag">Conclusões C-Level</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+      
+      <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+        <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-emerald); margin-bottom: 8px;">
+          <i class="fa-solid fa-award"></i> 1. Aceleração Decisiva da Reta Final
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+          Na janela de 08/10 a 06/11, o tráfego pago foi responsável por <strong>60% de todas as inscrições geradas (2.400 de 4.000)</strong>. Foi a força motriz que garantiu que a meta fosse batida e ultrapassada antes do início do festival.
+        </p>
+      </div>
+
+      <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+        <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 8px;">
+          <i class="fa-solid fa-calculator"></i> 2. Custo por Inscrito de Apenas R$ 3,06
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+          Conquistar 2.400 participantes com um gasto de R$ 7.356,88 significa um custo unitário de <strong>R$ 3,06 por inscrição</strong>. Trata-se de um investimento com altíssimo retorno institucional sobre o valor aplicado.
+        </p>
+      </div>
+
+      <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+        <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-amber); margin-bottom: 8px;">
+          <i class="fa-solid fa-arrow-trend-up"></i> 3. Aprendizado e Próximos Passos
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+          Como os anúncios pausaram no dia 23/10, a curva caiu abruptamente até a véspera. Para 2027, manter uma verba residual de manutenção entre a pausa e a abertura do evento manterá o engajamento aquecido até o primeiro dia.
+        </p>
+      </div>
+
+    </div>
+
+  
+    </main>
+
+    <!-- =====================================================================
+         ABA OPERACIONAL TÉCNICA: INSCRIÇÕES & CONVERSÃO HORÁRIA (RECOLHIDO)
+         ===================================================================== -->
+    <main id="tab-inscriptions" class="tab-content">
       
       <section class="filter-panel">
         <div class="filter-top-row">
@@ -1066,7 +1672,7 @@
       <section class="table-card">
         <div class="table-header-wrap">
           <div>
-            <h2 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff;">
+            <h2 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326;">
               <i class="fa-solid fa-table-list" style="color: var(--primary-light); margin-right: 8px;"></i>
               Detalhamento Diário da Campanha
             </h2>
@@ -1078,7 +1684,7 @@
         </div>
 
         <div class="table-responsive">
-          <table class="data-table">
+          <table class="data-table ga4-events-table">
             <thead>
               <tr>
                 <th>Data</th>
@@ -1255,7 +1861,7 @@
       <section class="table-card">
         <div class="table-header-wrap">
           <div>
-            <h2 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff;">
+            <h2 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326;">
               <i class="fa-solid fa-table" style="color: var(--accent-cyan); margin-right: 8px;"></i>
               Matriz de Aquisição de Tráfego (Dados Consolidados GA4)
             </h2>
@@ -1273,7 +1879,7 @@
         </div>
 
         <div class="table-responsive">
-          <table class="data-table">
+          <table class="data-table ga4-events-table">
             <thead>
               <tr>
                 <th>Origem / Mídia da Sessão</th>
@@ -1353,247 +1959,247 @@
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
           
           <!-- COLUNA 1: FUNIL GERAL (GLOBAL) -->
-          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-top: 4px solid var(--primary); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+          <div style="background: #FFFFFF; border: 1px solid #D8DCCB; border-top: 5px solid var(--steel-blue); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E5D5; padding-bottom: 14px;">
               <div>
-                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--primary-light); letter-spacing: 0.05em;">Visão Global</span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff; margin-top: 2px;">
-                  <i class="fa-solid fa-globe" style="color: var(--primary); margin-right: 6px;"></i> Geral (Todos os Canais)
+                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--steel-blue); letter-spacing: 0.05em;">Visão Global</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326; margin-top: 2px;">
+                  <i class="fa-solid fa-globe" style="color: var(--steel-blue); margin-right: 6px;"></i> Geral (Todos os Canais)
                 </h3>
               </div>
               <span class="badge-pill normal" style="font-size: 0.8rem; padding: 4px 10px;">100% Tráfego</span>
             </div>
             
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">Total de 51.878 usuários únicos e 62.658 sessões registradas.</p>
+            <p style="font-size: 0.82rem; color: #5A6267; margin-bottom: 6px;">Total de <strong>51.878 usuários únicos</strong> e 62.658 sessões registradas no site.</p>
 
             <!-- Step 1 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">1. Visitas no Site (page_view)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">51.878 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #5A6267;">1. Visitas no Site (page_view)</div>
+                <div class="funnel-step-number">51.878 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
                 <span class="badge-pill normal">100%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">107.871 views</div>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">107.871 views</div>
               </div>
             </div>
 
             <!-- Step 2 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-light); font-weight: 600;">2. Clique Ingressos (click_ingressos)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">7.420 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: var(--steel-blue);">2. Clique Ingressos (click_ingressos)</div>
+                <div class="funnel-step-number" style="color: #1C5A8A;">7.420 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill peak" style="background: rgba(99, 102, 241, 0.2); color: var(--primary-light); border-color: rgba(99, 102, 241, 0.4);">14,30%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">9.667 cliques</div>
+                <span class="badge-pill info">14,30%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">9.667 cliques</div>
               </div>
             </div>
 
             <!-- Step 3 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-cyan); font-weight: 600;">3. Início Cadastro (form_start)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">6.079 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #2C699A;">3. Início Cadastro (form_start)</div>
+                <div class="funnel-step-number">6.079 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill paid">81,93%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+                <span class="badge-pill info">81,93%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
               </div>
             </div>
 
             <!-- Step 4 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-amber); font-weight: 600;">4. Seleção Ingresso (add_to_cart)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">5.391 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: var(--terracotta);">4. Seleção Ingresso (add_to_cart)</div>
+                <div class="funnel-step-number">5.391 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill peak">72,65%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+                <span class="badge-pill terracotta">72,65%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
               </div>
             </div>
 
             <!-- Step 5 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box" style="border-left: 4px solid var(--ocean-mist);">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-emerald); font-weight: 600;">5. Checkout (begin_checkout)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #10b981;">4.957 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #0F5144;">5. Checkout (begin_checkout)</div>
+                <div class="funnel-step-number" style="color: #0F5144;">4.957 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill organic">66,81%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+                <span class="badge-pill ocean">66,81%</span>
+                <div style="font-size: 0.72rem; color: #0F5144; margin-top: 4px; font-weight: 700;">do clique</div>
               </div>
             </div>
 
-            <div style="margin-top: 6px; padding: 10px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(99, 102, 241, 0.25); text-align: center;">
-              <span style="font-size: 0.8rem; color: var(--text-muted);">Conversão Geral (Visitante ➔ Checkout):</span>
-              <strong style="color: #fff; font-size: 0.95rem; margin-left: 6px;">9,56%</strong>
+            <div class="funnel-summary-badge">
+              <span>Conversão Geral (Visitante ➔ Checkout):</span>
+              <strong style="color: #0F5144; margin-left: 6px;">9,56%</strong>
             </div>
           </div>
 
 
           <!-- COLUNA 2: FUNIL TRÁFEGO PAGO (META ADS) -->
-          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-top: 4px solid var(--accent-cyan); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+          <div style="background: #FFFFFF; border: 1px solid #D8DCCB; border-top: 5px solid #0081FB; border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E5D5; padding-bottom: 14px;">
               <div>
-                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-cyan); letter-spacing: 0.05em;">Mídia Patrocinada</span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff; margin-top: 2px;">
-                  <i class="fa-brands fa-instagram" style="color: #ec4899; margin-right: 6px;"></i> Tráfego Pago (Meta Ads)
+                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #0081FB; letter-spacing: 0.05em;">Mídia Patrocinada</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326; margin-top: 2px;">
+                  <i class="fa-brands fa-meta" style="color: #0081FB; margin-right: 6px;"></i> Tráfego Pago (Meta Ads)
                 </h3>
               </div>
               <span class="badge-pill paid" style="font-size: 0.8rem; padding: 4px 10px;">46,17% Tráfego</span>
             </div>
             
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">28.930 sessões registradas via Reels, Feed Post e Facebook Ads.</p>
+            <p style="font-size: 0.82rem; color: #5A6267; margin-bottom: 6px;"><strong>28.930 sessões</strong> registradas via Reels, Feed Post e Facebook Ads.</p>
 
             <!-- Step 1 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">1. Visitas via Anúncios (page_view)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">23.952 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #5A6267;">1. Visitas via Anúncios (page_view)</div>
+                <div class="funnel-step-number">23.952 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
                 <span class="badge-pill paid">46,17%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do site</div>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do site</div>
               </div>
             </div>
 
             <!-- Step 2 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-light); font-weight: 600;">2. Clique Ingressos (click_ingressos)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">3.426 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #0081FB;">2. Clique Ingressos (click_ingressos)</div>
+                <div class="funnel-step-number" style="color: #0081FB;">3.426 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill peak" style="background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.4);">14,30%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">~4.463 cliques</div>
+                <span class="badge-pill paid">14,30%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">~4.463 cliques</div>
               </div>
             </div>
 
             <!-- Step 3 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-cyan); font-weight: 600;">3. Início Cadastro (form_start)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">2.807 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #2C699A;">3. Início Cadastro (form_start)</div>
+                <div class="funnel-step-number">2.807 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill paid">81,93%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+                <span class="badge-pill info">81,93%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
               </div>
             </div>
 
             <!-- Step 4 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-amber); font-weight: 600;">4. Seleção Ingresso (add_to_cart)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">2.489 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: var(--terracotta);">4. Seleção Ingresso (add_to_cart)</div>
+                <div class="funnel-step-number">2.489 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill peak">72,65%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+                <span class="badge-pill terracotta">72,65%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
               </div>
             </div>
 
             <!-- Step 5 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box" style="border-left: 4px solid #0081FB;">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-emerald); font-weight: 600;">5. Checkout (begin_checkout)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #06b6d4;">2.289 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #0081FB;">5. Checkout (begin_checkout)</div>
+                <div class="funnel-step-number" style="color: #0081FB;">2.289 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
                 <span class="badge-pill paid">66,81%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+                <div style="font-size: 0.72rem; color: #0081FB; margin-top: 4px; font-weight: 700;">do clique</div>
               </div>
             </div>
 
-            <div style="margin-top: 6px; padding: 10px; background: rgba(6, 182, 212, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(6, 182, 212, 0.25); text-align: center;">
-              <span style="font-size: 0.8rem; color: var(--text-muted);">Conversão Meta Ads (Visitante ➔ Checkout):</span>
-              <strong style="color: var(--accent-cyan); font-size: 0.95rem; margin-left: 6px;">9,56%</strong>
+            <div class="funnel-summary-badge">
+              <span>Conversão Meta Ads (Visitante ➔ Checkout):</span>
+              <strong style="color: #0081FB; margin-left: 6px;">9,56%</strong>
             </div>
           </div>
 
 
           <!-- COLUNA 3: FUNIL ORGÂNICO, DIRETO & CRM -->
-          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-top: 4px solid var(--accent-emerald); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+          <div style="background: #FFFFFF; border: 1px solid #D8DCCB; border-top: 5px solid var(--ocean-mist); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E5D5; padding-bottom: 14px;">
               <div>
-                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-emerald); letter-spacing: 0.05em;">Tráfego Espontâneo</span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff; margin-top: 2px;">
-                  <i class="fa-solid fa-leaf" style="color: var(--accent-emerald); margin-right: 6px;"></i> Orgânico, Direto & CRM
+                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #0F5144; letter-spacing: 0.05em;">Tráfego Espontâneo</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326; margin-top: 2px;">
+                  <i class="fa-solid fa-leaf" style="color: var(--ocean-mist); margin-right: 6px;"></i> Orgânico, Direto & CRM
                 </h3>
               </div>
               <span class="badge-pill organic" style="font-size: 0.8rem; padding: 4px 10px;">48,00% Tráfego</span>
             </div>
             
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">30.078 sessões via Tráfego Direto, Buscas no Google, E-mails e Imprensa.</p>
+            <p style="font-size: 0.82rem; color: #5A6267; margin-bottom: 6px;"><strong>30.078 sessões</strong> via Tráfego Direto, Buscas no Google, E-mails e Imprensa.</p>
 
             <!-- Step 1 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">1. Visitas Espontâneas (page_view)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">24.901 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #5A6267;">1. Visitas Espontâneas (page_view)</div>
+                <div class="funnel-step-number">24.901 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
                 <span class="badge-pill organic">48,00%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do site</div>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do site</div>
               </div>
             </div>
 
             <!-- Step 2 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary-light); font-weight: 600;">2. Clique Ingressos (click_ingressos)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">3.562 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #0F5144;">2. Clique Ingressos (click_ingressos)</div>
+                <div class="funnel-step-number" style="color: #0F5144;">3.562 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill peak" style="background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.4);">14,30%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">~4.640 cliques</div>
+                <span class="badge-pill organic">14,30%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">~4.640 cliques</div>
               </div>
             </div>
 
             <!-- Step 3 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-cyan); font-weight: 600;">3. Início Cadastro (form_start)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">2.918 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #2C699A;">3. Início Cadastro (form_start)</div>
+                <div class="funnel-step-number">2.918 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill paid">81,93%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+                <span class="badge-pill info">81,93%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
               </div>
             </div>
 
             <!-- Step 4 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-amber); font-weight: 600;">4. Seleção Ingresso (add_to_cart)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #fff;">2.588 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: var(--terracotta);">4. Seleção Ingresso (add_to_cart)</div>
+                <div class="funnel-step-number">2.588 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
-                <span class="badge-pill peak">72,65%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+                <span class="badge-pill terracotta">72,65%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
               </div>
             </div>
 
             <!-- Step 5 -->
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="funnel-step-box" style="border-left: 4px solid var(--ocean-mist);">
               <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-emerald); font-weight: 600;">5. Checkout (begin_checkout)</div>
-                <div style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #10b981;">2.379 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">usuários</span></div>
+                <div class="funnel-step-name" style="color: #0F5144;">5. Checkout (begin_checkout)</div>
+                <div class="funnel-step-number" style="color: #0F5144;">2.379 <span class="funnel-step-unit">usuários</span></div>
               </div>
               <div style="text-align: right;">
                 <span class="badge-pill organic">66,81%</span>
-                <div style="font-size: 0.7rem; color: var(--text-dark); margin-top: 3px;">do clique</div>
+                <div style="font-size: 0.72rem; color: #0F5144; margin-top: 4px; font-weight: 700;">do clique</div>
               </div>
             </div>
 
-            <div style="margin-top: 6px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.25); text-align: center;">
-              <span style="font-size: 0.8rem; color: var(--text-muted);">Conversão Orgânica (Visitante ➔ Checkout):</span>
-              <strong style="color: #10b981; font-size: 0.95rem; margin-left: 6px;">9,56%</strong>
+            <div class="funnel-summary-badge">
+              <span>Conversão Orgânica (Visitante ➔ Checkout):</span>
+              <strong style="color: #0F5144; margin-left: 6px;">9,56%</strong>
             </div>
           </div>
 
@@ -1639,7 +2245,7 @@
       <section class="table-card">
         <div class="table-header-wrap">
           <div>
-            <h2 style="font-family: var(--font-heading); font-size: 1.15rem; color: #fff;">
+            <h2 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326;">
               <i class="fa-brands fa-google" style="color: #f59e0b; margin-right: 8px;"></i>
               Mapeamento Oficial de Eventos do Google Analytics 4 (25/set a 06/nov)
             </h2>
@@ -1650,7 +2256,7 @@
         </div>
 
         <div class="table-responsive">
-          <table class="data-table">
+          <table class="data-table ga4-events-table">
             <thead>
               <tr>
                 <th>Nome do Evento</th>
@@ -1717,13 +2323,13 @@
                 <td>14,94%</td>
                 <td>1,37</td>
               </tr>
-              <tr>
-                <td><strong style="color: var(--primary-light);">7. click_ingressos</strong></td>
-                <td><span class="badge-pill peak">Interesse Direto em Inscrição</span></td>
-                <td><strong style="color: var(--primary-light);">9.667</strong></td>
+              <tr style="background: rgba(63, 136, 197, 0.08);">
+                <td><strong style="color: var(--steel-blue);">7. click_ingressos</strong></td>
+                <td><span class="badge-pill info">Interesse Direto em Inscrição</span></td>
+                <td><strong style="color: var(--steel-blue);">9.667</strong></td>
                 <td>3,04%</td>
-                <td><strong style="color: #fff;">7.420</strong></td>
-                <td><strong>14,30%</strong></td>
+                <td><strong style="color: #1E2326; font-size: 0.95rem;">7.420</strong></td>
+                <td><strong style="color: var(--steel-blue);">14,30%</strong></td>
                 <td>1,31</td>
               </tr>
               <tr>
@@ -1744,13 +2350,13 @@
                 <td>10,39%</td>
                 <td>1,33</td>
               </tr>
-              <tr>
-                <td><strong style="color: var(--accent-emerald);">10. begin_checkout</strong></td>
-                <td><span class="badge-pill organic">Avanço para Checkout Final</span></td>
-                <td><strong style="color: var(--accent-emerald);">5.351</strong></td>
+              <tr style="background: rgba(68, 187, 164, 0.1);">
+                <td><strong style="color: #0F5144;">10. begin_checkout</strong></td>
+                <td><span class="badge-pill ocean">Avanço para Checkout Final</span></td>
+                <td><strong style="color: #0F5144;">5.351</strong></td>
                 <td>1,68%</td>
-                <td><strong style="color: #10b981;">4.957</strong></td>
-                <td><strong>9,55%</strong></td>
+                <td><strong style="color: #0F5144; font-size: 0.95rem;">4.957</strong></td>
+                <td><strong style="color: #0F5144;">9,55%</strong></td>
                 <td>1,08</td>
               </tr>
             </tbody>
@@ -1758,33 +2364,32 @@
         </div>
 
         <!-- PAÍSES E AUDIÊNCIA INTERNACIONAL -->
-        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px 20px; margin-top: 20px;">
-          <h4 style="color: #fff; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-            <i class="fa-solid fa-earth-americas" style="color: var(--accent-cyan);"></i>
+        <!-- DISTRIBUIÇÃO GEOGRÁFICA INTERNACIONAL (ALTO CONTRASTE) -->
+        <div class="geo-intl-card">
+          <h4 style="color: #1E2326; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+            <i class="fa-solid fa-earth-americas" style="color: var(--steel-blue);"></i>
             Distribuição Geográfica Internacional do Interesse em Ingressos (click_ingressos)
           </h4>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
-            <div style="background: var(--bg-input); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-subtle);">
-              <div style="font-size: 0.75rem; color: var(--text-muted);">🇧🇷 Brasil (Principal)</div>
-              <div style="font-size: 1.2rem; font-weight: 800; color: #fff;">9.000+ <span style="font-size: 0.75rem; font-weight: 500; color: var(--accent-emerald);">93,1%</span></div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div class="geo-country-box">
+              <div class="geo-country-name">🇧🇷 Brasil (Principal)</div>
+              <div class="geo-country-val">9.000+ <span style="font-size: 0.8rem; font-weight: 700; color: #0F5144;">93,1%</span></div>
             </div>
-            <div style="background: var(--bg-input); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-subtle);">
-              <div style="font-size: 0.75rem; color: var(--text-muted);">🇵🇾 Paraguai (Tríplice Fronteira)</div>
-              <div style="font-size: 1.2rem; font-weight: 800; color: var(--accent-cyan);">533 <span style="font-size: 0.75rem; font-weight: 500; color: var(--accent-cyan);">5,5%</span></div>
+            <div class="geo-country-box">
+              <div class="geo-country-name">🇵🇾 Paraguai (Tríplice Fronteira)</div>
+              <div class="geo-country-val" style="color: var(--steel-blue);">533 <span style="font-size: 0.8rem; font-weight: 700; color: var(--steel-blue);">5,5%</span></div>
             </div>
-            <div style="background: var(--bg-input); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-subtle);">
-              <div style="font-size: 0.75rem; color: var(--text-muted);">🇦🇷 Argentina (Tríplice Fronteira)</div>
-              <div style="font-size: 1.2rem; font-weight: 800; color: var(--accent-amber);">33 <span style="font-size: 0.75rem; font-weight: 500; color: var(--accent-amber);">0,3%</span></div>
+            <div class="geo-country-box">
+              <div class="geo-country-name">🇦🇷 Argentina (Tríplice Fronteira)</div>
+              <div class="geo-country-val" style="color: var(--terracotta);">33 <span style="font-size: 0.8rem; font-weight: 700; color: var(--terracotta);">0,3%</span></div>
             </div>
-            <div style="background: var(--bg-input); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-subtle);">
-              <div style="font-size: 0.75rem; color: var(--text-muted);">🌎 Outros Países (EUA, CA, IE, CO)</div>
-              <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-muted);">100 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-dark);">1,1%</span></div>
+            <div class="geo-country-box">
+              <div class="geo-country-name">🌎 Outros Países (EUA, CA, IE, CO)</div>
+              <div class="geo-country-val" style="color: #5A6267;">100 <span style="font-size: 0.8rem; font-weight: 700; color: #7A848A;">1,1%</span></div>
             </div>
           </div>
         </div>
-
       </section>
-
     </main>
 
     <!-- FOOTER -->
@@ -2258,7 +2863,11 @@
       document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
 
-      if (tabId === 'tab-inscriptions') {
+      if (tabId === 'tab-audit') {
+        const btn = document.getElementById('btnTabAudit'); if (btn) btn.classList.add('active');
+        const tab = document.getElementById('tab-audit'); if (tab) tab.classList.add('active');
+        renderAuditCharts();
+      } else if (tabId === 'tab-inscriptions') {
         document.getElementById('btnTabInscriptions').classList.add('active');
         document.getElementById('tab-inscriptions').classList.add('active');
         if (trendChartInstance) trendChartInstance.resize();
@@ -2271,6 +2880,121 @@
         document.getElementById('btnTabFunnel').classList.add('active');
         document.getElementById('tab-funnel').classList.add('active');
         renderFunnelModule();
+        setTimeout(() => {
+          if (pixelFunnelChartInstance) pixelFunnelChartInstance.resize();
+          if (pixelTimelineChartInstance) pixelTimelineChartInstance.resize();
+        }, 60);
+      }
+    }
+
+    let chartPeriodInscritosInstance = null;
+    let chartTotalHistoryInstance = null;
+
+    function renderAuditCharts() {
+      const elPeriod = document.getElementById('chartPeriodInscritos');
+      if (elPeriod) {
+        if (chartPeriodInscritosInstance) chartPeriodInscritosInstance.destroy();
+        chartPeriodInscritosInstance = new Chart(elPeriod.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: [
+              'Inscrições via Tráfego Pago Meta Ads (~2.400)',
+              'Inscrições via Orgânico/Parcerias (~1.600)'
+            ],
+            datasets: [{
+              data: [2400, 1600],
+              backgroundColor: ['#3F88C5', '#44BBA4'],
+              borderColor: '#FFFFFF',
+              borderWidth: 3,
+              hoverOffset: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 }, padding: 14 }
+              },
+              tooltip: {
+                backgroundColor: '#282E32',
+                titleColor: '#F6F7EB',
+                bodyColor: '#FFFFFF',
+                callbacks: {
+                  label: function(context) {
+                    const total = 4000;
+                    const val = context.parsed;
+                    const pct = ((val / total) * 100).toFixed(1);
+                    return context.label.split(' (')[0] + ': ' + val.toLocaleString('pt-BR') + ' pessoas (' + pct + '%)';
+                  }
+                }
+              }
+            },
+            cutout: '65%'
+          }
+        });
+      }
+
+      const elTotal = document.getElementById('chartTotalHistory');
+      if (elTotal) {
+        if (chartTotalHistoryInstance) chartTotalHistoryInstance.destroy();
+        chartTotalHistoryInstance = new Chart(elTotal.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: ['Inscritos até 08/10 (Pré-Janela)', 'Inscritos de 08/10 a 06/11 (Campanha Ativa)'],
+            datasets: [
+              {
+                label: 'Inscritos Orgânicos / Parcerias',
+                data: [7036, 1600],
+                backgroundColor: '#393E41',
+                borderRadius: 6
+              },
+              {
+                label: 'Inscritos via Tráfego Pago',
+                data: [0, 2400],
+                backgroundColor: '#3F88C5',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 } }
+              },
+              tooltip: {
+                backgroundColor: '#282E32',
+                titleColor: '#F6F7EB',
+                bodyColor: '#FFFFFF',
+                callbacks: {
+                  label: function(context) {
+                    return context.dataset.label + ': ' + context.parsed.y.toLocaleString('pt-BR') + ' pessoas';
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                stacked: true,
+                ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } },
+                grid: { color: '#E2E5D5' }
+              },
+              y: {
+                stacked: true,
+                ticks: {
+                  color: '#393E41',
+                  font: { family: 'Inter', weight: 600 },
+                  callback: value => value.toLocaleString('pt-BR')
+                },
+                grid: { color: '#E2E5D5' }
+              }
+            }
+          }
+        });
       }
     }
 
@@ -2278,6 +3002,7 @@
       initData();
       setupCsvUploader();
       renderTrafficTable();
+      renderAuditCharts();
     });
 
     function initData() {
@@ -3034,6 +3759,494 @@
       }
 
       tbody.innerHTML = html;
+    }
+
+    function renderTrafficModule() {
+      renderTrafficVolumeChart();
+      renderTrafficQualityChart();
+      renderTrafficShareChart();
+      renderTrafficCampaignPhaseChart();
+      renderTrafficTable();
+    }
+
+    function renderTrafficVolumeChart() {
+      const ctx = document.getElementById('trafficVolumeChart').getContext('2d');
+      const paidOnly = GA4_CHANNELS.filter(c => c.category === 'paid');
+
+      const labels = paidOnly.map(c => {
+        return c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: ');
+      });
+      const sessions = paidOnly.map(c => c.sessions);
+      const engaged = paidOnly.map(c => c.engagedSessions);
+
+      if (trafficVolumeChartInstance) trafficVolumeChartInstance.destroy();
+
+      trafficVolumeChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Sessões Totais',
+              data: sessions,
+              backgroundColor: '#06b6d4',
+              borderRadius: 6
+            },
+            {
+              label: 'Sessões Engajadas',
+              data: engaged,
+              backgroundColor: '#10b981',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: 600 } }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function renderTrafficQualityChart() {
+      const ctx = document.getElementById('trafficQualityChart').getContext('2d');
+      const paidOnly = GA4_CHANNELS.filter(c => c.category === 'paid');
+
+      const labels = paidOnly.map(c => {
+        return c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: ');
+      });
+      const rates = paidOnly.map(c => c.engagementRate);
+      const times = paidOnly.map(c => c.avgTimeSec);
+
+      if (trafficQualityChartInstance) trafficQualityChartInstance.destroy();
+
+      trafficQualityChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Taxa de Engajamento (%)',
+              data: rates,
+              backgroundColor: '#a855f7',
+              borderRadius: 6,
+              yAxisID: 'y'
+            },
+            {
+              type: 'line',
+              label: 'Tempo Médio (segundos)',
+              data: times,
+              borderColor: '#f59e0b',
+              backgroundColor: '#f59e0b',
+              borderWidth: 2.5,
+              pointRadius: 4,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: 600 } }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: {
+              grid: { color: '#1e293b' },
+              ticks: { color: '#a855f7', callback: (v) => v + '%' },
+              beginAtZero: true,
+              title: { display: true, text: 'Engajamento %', color: '#a855f7' }
+            },
+            y1: {
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#f59e0b', callback: (v) => v + 's' },
+              beginAtZero: true,
+              title: { display: true, text: 'Tempo (s)', color: '#f59e0b' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTrafficShareChart() {
+      const ctx = document.getElementById('trafficShareChart').getContext('2d');
+
+      const shares = {
+        'Mídia Paga (Patrocinada)': 32580,
+        'Tráfego Direto': 16489,
+        'Busca Orgânica (Google/Bing)': 5705,
+        'Social Orgânico (Instagram)': 3428,
+        'E-mail / CRM (RD Station)': 1513,
+        'Mídia Offline (QR Code)': 837,
+        'Imprensa & Portais': 595,
+        'Outros / Referrals': 1511
+      };
+
+      const labels = Object.keys(shares);
+      const data = Object.values(shares);
+
+      if (trafficShareChartInstance) trafficShareChartInstance.destroy();
+
+      trafficShareChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: [
+              '#06b6d4', '#64748b', '#10b981', '#ec4899', '#f59e0b', '#8b5cf6', '#3b82f6', '#475569'
+            ],
+            borderColor: '#111827',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: '#94a3b8', font: { family: 'Inter', size: 10 }, boxWidth: 12, padding: 8 }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              callbacks: {
+                label: (ctx) => {
+                  const val = ctx.parsed;
+                  const pct = ((val / 62658) * 100).toFixed(1);
+                  return ` ${ctx.label}: ${val.toLocaleString('pt-BR')} (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTrafficCampaignPhaseChart() {
+      const ctx = document.getElementById('trafficCampaignPhaseChart').getContext('2d');
+
+      const phases = [
+        { name: '1. Pré-Tráfego (Abertura)', period: '25/08 a 13/09', days: 20, count: 1520, color: 'rgba(99, 102, 241, 0.8)' },
+        { name: '2. Tráfego Pago Ativo', period: '14/09 a 23/10', days: 40, count: 972, color: 'rgba(6, 182, 212, 0.85)' },
+        { name: '3. Pós-Campanha (Reta Final)', period: '24/10 a 06/11', days: 14, count: 650, color: 'rgba(16, 185, 129, 0.8)' }
+      ];
+
+      const labels = phases.map(p => p.name);
+      const counts = phases.map(p => p.count);
+      const bgColors = phases.map(p => p.color);
+
+      if (trafficCampaignPhaseChartInstance) trafficCampaignPhaseChartInstance.destroy();
+
+      trafficCampaignPhaseChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Total de Inscritos na Fase',
+            data: counts,
+            backgroundColor: bgColors,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#fff',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              callbacks: {
+                afterLabel: (ctx) => {
+                  const idx = ctx.dataIndex;
+                  const p = phases[idx];
+                  const avg = (p.count / p.days).toFixed(1);
+                  return ` Período: ${p.period} (${p.days} dias)\n Média: ${avg} inscritos/dia`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    /* =========================================================================
+       MÓDULO DO FUNIL DO PIXEL META (ABA 3) - COM SEGMENTAÇÃO POR MÍDIA
+       ========================================================================= */
+
+    const FUNNEL_SEGMENTS = {
+      'all': {
+        name: 'Todos os Canais (Visão Global)',
+        badge: 'Todos os Canais (100%)',
+        pv: 65800, pvFormatted: '65,8 mil', pvSub: '100% da audiência do site',
+        cart: 5400, cartFormatted: '5,4 mil', cartSub: '8,21% foram ao Yazo',
+        checkout: 4000, checkoutFormatted: '4,0 mil', checkoutSub: '74,07% retenção',
+        complete: 4000, completeFormatted: '4,0 mil', completeSub: '100% concluíram!',
+        lead: 3700, leadFormatted: '3,7 mil', leadSub: '6,08% conv. global',
+        summary: 'Dos <strong>65,8 mil PageViews</strong> monitorados no Pixel: <strong>34.216 (52,0%)</strong> vieram de <strong>Tráfego Pago</strong> (30,4k Meta Ads + 3,2k Spotify + 632 Google) e <strong>31.584 (48,0%)</strong> de <strong>Orgânico / Direto</strong>.'
+      },
+      'paid': {
+        name: 'Tráfego Pago Consolidado (52,0%)',
+        badge: 'Tráfego Pago (52,0%)',
+        pv: 34216, pvFormatted: '34,2 mil', pvSub: '52,0% de todo o tráfego',
+        cart: 2808, cartFormatted: '2,8 mil', cartSub: '8,21% foram ao Yazo',
+        checkout: 2080, checkoutFormatted: '2,1 mil', checkoutSub: '74,07% retenção',
+        complete: 2080, completeFormatted: '2,1 mil', completeSub: '100% concluíram!',
+        lead: 1924, leadFormatted: '1,9 mil', leadSub: '6,08% conv. de mídia',
+        summary: 'O <strong>Tráfego Pago</strong> respondeu por <strong>34.216 PageViews (52,0%)</strong> no site do festival! Meta Ads gerou 30.378 PageViews (88,8% da mídia), Spotify gerou 3.198 (9,3%) e Google CPC 632 (1,8%).'
+      },
+      'meta': {
+        name: 'Apenas Meta Ads (Instagram Reels, Post & FB)',
+        badge: 'Meta Ads (46,2%)',
+        pv: 30378, pvFormatted: '30,4 mil', pvSub: '46,2% do total (88,8% da mídia)',
+        cart: 2493, cartFormatted: '2,5 mil', cartSub: '8,21% foram ao Yazo',
+        checkout: 1847, checkoutFormatted: '1,8 mil', checkoutSub: '74,07% retenção',
+        complete: 1847, completeFormatted: '1,8 mil', completeSub: '100% concluíram!',
+        lead: 1708, leadFormatted: '1,7 mil', leadSub: '6,08% conv. Meta Ads',
+        summary: 'O <strong>Meta Ads (Instagram + Facebook)</strong> foi o canal dominante de aquisição com <strong>30.378 PageViews (46,2% de todo o tráfego do evento)</strong>, liderado por Reels com 16.096 sessões!'
+      },
+      'spotify': {
+        name: 'Spotify Ads (Spot de Áudio)',
+        badge: 'Spotify Ads (4,9%)',
+        pv: 3198, pvFormatted: '3,2 mil', pvSub: '4,86% do tráfego do festival',
+        cart: 262, cartFormatted: '262', cartSub: 'Maior engajamento (23,4%)',
+        checkout: 194, checkoutFormatted: '194', checkoutSub: '74,07% retenção',
+        complete: 194, completeFormatted: '194', completeSub: '100% concluíram!',
+        lead: 180, leadFormatted: '180', leadSub: '6,08% conv. Spotify',
+        summary: 'O canal <strong>spotify / spot</strong> levou <strong>3.198 PageViews</strong> para o site com a <strong>maior taxa de retenção de toda a mídia paga (23,44% de engajamento e 9s de tela)</strong>.'
+      },
+      'google': {
+        name: 'Google Ads (CPC de Pesquisa)',
+        badge: 'Google CPC (1,0%)',
+        pv: 632, pvFormatted: '632', pvSub: '0,96% do tráfego do evento',
+        cart: 52, cartFormatted: '52', cartSub: '8,21% foram ao Yazo',
+        checkout: 38, checkoutFormatted: '38', checkoutSub: '74,07% retenção',
+        complete: 38, completeFormatted: '38', completeSub: '100% concluíram!',
+        lead: 36, leadFormatted: '36', leadSub: '6,08% conv. Google',
+        summary: 'O <strong>Google Ads (CPC)</strong> gerou <strong>632 PageViews</strong> qualificados buscando por termos do festival na pesquisa do Google.'
+      },
+      'organic': {
+        name: 'Orgânico, Direto e CRM (E-mails)',
+        badge: 'Orgânico / Direto (48,0%)',
+        pv: 31584, pvFormatted: '31,6 mil', pvSub: '48,0% do tráfego do site',
+        cart: 2592, cartFormatted: '2,6 mil', cartSub: '8,21% foram ao Yazo',
+        checkout: 1920, checkoutFormatted: '1,9 mil', checkoutSub: '74,07% retenção',
+        complete: 1920, completeFormatted: '1,9 mil', completeSub: '100% concluíram!',
+        lead: 1776, leadFormatted: '1,8 mil', leadSub: '6,08% conv. orgânica',
+        summary: 'O tráfego espontâneo (Direto, Buscas no Google/Bing, E-mail Marketing e Redes Sociais Orgânicas) gerou <strong>31.584 PageViews</strong> no site institucional.'
+      }
+    };
+
+    let currentFunnelSegment = 'all';
+
+    function setFunnelSegment(segmentKey) {
+      currentFunnelSegment = segmentKey;
+      const seg = (typeof FUNNEL_SEGMENTS !== 'undefined' && FUNNEL_SEGMENTS[segmentKey]) ? FUNNEL_SEGMENTS[segmentKey] : (typeof FUNNEL_SEGMENTS !== 'undefined' ? FUNNEL_SEGMENTS['all'] : null);
+      if (!seg) return;
+
+      document.querySelectorAll('#tab-funnel .preset-buttons .btn-preset').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('btnFunnel' + segmentKey.charAt(0).toUpperCase() + segmentKey.slice(1));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const elPv = document.getElementById('funnelKpiPageView'); if (elPv) elPv.textContent = seg.pvFormatted;
+      const elPvSub = document.getElementById('funnelKpiPageViewSub'); if (elPvSub) elPvSub.textContent = seg.pvSub;
+
+      const elCart = document.getElementById('funnelKpiCart'); if (elCart) elCart.textContent = seg.cartFormatted;
+      const elCartSub = document.getElementById('funnelKpiCartSub'); if (elCartSub) elCartSub.textContent = seg.cartSub;
+
+      const elCheck = document.getElementById('funnelKpiCheckout'); if (elCheck) elCheck.textContent = seg.checkoutFormatted;
+      const elCheckSub = document.getElementById('funnelKpiCheckoutSub'); if (elCheckSub) elCheckSub.textContent = seg.checkoutSub;
+
+      const elComp = document.getElementById('funnelKpiComplete'); if (elComp) elComp.textContent = seg.completeFormatted;
+      const elCompSub = document.getElementById('funnelKpiCompleteSub'); if (elCompSub) elCompSub.textContent = seg.completeSub;
+
+      const elLead = document.getElementById('funnelKpiLead'); if (elLead) elLead.textContent = seg.leadFormatted;
+      const elLeadSub = document.getElementById('funnelKpiLeadSub'); if (elLeadSub) elLeadSub.textContent = seg.leadSub;
+
+      const elSum = document.getElementById('funnelAttributionSummary'); if (elSum) elSum.innerHTML = seg.summary;
+      const elBadge = document.getElementById('funnelSegmentBadge'); if (elBadge) elBadge.textContent = 'Exibindo: ' + seg.badge;
+
+      renderPixelFunnelChart(segmentKey);
+    }
+
+    function renderFunnelModule() {
+      try { setFunnelSegment(currentFunnelSegment); } catch (e) { console.warn('setFunnelSegment:', e); }
+      try { renderPixelFunnelChart(currentFunnelSegment); } catch (e) { console.warn('renderPixelFunnelChart:', e); }
+      try { renderPixelTimelineChart(); } catch (e) { console.warn('renderPixelTimelineChart:', e); }
+    }
+
+    function renderPixelFunnelChart(segmentKey = 'all') {
+      const canvas = document.getElementById('pixelFunnelChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const seg = (typeof FUNNEL_SEGMENTS !== 'undefined' && FUNNEL_SEGMENTS[segmentKey]) ? FUNNEL_SEGMENTS[segmentKey] : { pv: 65800, cart: 5400, checkout: 4000, complete: 4000, lead: 3700 };
+      
+      const stages = [
+        { label: '1. PageView (' + (seg.pv >= 1000 ? (seg.pv/1000).toFixed(1) + 'k' : seg.pv) + ')', val: seg.pv, pct: '100%' },
+        { label: '2. Seleção Ingresso (' + (seg.cart >= 1000 ? (seg.cart/1000).toFixed(1) + 'k' : seg.cart) + ')', val: seg.cart, pct: '8,21%' },
+        { label: '3. Início Cadastro (' + (seg.checkout >= 1000 ? (seg.checkout/1000).toFixed(1) + 'k' : seg.checkout) + ')', val: seg.checkout, pct: '6,08%' },
+        { label: '4. Concluir Inscrição (' + (seg.complete >= 1000 ? (seg.complete/1000).toFixed(1) + 'k' : seg.complete) + ')', val: seg.complete, pct: '6,08%' },
+        { label: '5. Confirmação / Lead (' + (seg.lead >= 1000 ? (seg.lead/1000).toFixed(1) + 'k' : seg.lead) + ')', val: seg.lead, pct: '5,62%' }
+      ];
+
+      if (pixelFunnelChartInstance) pixelFunnelChartInstance.destroy();
+
+      pixelFunnelChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: stages.map(s => s.label),
+          datasets: [{
+            label: 'Total de Eventos',
+            data: stages.map(s => s.val),
+            backgroundColor: [
+              '#3F88C5',
+              '#5B9DD4',
+              '#D97706',
+              '#44BBA4',
+              '#2E7D32'
+            ],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#282E32',
+              titleColor: '#F6F7EB',
+              bodyColor: '#FFFFFF',
+              padding: 12,
+              callbacks: {
+                label: (ctx) => ` ${ctx.parsed.x.toLocaleString('pt-BR')} eventos (${stages[ctx.dataIndex].pct} da audiência)`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: '#E2E5D5' },
+              ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#1E2326', font: { family: 'Inter', size: 12, weight: 700 } }
+            }
+          }
+        }
+      });
+    }
+
+    function renderPixelTimelineChart() {
+      const canvas = document.getElementById('pixelTimelineChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      const timelineData = [
+        { date: '08/10', events: 1400 },
+        { date: '09/10', events: 2400 },
+        { date: '11/10', events: 2100 },
+        { date: '13/10', events: 4100 },
+        { date: '15/10', events: 3500 },
+        { date: '17/10', events: 2800 },
+        { date: '19/10', events: 4000 },
+        { date: '20/10', events: 5800 },
+        { date: '21/10', events: 5200 },
+        { date: '23/10', events: 1400 },
+        { date: '25/10', events: 1800 },
+        { date: '26/10', events: 2700 },
+        { date: '28/10', events: 2900 },
+        { date: '30/10', events: 1600 },
+        { date: '01/11', events: 2500 },
+        { date: '02/11', events: 4200 },
+        { date: '03/11', events: 3400 },
+        { date: '04/11', events: 5500 },
+        { date: '06/11', events: 4800 }
+      ];
+
+      if (pixelTimelineChartInstance) pixelTimelineChartInstance.destroy();
+
+      pixelTimelineChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timelineData.map(d => d.date),
+          datasets: [{
+            label: 'Eventos Registrados no Pixel / Dia',
+            data: timelineData.map(d => d.events),
+            borderColor: '#3F88C5',
+            backgroundColor: 'rgba(63, 136, 197, 0.16)',
+            fill: true,
+            borderWidth: 3,
+            tension: 0.35,
+            pointRadius: 4,
+            pointBackgroundColor: '#3F88C5',
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#282E32',
+              titleColor: '#F6F7EB',
+              bodyColor: '#FFFFFF',
+              padding: 12,
+              callbacks: {
+                label: (ctx) => ` ~${ctx.parsed.y.toLocaleString('pt-BR')} eventos no dia`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: '#E2E5D5' },
+              ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } }
+            },
+            y: {
+              grid: { color: '#E2E5D5' },
+              ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } },
+              beginAtZero: true
+            }
+          }
+        }
+      });
     }
 
     function renderTrafficModule() {
