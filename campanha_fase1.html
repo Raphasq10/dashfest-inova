@@ -510,6 +510,7 @@
   <!-- Tema Executivo (Claro Padrão / Escuro Opcional) -->
   <link rel="stylesheet" href="theme.css">
   <script src="theme.js"></script>
+  <script src="nav.js"></script>
 </head>
 <body>
 
@@ -524,21 +525,6 @@
         </div>
       </div>
       <div class="nav-actions">
-                <a href="meta_marketing.html" class="btn-action" style="border-color: rgba(0, 129, 251, 0.4); color: #38bdf8;">
-          <i class="fa-brands fa-meta"></i> Meta API v21.0
-        </a>
-<a href="respostas_cliente.html" class="btn-action" style="border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald);">
-          <i class="fa-solid fa-clipboard-check"></i> Respostas do Cliente
-        </a>
-        <a href="campanha_fase1.html" class="btn-action active-phase">
-          <i class="fa-solid fa-play"></i> Fase 1 (14/09 a 07/10)
-        </a>
-        <a href="diretoria.html" class="btn-action">
-          <i class="fa-solid fa-briefcase"></i> Fase 2 (08/10 a 06/11)
-        </a>
-        <a href="index.html" class="btn-action">
-          <i class="fa-solid fa-chart-pie"></i> Painel Geral
-        </a>
         <button onclick="window.print()" class="btn-action btn-primary">
           <i class="fa-solid fa-file-pdf"></i> Salvar PDF
         </button>
@@ -547,6 +533,7 @@
   </header>
 
   <div class="container">
+    <div id="globalNavMount"></div>
     
     <!-- HERO EXECUTIVE BANNER -->
     <section class="hero-banner">

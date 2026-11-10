@@ -17,6 +17,7 @@
 
   <link rel="stylesheet" href="theme.css">
   <script src="theme.js"></script>
+  <script src="nav.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -524,24 +525,8 @@
       </div>
     </header>
 
-    <!-- NAVEGAÇÃO ENTRE TELAS DO PROJETO -->
-    <nav class="nav-pills-bar">
-      <a href="operacao.html" class="nav-pill active">
-        <i class="fa-solid fa-stopwatch"></i> Meu Painel War Room (Meta 30k & Hora a Hora)
-      </a>
-      <a href="index.html" class="nav-pill">
-        <i class="fa-solid fa-briefcase"></i> Painel do Diretor (Home Executiva)
-      </a>
-      <a href="meta_marketing.html" class="nav-pill">
-        <i class="fa-brands fa-meta"></i> Meta Ads API
-      </a>
-      <a href="diretoria.html" class="nav-pill">
-        <i class="fa-solid fa-file-lines"></i> Relatório C-Level (PDF)
-      </a>
-      <a href="respostas_cliente.html" class="nav-pill">
-        <i class="fa-solid fa-clipboard-check"></i> Respostas do Cliente
-      </a>
-    </nav>
+    <!-- NAVEGAÇÃO GLOBAL UNIFICADA -->
+    <div id="globalNavMount"></div>
 
     <!-- STATUS DE SINCRONIZAÇÃO -->
     <div class="status-strip">

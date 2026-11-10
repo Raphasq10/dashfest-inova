@@ -461,6 +461,7 @@
   <!-- Tema Executivo (Claro Padrão / Escuro Opcional) -->
   <link rel="stylesheet" href="theme.css">
   <script src="theme.js"></script>
+  <script src="nav.js"></script>
 </head>
 <body>
 
@@ -475,18 +476,6 @@
         </div>
       </div>
       <div class="nav-actions">
-        <a href="meta_marketing.html" class="btn-action active-meta">
-          <i class="fa-brands fa-meta"></i> Meta API
-        </a>
-        <a href="respostas_cliente.html" class="btn-action">
-          <i class="fa-solid fa-clipboard-check"></i> Respostas do Cliente
-        </a>
-        <a href="diretoria.html" class="btn-action">
-          <i class="fa-solid fa-briefcase"></i> Diretoria
-        </a>
-        <a href="index.html" class="btn-action">
-          <i class="fa-solid fa-chart-pie"></i> Painel Geral
-        </a>
         <button id="btnRefresh" onclick="fetchLiveData(true)" class="btn-action btn-primary">
           <i class="fa-solid fa-arrows-rotate"></i> Atualizar API
         </button>
@@ -495,6 +484,7 @@
   </header>
 
   <div class="container">
+    <div id="globalNavMount"></div>
     
     <!-- CAMPANHA EM FOCO (SOLICITADA PELO CLIENTE) -->
     <section class="target-campaign-banner">

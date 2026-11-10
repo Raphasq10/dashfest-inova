@@ -638,3 +638,164 @@ table.data-table tr:hover td {
   width: 100% !important;
   display: block !important;
 }
+
+/* ==========================================================================
+   NAVEGAÇÃO GLOBAL UNIFICADA (EXECUTIVO & OPERAÇÃO)
+   ========================================================================== */
+.global-nav-shell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #FFFFFF;
+  border: 1px solid #E2E5D5;
+  border-radius: 14px;
+  padding: 12px 18px;
+  margin: 18px 0 22px 0;
+  box-shadow: 0 3px 10px -2px rgba(57, 62, 65, 0.05);
+}
+
+.gnav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gnav-group-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #7A848A;
+  padding-left: 2px;
+}
+
+.gnav-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.gnav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 9px;
+  border: 1px solid #D8DCCB;
+  background: #FAFBF7;
+  color: #393E41 !important;
+  font-size: 0.81rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.gnav-link:hover {
+  border-color: #3F88C5;
+  color: #1C5A8A !important;
+  background: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.gnav-link.active {
+  background: #393E41 !important;
+  border-color: #393E41 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 3px 8px rgba(57, 62, 65, 0.22);
+}
+
+.gnav-link[data-group="operations"].active {
+  background: #E94F37 !important;
+  border-color: #E94F37 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 3px 8px rgba(233, 79, 55, 0.25);
+}
+
+.gnav-link.active i {
+  color: #FFFFFF !important;
+}
+
+.gnav-divider {
+  width: 1px;
+  align-self: stretch;
+  background: #E2E5D5;
+  margin: 2px 4px;
+}
+
+.gnav-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 99px;
+  letter-spacing: 0.02em;
+}
+
+.gnav-badge.terra {
+  background: rgba(233, 79, 55, 0.14);
+  color: #B91C1C;
+}
+
+.gnav-badge.blue {
+  background: rgba(63, 136, 197, 0.15);
+  color: #1C5A8A;
+}
+
+.gnav-link.active .gnav-badge {
+  background: rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+}
+
+@media (max-width: 1024px) {
+  .gnav-divider {
+    display: none;
+  }
+  .global-nav-shell {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+[data-theme="dark"] .global-nav-shell {
+  background: #282E32 !important;
+  border-color: #3E464C !important;
+}
+
+[data-theme="dark"] .gnav-group-label {
+  color: #87939A !important;
+}
+
+[data-theme="dark"] .gnav-link {
+  background: #31383D !important;
+  border-color: #4A535A !important;
+  color: #F6F7EB !important;
+}
+
+[data-theme="dark"] .gnav-link:hover {
+  border-color: #5B9DD4 !important;
+  color: #7EBAE8 !important;
+}
+
+[data-theme="dark"] .gnav-link.active {
+  background: #3F88C5 !important;
+  border-color: #3F88C5 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .gnav-link[data-group="operations"].active {
+  background: #E94F37 !important;
+  border-color: #E94F37 !important;
+}
+
+[data-theme="dark"] .gnav-divider {
+  background: #3E464C !important;
+}
+
+@media print {
+  .global-nav-shell {
+    display: none !important;
+  }
+}
