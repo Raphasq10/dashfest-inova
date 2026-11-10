@@ -13,6 +13,7 @@
 
   <!-- Fallback estático sanitizado para funcionamento offline / GitHub Pages -->
   <script src="yazo_operacao_data.js"></script>
+  <script src="ga4_operacao_data.js"></script>
 
   <link rel="stylesheet" href="theme.css">
   <script src="theme.js"></script>
@@ -198,8 +199,8 @@
 
     .kpi-grid-4 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+      gap: 16px;
       margin-bottom: 24px;
     }
 
@@ -570,6 +571,23 @@
         <div class="kpi-meta" id="kpiGoalSub">Meta mínima: 30.000 inscritos</div>
       </div>
 
+      <div class="kpi-box" style="border-top: 4px solid #7C3AED;">
+        <div class="kpi-top">
+          <span>Acessos Página Yazo (GA4) vs Inscritos</span>
+          <i class="fa-brands fa-google" style="color: #7C3AED;"></i>
+        </div>
+        <div class="kpi-big" id="kpiGa4Conversion" style="color: #1E2326;">--</div>
+        <div class="kpi-meta" id="kpiGa4Sub">Carregando Analytics...</div>
+        <div style="margin-top: auto; padding-top: 6px; display: flex; gap: 6px; flex-wrap: wrap;">
+          <button class="btn" style="padding: 4px 10px; font-size: 0.74rem;" onclick="promptManualGa4()">
+            <i class="fa-solid fa-pen"></i> Ajustar GA4
+          </button>
+          <button class="btn" style="padding: 4px 10px; font-size: 0.74rem; border-color: #7C3AED; color: #7C3AED;" onclick="openGa4SetupModal()">
+            <i class="fa-solid fa-plug"></i> API GA4
+          </button>
+        </div>
+      </div>
+
       <div class="kpi-box accent-terra">
         <div class="kpi-top">
           <span>Meta Diária Necessária (Run Rate)</span>
@@ -842,6 +860,8 @@
               <th>Data</th>
               <th>Dia</th>
               <th>Inscritos Validados</th>
+              <th>Acessos Yazo (GA4)</th>
+              <th>Conv. %</th>
               <th>Acumulado</th>
               <th>Hora de Pico</th>
               <th>Top UTM do Dia</th>
@@ -852,6 +872,33 @@
         </table>
       </div>
     </section>
+  </div>
+
+  <!-- MODAL CONFIGURAÇÃO GOOGLE ANALYTICS 4 (GA4 DATA API) -->
+  <div id="ga4Modal" style="display: none; position: fixed; inset: 0; background: rgba(30, 35, 38, 0.72); z-index: 9998; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #FFFFFF; border-radius: 16px; max-width: 680px; width: 100%; padding: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); color: #1E2326; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E5D5; padding-bottom: 12px; margin-bottom: 16px;">
+        <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.15rem; font-weight: 800;">
+          <i class="fa-brands fa-google" style="color: #7C3AED; margin-right: 8px;"></i>
+          Conectar Google Analytics 4 em Tempo Real (API Oficial)
+        </h3>
+        <button onclick="closeGa4SetupModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #5A6267;">&times;</button>
+      </div>
+      <p style="font-size: 0.88rem; color: #393E41; line-height: 1.6; margin-bottom: 14px;">
+        O conector <code>api_ga4.php</code> já está pronto no sistema. Para liberar o carregamento automático dos acessos à página da Yazo:
+      </p>
+      <ol style="padding-left: 20px; font-size: 0.85rem; color: #393E41; line-height: 1.7; margin-bottom: 16px;">
+        <li>No <strong>Google Analytics 4</strong> &rarr; <em>Administração</em> &rarr; <em>Detalhes da Propriedade</em>, copie o <strong>ID da Propriedade</strong> numérico (ex: <code>458912345</code>).</li>
+        <li>No <strong>Google Cloud Console</strong> (<a href="https://console.cloud.google.com" target="_blank" style="color: #3F88C5;">console.cloud.google.com</a>): ative a <strong>Google Analytics Data API</strong>, crie uma <strong>Conta de Serviço</strong> (Service Account) e baixe a chave em formato <strong>JSON</strong>.</li>
+        <li>Salve esse JSON na pasta <code>dashboard 26/</code> com o nome <code>ga4-credentials.json</code> (já protegido pelo <code>.gitignore</code>).</li>
+        <li>Copie o <code>client_email</code> de dentro do JSON e adicione-o em <strong>Administração do GA4 &rarr; Gerenciamento de acesso à propriedade</strong> com perfil <strong>Leitor</strong>.</li>
+        <li>Adicione <code>GA4_PROPERTY_ID=SEU_ID</code> no arquivo <code>.env.local</code> e clique em atualizar.</li>
+      </ol>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn" onclick="promptManualGa4(); closeGa4SetupModal();">Digitar Número Manual Agora</button>
+        <button class="btn btn-primary" onclick="closeGa4SetupModal()">Entendi</button>
+      </div>
+    </div>
   </div>
 
   <div class="toast-copy" id="toastMsg">Resumo copiado para a área de transferência!</div>
@@ -906,7 +953,8 @@
       if (icon) icon.classList.add('fa-spin');
 
       if (forceRefresh) {
-        showToast('Conectando à API Yazo em tempo real (buscando todas as páginas)...');
+        showToast('Sincronizando API Yazo & Google Analytics 4 ao vivo...');
+        fetchGa4Live(true);
       }
 
       try {
@@ -966,7 +1014,91 @@
 
       populateSelects();
       updateGoalThermometer();
+      renderGa4Card();
       applyQuickPreset('all');
+    }
+
+    let ga4Data = (typeof window !== 'undefined' && window.GA4_OPERACAO_DATA) ? window.GA4_OPERACAO_DATA : null;
+
+    async function fetchGa4Live(forceRefresh = false) {
+      try {
+        const url = forceRefresh ? 'api_ga4.php?refresh=1' : 'api_ga4.php';
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json && json.status === 'ok') {
+          ga4Data = json;
+          renderGa4Card();
+          if (allRecords.length > 0) {
+            updateGoalThermometer();
+            renderDailyAuditTable();
+          }
+        }
+      } catch (e) {
+        if (window.GA4_OPERACAO_DATA && !ga4Data) {
+          ga4Data = window.GA4_OPERACAO_DATA;
+          renderGa4Card();
+        }
+      }
+    }
+
+    function renderGa4Card() {
+      const totalValid = allRecords.length;
+      const elConv = document.getElementById('kpiGa4Conversion');
+      const elSub = document.getElementById('kpiGa4Sub');
+      if (!elConv || !elSub) return;
+
+      if (ga4Data && ga4Data.yazo_page && ga4Data.yazo_page.totalUsers > 0) {
+        const users = ga4Data.yazo_page.totalUsers;
+        const pv = ga4Data.yazo_page.pageViews;
+        const u48 = ga4Data.yazo_48h ? ga4Data.yazo_48h.totalUsers : 0;
+        const convRate = ((totalValid / users) * 100).toFixed(1);
+        elConv.innerHTML = `${convRate}% <span style="font-size: 0.9rem; font-weight: 700; color: #7C3AED;">conv.</span>`;
+        elSub.innerHTML =
+          `<strong>${totalValid.toLocaleString('pt-BR')}</strong> inscritos / <strong>${users.toLocaleString('pt-BR')}</strong> usuários na Yazo (GA4 Live)<br>` +
+          `<span class="tag-pill tag-ok">${pv.toLocaleString('pt-BR')} views</span> • 48h na Yazo: <strong>${u48.toLocaleString('pt-BR')}</strong> usuários`;
+        return;
+      }
+
+      // Usa valor salvo manualmente ou referência auditada do GA4
+      const manualVal = parseInt(localStorage.getItem('festival_manual_ga4_yazo_users') || '0', 10);
+      if (manualVal > 0) {
+        const convRate = ((totalValid / manualVal) * 100).toFixed(1);
+        const drop = Math.max(0, manualVal - totalValid);
+        elConv.innerHTML = `${convRate}% <span style="font-size: 0.9rem; font-weight: 700; color: #7C3AED;">conv.</span>`;
+        elSub.innerHTML =
+          `<strong>${totalValid.toLocaleString('pt-BR')}</strong> inscritos / <strong>${manualVal.toLocaleString('pt-BR')}</strong> acessos informados<br>` +
+          `<span class="tag-pill tag-info">Não concluíram: ${drop.toLocaleString('pt-BR')}</span> (GA4 manual)`;
+      } else {
+        // Fallback referência auditada (6.079 form_start / 7.420 click_ingressos até 06/11)
+        elConv.innerHTML = `<span style="font-size: 1.45rem;">65,8%</span> <span style="font-size: 0.85rem; color: #5A6267;">ref. 06/11</span>`;
+        elSub.innerHTML =
+          `Auditado até 06/11: <strong>7.420</strong> cliques &rarr; <strong>6.079</strong> no formulário.<br>` +
+          `<span class="tag-pill tag-neutral">Conecte a API GA4 ou informe os acessos atuais</span>`;
+      }
+    }
+
+    function promptManualGa4() {
+      const current = localStorage.getItem('festival_manual_ga4_yazo_users') || '';
+      const val = prompt('Quantos usuários únicos (Total de Usuários) aparecem no seu GA4 para a página da Yazo hoje?', current);
+      if (val === null) return;
+      const num = parseInt(val.replace(/[^0-9]/g, ''), 10);
+      if (!isNaN(num) && num > 0) {
+        localStorage.setItem('festival_manual_ga4_yazo_users', String(num));
+        renderGa4Card();
+        showToast('Acessos da página Yazo atualizados no comparativo!');
+      } else if (val.trim() === '') {
+        localStorage.removeItem('festival_manual_ga4_yazo_users');
+        renderGa4Card();
+      }
+    }
+
+    function openGa4SetupModal() {
+      document.getElementById('ga4Modal').style.display = 'flex';
+    }
+
+    function closeGa4SetupModal() {
+      document.getElementById('ga4Modal').style.display = 'none';
     }
 
     function populateSelects() {
@@ -1518,11 +1650,23 @@
       // Mostra dos mais recentes para os mais antigos
       rows.reverse();
 
-      document.getElementById('dailyAuditTableBody').innerHTML = rows.map(row => `
+      const dailyGa4Map = (ga4Data && ga4Data.daily_yazo) ? ga4Data.daily_yazo : {};
+
+      document.getElementById('dailyAuditTableBody').innerHTML = rows.map(row => {
+        const ga4Day = dailyGa4Map[row.d];
+        const ga4UsersStr = ga4Day ? `<strong>${ga4Day.users.toLocaleString('pt-BR')}</strong>` : '<span style="color:#94a3b8;">--</span>';
+        let convDayStr = '<span style="color:#94a3b8;">--</span>';
+        if (ga4Day && ga4Day.users > 0) {
+          const pct = ((row.count / ga4Day.users) * 100).toFixed(1);
+          convDayStr = `<span class="tag-pill tag-info">${pct}%</span>`;
+        }
+        return `
         <tr>
           <td><strong>${formatDateBr(row.d)}</strong></td>
           <td>${row.weekday}</td>
           <td><strong style="font-size: 0.95rem;">${row.count.toLocaleString('pt-BR')}</strong></td>
+          <td>${ga4UsersStr}</td>
+          <td>${convDayStr}</td>
           <td>${row.acc.toLocaleString('pt-BR')}</td>
           <td><span class="tag-pill tag-info">${row.peakStr}</span></td>
           <td>${row.topUtmStr}</td>
@@ -1532,13 +1676,25 @@
             </span>
           </td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
 
     let cachedMeetingText = '';
 
     function buildMeetingBriefing(totalValid, missing, diffDays, reqRate, avg7d, projected, yestCount, todayCount, peakYH, peakYV) {
       const gapDaily = Math.max(0, reqRate - avg7d);
+
+      // Dados GA4 página Yazo (quando conectados)
+      let ga4SummaryHtml = '';
+      let ga4TextLine = '';
+      if (ga4Data && ga4Data.yazo_page && ga4Data.yazo_page.totalUsers > 0) {
+        const uTot = ga4Data.yazo_page.totalUsers;
+        const u48 = ga4Data.yazo_48h ? ga4Data.yazo_48h.totalUsers : 0;
+        const convTot = ((totalValid / uTot) * 100).toFixed(1);
+        ga4SummaryHtml = `<li><strong>Conversão Página Yazo (GA4 Ao Vivo):</strong> <strong>${uTot.toLocaleString('pt-BR')}</strong> usuários únicos acessaram a página da Yazo $\rightarrow$ <strong>${totalValid.toLocaleString('pt-BR')} inscritos (${convTot}% de conversão)</strong>. Nas últimas 48h foram <strong>${u48.toLocaleString('pt-BR')}</strong> acessos na Yazo.</li>`;
+        ga4TextLine = `\n• Página Yazo (GA4): *${uTot.toLocaleString('pt-BR')}* usuários acessaram -> *${convTot}% de conversão* (48h: ${u48.toLocaleString('pt-BR')} acessos na Yazo)`;
+      }
 
       // Conta UTMs nas últimas 48h
       let ig48 = 0, rd48 = 0, noUtm48 = 0;
@@ -1556,6 +1712,7 @@
           <h3><i class="fa-solid fa-thumbs-up" style="color:#44BBA4;"></i> 1. Olhar Positivo (O que funciona)</h3>
           <ul>
             <li>Base oficial validada na Yazo já alcançou <strong>${totalValid.toLocaleString('pt-BR')} inscritos</strong> (${((totalValid/GOAL_TOTAL)*100).toFixed(1)}% dos 30k).</li>
+            ${ga4SummaryHtml}
             <li>Nas últimas 48h entraram <strong>${(yestCount + todayCount).toLocaleString('pt-BR')} novos inscritos</strong> (Ontem: ${yestCount} | Hoje parcial: ${todayCount}).</li>
             <li>O pico horário de ontem ocorreu às <strong>${String(peakYH).padStart(2,'0')}h (${peakYV} inscritos)</strong>, comprovando resposta imediata nos horários de divulgação.</li>
             <li>Atribuição confirmada na ponta final (48h): <strong>${ig48} via Instagram (ig)</strong> e <strong>${rd48} via RD Station (e-mail)</strong>.</li>
@@ -1591,7 +1748,7 @@ Data de corte: ${formatDateBr(todayIso)} | Faltam ${diffDays} dias para 25/11
 • Faltam: *${missing.toLocaleString('pt-BR')}*
 • Meta diária necessária: *${reqRate.toLocaleString('pt-BR')}/dia*
 • Ritmo atual (média 7d): *${avg7d}/dia* (Ontem: ${yestCount} | Hoje: ${todayCount})
-• Projeção no ritmo atual: *~${projected.toLocaleString('pt-BR')}*
+• Projeção no ritmo atual: *~${projected.toLocaleString('pt-BR')}*${ga4TextLine}
 
 2️⃣ *ANÁLISE DE HORÁRIO & UTMs (ÚLTIMAS 48H)*
 • Pico de conversão ontem: *${String(peakYH).padStart(2,'0')}:00h* (${peakYV} inscritos na hora)
@@ -1648,7 +1805,12 @@ Precisamos acelerar em +${gapDaily} inscritos/dia acima da média atual. Links s
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      if (window.YAZO_OPERACAO_DATA && window.YAZO_OPERACAO_DATA.records) {
+        yazoPayload = window.YAZO_OPERACAO_DATA;
+        bootstrapDashboard();
+      }
       fetchYazoLive(false);
+      fetchGa4Live(false);
     });
   </script>
 </body>

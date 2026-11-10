@@ -5,6 +5,9 @@
 # Cache temporário
 meta_cache.json
 yazo_cache.json
+ga4_cache.json
+ga4-credentials.json
+*service-account*.json
 test_meta.py
 normalize_meta.py
 test_yazo.py
