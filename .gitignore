@@ -4,5 +4,10 @@
 
 # Cache temporário
 meta_cache.json
+yazo_cache.json
 test_meta.py
 normalize_meta.py
+test_yazo.py
+test_yazo.js
+inspect_yazo_api.js
+inspect_yazo_reg.js

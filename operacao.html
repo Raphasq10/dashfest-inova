@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>War Room & Painel Horário (API Yazo) | Festival Iguassu Inova 2026</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Fallback estático sanitizado para funcionamento offline / GitHub Pages -->
+  <script src="yazo_operacao_data.js"></script>
+
+  <link rel="stylesheet" href="theme.css">
+  <script src="theme.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-body, #F6F7EB);
+      color: var(--text-main, #393E41);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 22px;
+      background: #FFFFFF;
+      border: 1px solid #E2E5D5;
+      border-radius: 14px;
+      padding: 18px 26px;
+      box-shadow: 0 4px 12px -2px rgba(57, 62, 65, 0.06);
+    }
+
+    .header-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3F88C5, #44BBA4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    .header-title h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #1E2326;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-warroom {
+      background: #E94F37;
+      color: #FFFFFF !important;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .header-title p {
+      font-size: 0.85rem;
+      color: #5A6267;
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid #D8DCCB;
+      background: #FFFFFF;
+      color: #393E41;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      border-color: #3F88C5;
+      color: #3F88C5;
+      background: #FAFBF7;
+    }
+
+    .btn-primary {
+      background: #3F88C5;
+      border-color: #3F88C5;
+      color: #FFFFFF !important;
+    }
+
+    .btn-primary:hover {
+      background: #2C699A;
+      border-color: #2C699A;
+      color: #FFFFFF !important;
+    }
+
+    .btn-terracotta {
+      background: #E94F37;
+      border-color: #E94F37;
+      color: #FFFFFF !important;
+    }
+
+    .btn-terracotta:hover {
+      background: #C83C26;
+      border-color: #C83C26;
+      color: #FFFFFF !important;
+    }
+
+    .nav-pills-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      border-radius: 10px;
+      background: #FFFFFF;
+      border: 1px solid #D8DCCB;
+      color: #393E41;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-pill:hover {
+      border-color: #3F88C5;
+      color: #3F88C5;
+    }
+
+    .nav-pill.active {
+      background: #393E41;
+      border-color: #393E41;
+      color: #FFFFFF !important;
+    }
+
+    .status-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: #FFFFFF;
+      border: 1px solid #D8DCCB;
+      border-left: 5px solid #44BBA4;
+      border-radius: 10px;
+      padding: 12px 20px;
+      margin-bottom: 22px;
+      font-size: 0.84rem;
+    }
+
+    .kpi-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-box {
+      background: #FFFFFF;
+      border: 1px solid #D8DCCB;
+      border-radius: 14px;
+      padding: 20px 22px;
+      box-shadow: 0 4px 10px -2px rgba(57, 62, 65, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .kpi-box.accent-blue { border-top: 4px solid #3F88C5; }
+    .kpi-box.accent-terra { border-top: 4px solid #E94F37; }
+    .kpi-box.accent-ocean { border-top: 4px solid #44BBA4; }
+    .kpi-box.accent-gunmetal { border-top: 4px solid #393E41; }
+
+    .kpi-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #5A6267;
+      letter-spacing: 0.04em;
+    }
+
+    .kpi-big {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: #1E2326;
+      line-height: 1.1;
+    }
+
+    .kpi-meta {
+      font-size: 0.82rem;
+      color: #5A6267;
+      line-height: 1.45;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: #ECEEDD;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.5s ease;
+    }
+
+    .card-panel {
+      background: #FFFFFF;
+      border: 1px solid #D8DCCB;
+      border-radius: 14px;
+      padding: 22px 26px;
+      box-shadow: 0 4px 12px -2px rgba(57, 62, 65, 0.05);
+      margin-bottom: 24px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .panel-title h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #1E2326;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-title p {
+      font-size: 0.84rem;
+      color: #5A6267;
+      margin-top: 2px;
+    }
+
+    .filter-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .preset-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-preset {
+      padding: 6px 13px;
+      border-radius: 8px;
+      border: 1px solid #D8DCCB;
+      background: #F6F7EB;
+      color: #393E41;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-preset:hover {
+      border-color: #3F88C5;
+      color: #3F88C5;
+    }
+
+    .btn-preset.active {
+      background: #3F88C5;
+      border-color: #3F88C5;
+      color: #FFFFFF !important;
+    }
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #5A6267;
+      margin-bottom: 4px;
+    }
+
+    .form-ctrl {
+      width: 100%;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1px solid #D8DCCB;
+      background: #FFFFFF;
+      color: #1E2326;
+      font-size: 0.84rem;
+      font-family: inherit;
+    }
+
+    .form-ctrl:focus {
+      outline: none;
+      border-color: #3F88C5;
+    }
+
+    .charts-2col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 980px) {
+      .charts-2col { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrap-320 {
+      position: relative;
+      height: 320px;
+      width: 100%;
+    }
+
+    .tag-pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .tag-ok { background: rgba(68, 187, 164, 0.16); color: #0F5144; }
+    .tag-warn { background: rgba(233, 79, 55, 0.14); color: #B91C1C; }
+    .tag-info { background: rgba(63, 136, 197, 0.15); color: #1C5A8A; }
+    .tag-neutral { background: #ECEEDD; color: #393E41; }
+
+    .table-box {
+      overflow-x: auto;
+      border: 1px solid #E2E5D5;
+      border-radius: 10px;
+    }
+
+    table.ops-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      text-align: left;
+    }
+
+    table.ops-table th {
+      background: #F6F7EB;
+      color: #1E2326;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.74rem;
+      letter-spacing: 0.04em;
+      padding: 12px 14px;
+      border-bottom: 2px solid #D8DCCB;
+    }
+
+    table.ops-table td {
+      padding: 11px 14px;
+      color: #1E2326;
+      border-bottom: 1px solid #ECEEDD;
+    }
+
+    table.ops-table tr:nth-child(even) td {
+      background: #FAFBF7;
+    }
+
+    table.ops-table tr:hover td {
+      background: rgba(63, 136, 197, 0.06);
+    }
+
+    .warroom-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+      margin-top: 14px;
+    }
+
+    .warroom-box {
+      background: #FAFBF7;
+      border: 1px solid #D8DCCB;
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+
+    .warroom-box.pos { border-left: 5px solid #44BBA4; }
+    .warroom-box.crit { border-left: 5px solid #E94F37; }
+    .warroom-box.prop { border-left: 5px solid #3F88C5; }
+
+    .warroom-box h3 {
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: #1E2326;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .warroom-box ul {
+      padding-left: 18px;
+      font-size: 0.85rem;
+      color: #393E41;
+      line-height: 1.65;
+    }
+
+    .warroom-box li {
+      margin-bottom: 6px;
+    }
+
+    .toast-copy {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1E2326;
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      z-index: 9999;
+      display: none;
+    }
+
+    @media print {
+      body { background: #fff !important; padding: 0; }
+      .header-actions, .nav-pills-bar, .filter-bar, .no-print { display: none !important; }
+      .card-panel, .kpi-box { break-inside: avoid; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- HEADER -->
+    <header class="dashboard-header">
+      <div class="header-title-wrap">
+        <div class="logo-badge">
+          <i class="fa-solid fa-gauge-high"></i>
+        </div>
+        <div class="header-title">
+          <h1>
+            War Room Operacional & Horário
+            <span class="badge-warroom">Meta 30.000</span>
+          </h1>
+          <p>Painel pessoal de acompanhamento (48h / hora a hora / UTMs reais) conectado à API da Yazo Tickets</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="btnSyncLive" onclick="fetchYazoLive(true)">
+          <i class="fa-solid fa-rotate" id="syncIcon"></i> Atualizar API Yazo Agora
+        </button>
+        <button class="btn btn-terracotta" onclick="copyMeetingBriefing()">
+          <i class="fa-solid fa-copy"></i> Copiar Resumo Reunião (48h)
+        </button>
+        <button class="btn" onclick="exportFilteredCsv()">
+          <i class="fa-solid fa-file-csv"></i> Exportar CSV
+        </button>
+        <button class="btn" onclick="window.print()">
+          <i class="fa-solid fa-print"></i> PDF
+        </button>
+      </div>
+    </header>
+
+    <!-- NAVEGAÇÃO ENTRE TELAS DO PROJETO -->
+    <nav class="nav-pills-bar">
+      <a href="operacao.html" class="nav-pill active">
+        <i class="fa-solid fa-stopwatch"></i> Meu Painel War Room (Meta 30k & Hora a Hora)
+      </a>
+      <a href="index.html" class="nav-pill">
+        <i class="fa-solid fa-briefcase"></i> Painel do Diretor (Home Executiva)
+      </a>
+      <a href="meta_marketing.html" class="nav-pill">
+        <i class="fa-brands fa-meta"></i> Meta Ads API
+      </a>
+      <a href="diretoria.html" class="nav-pill">
+        <i class="fa-solid fa-file-lines"></i> Relatório C-Level (PDF)
+      </a>
+      <a href="respostas_cliente.html" class="nav-pill">
+        <i class="fa-solid fa-clipboard-check"></i> Respostas do Cliente
+      </a>
+    </nav>
+
+    <!-- STATUS DE SINCRONIZAÇÃO -->
+    <div class="status-strip">
+      <div>
+        <i class="fa-solid fa-circle-check" style="color: #44BBA4; margin-right: 6px;"></i>
+        <strong>Fonte de Dados:</strong> <span id="syncSourceLabel">Carregando...</span>
+        <span style="margin-left: 12px; color: #5A6267;">Última atualização: <strong id="syncTimeLabel">--</strong></span>
+      </div>
+      <div id="statusBreakdownLabel" style="color: #5A6267;">
+        --
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         BLOCO 1: TERMÔMETRO DA META 30.000 (RESPONDE À SUPERVISORA EM 10 SEGUNDOS)
+         ===================================================================== -->
+    <section class="kpi-grid-4">
+      <div class="kpi-box accent-blue">
+        <div class="kpi-top">
+          <span>Inscritos Validados (Yazo)</span>
+          <i class="fa-solid fa-users" style="color: #3F88C5;"></i>
+        </div>
+        <div class="kpi-big" id="kpiTotalValid">--</div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressGoalFill" style="width: 0%; background: linear-gradient(90deg, #3F88C5, #44BBA4);"></div>
+        </div>
+        <div class="kpi-meta" id="kpiGoalSub">Meta mínima: 30.000 inscritos</div>
+      </div>
+
+      <div class="kpi-box accent-terra">
+        <div class="kpi-top">
+          <span>Meta Diária Necessária (Run Rate)</span>
+          <i class="fa-solid fa-fire" style="color: #E94F37;"></i>
+        </div>
+        <div class="kpi-big" id="kpiRequiredDaily" style="color: #E94F37;">--</div>
+        <div class="kpi-meta" id="kpiRequiredSub">Faltam -- inscritos em -- dias até 25/11</div>
+      </div>
+
+      <div class="kpi-box accent-ocean">
+        <div class="kpi-top">
+          <span>Últimas 48h (Hoje + Ontem)</span>
+          <i class="fa-solid fa-calendar-day" style="color: #44BBA4;"></i>
+        </div>
+        <div class="kpi-big" id="kpiLast48h">--</div>
+        <div class="kpi-meta" id="kpiLast48hSub">--</div>
+      </div>
+
+      <div class="kpi-box accent-gunmetal">
+        <div class="kpi-top">
+          <span>Hoje + Horário de Pico</span>
+          <i class="fa-solid fa-clock" style="color: #393E41;"></i>
+        </div>
+        <div class="kpi-big" id="kpiTodayCount">--</div>
+        <div class="kpi-meta" id="kpiTodaySub">--</div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         BLOCO 2: FILTROS OPERACIONAIS & SELETOR DE PERÍODO
+         ===================================================================== -->
+    <section class="card-panel">
+      <div class="panel-header" style="margin-bottom: 12px;">
+        <div class="panel-title">
+          <h2><i class="fa-solid fa-sliders" style="color: #3F88C5;"></i> Filtros de Análise (Auditoria de Ações, Horários & UTMs)</h2>
+          <p>Filtre por janela de tempo, origem UTM, perfil do público ou resposta do formulário. Os gráficos abaixo respondem em tempo real.</p>
+        </div>
+        <span class="tag-pill tag-info" id="filteredCountBadge">-- registros filtrados</span>
+      </div>
+
+      <div class="filter-bar">
+        <div class="preset-row">
+          <span style="font-size: 0.78rem; font-weight: 700; color: #5A6267; margin-right: 4px;">Atalhos Reunião:</span>
+          <button class="btn-preset active" id="preset-all" onclick="applyQuickPreset('all')">Todo Período</button>
+          <button class="btn-preset" id="preset-today" onclick="applyQuickPreset('today')">Só Hoje</button>
+          <button class="btn-preset" id="preset-yesterday" onclick="applyQuickPreset('yesterday')">Só Ontem</button>
+          <button class="btn-preset" id="preset-48h" onclick="applyQuickPreset('48h')">Últimas 48h (Agenda)</button>
+          <button class="btn-preset" id="preset-7d" onclick="applyQuickPreset('7d')">Últimos 7 Dias</button>
+          <button class="btn-preset" id="preset-nov" onclick="applyQuickPreset('nov')">Novembro</button>
+          <button class="btn-preset" id="preset-out" onclick="applyQuickPreset('out')">Outubro</button>
+        </div>
+
+        <div class="inputs-grid">
+          <div class="input-group">
+            <label>Data Inicial</label>
+            <input type="date" id="fStartDate" class="form-ctrl" onchange="onFilterInput()">
+          </div>
+          <div class="input-group">
+            <label>Data Final</label>
+            <input type="date" id="fEndDate" class="form-ctrl" onchange="onFilterInput()">
+          </div>
+          <div class="input-group">
+            <label>Origem UTM (Yazo Real)</label>
+            <select id="fUtmSource" class="form-ctrl" onchange="onFilterInput()">
+              <option value="ALL">Todas as Origens UTM</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Perfil do Inscrito</label>
+            <select id="fPerfil" class="form-ctrl" onchange="onFilterInput()">
+              <option value="ALL">Todos os Perfis</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Tipo de Ingresso</label>
+            <select id="fTicket" class="form-ctrl" onchange="onFilterInput()">
+              <option value="ALL">Todos os Ingressos</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Como ficou sabendo</label>
+            <select id="fOrigin" class="form-ctrl" onchange="onFilterInput()">
+              <option value="ALL">Todas as Respostas</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         BLOCO 3: GRÁFICOS PRINCIPAIS (CONVERSÃO POR HORA + RITMO VS META)
+         ===================================================================== -->
+    <section class="charts-2col">
+      <!-- GRÁFICO HORÁRIO 00h às 23h -->
+      <div class="card-panel" style="margin-bottom: 0;">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2><i class="fa-solid fa-clock" style="color: #E94F37;"></i> Inscrições por Hora do Dia (00h às 23h)</h2>
+            <p id="hourlySubtitle">Veja exatamente em qual hora os posts, stories e e-mails geraram picos.</p>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <select id="hourlyCompareMode" class="form-ctrl" style="width: auto; padding: 5px 10px; font-size: 0.78rem;" onchange="renderHourlyChart()">
+              <option value="compare_today_yesterday">Comparar Hoje vs Ontem</option>
+              <option value="filtered_sum">Soma do Filtro Atual</option>
+              <option value="single_day">Dia Específico ▾</option>
+            </select>
+            <input type="date" id="hourlySpecificDate" class="form-ctrl" style="width: auto; padding: 5px 8px; font-size: 0.78rem; display: none;" onchange="renderHourlyChart()">
+          </div>
+        </div>
+        <div class="chart-wrap-320">
+          <canvas id="warHourlyChart"></canvas>
+        </div>
+        <div id="hourlyInsightBar" style="margin-top: 12px; padding: 10px 14px; background: #F6F7EB; border-radius: 8px; font-size: 0.82rem; color: #393E41;">
+          --
+        </div>
+      </div>
+
+      <!-- GRÁFICO DIÁRIO VS META DIÁRIA -->
+      <div class="card-panel" style="margin-bottom: 0;">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2><i class="fa-solid fa-chart-column" style="color: #3F88C5;"></i> Evolução Diária vs Meta Necessária</h2>
+            <p>Linha vermelha = meta diária necessária para atingir 30.000 até 25/11.</p>
+          </div>
+        </div>
+        <div class="chart-wrap-320">
+          <canvas id="warDailyChart"></canvas>
+        </div>
+        <div id="dailyInsightBar" style="margin-top: 12px; padding: 10px 14px; background: #F6F7EB; border-radius: 8px; font-size: 0.82rem; color: #393E41;">
+          --
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         BLOCO 4: CURVA ACUMULADA (RUMO AOS 30K) & ORIGENS UTMs REAIS
+         ===================================================================== -->
+    <section class="charts-2col">
+      <!-- CURVA S ACUMULADA -->
+      <div class="card-panel" style="margin-bottom: 0;">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2><i class="fa-solid fa-arrow-trend-up" style="color: #44BBA4;"></i> Curva S Acumulada (Realizado vs Meta 30.000)</h2>
+            <p>Trajetória histórica acumulada e projeção se mantiver a média dos últimos 7 dias.</p>
+          </div>
+        </div>
+        <div class="chart-wrap-320">
+          <canvas id="warCumulativeChart"></canvas>
+        </div>
+      </div>
+
+      <!-- RANKING UTMs REAIS CAPTURADAS NA YAZO -->
+      <div class="card-panel" style="margin-bottom: 0;">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2><i class="fa-solid fa-link" style="color: #3F88C5;"></i> Rastreio Real de UTMs na Ponta Final (Yazo)</h2>
+            <p>Inscrições efetivamente atribuídas via parâmetros UTM gravados na Yazo no filtro selecionado.</p>
+          </div>
+        </div>
+        <div class="table-box" style="max-height: 320px; overflow-y: auto;">
+          <table class="ops-table">
+            <thead>
+              <tr>
+                <th>utm_source / utm_medium</th>
+                <th>Inscritos (Filtro)</th>
+                <th>Últimas 48h</th>
+                <th>% Share</th>
+              </tr>
+            </thead>
+            <tbody id="utmTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         BLOCO 5: PESQUISA DE ORIGEM, FACULDADES E CIDADES (ONDE ACELERAR)
+         ===================================================================== -->
+    <section class="charts-2col">
+      <div class="card-panel" style="margin-bottom: 0;">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2><i class="fa-solid fa-bullhorn" style="color: #D97706;"></i> "Como ficou sabendo do Festival?"</h2>
+            <p>Distribuição declarada no formulário (comparativo entre o filtro atual e últimas 48h).</p>
+          </div>
+        </div>
+        <div class="table-box" style="max-height: 320px; overflow-y: auto;">
+          <table class="ops-table">
+            <thead>
+              <tr>
+                <th>Canal Declarado</th>
+                <th>No Filtro</th>
+                <th>Últimas 48h</th>
+                <th>%</th>
+              </tr>
+            </thead>
+            <tbody id="originSurveyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card-panel" style="margin-bottom: 0;">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2><i class="fa-solid fa-graduation-cap" style="color: #44BBA4;"></i> Top Escolas, Universidades & Cidades</h2>
+            <p>Onde o público já está engajando — e quais instituições acionar para lotes.</p>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="table-box" style="max-height: 320px; overflow-y: auto;">
+            <table class="ops-table">
+              <thead>
+                <tr>
+                  <th>Instituição (Estudantes)</th>
+                  <th>Qtd</th>
+                </tr>
+              </thead>
+              <tbody id="institutionsTableBody"></tbody>
+            </table>
+          </div>
+          <div class="table-box" style="max-height: 320px; overflow-y: auto;">
+            <table class="ops-table">
+              <thead>
+                <tr>
+                  <th>Cidade</th>
+                  <th>Qtd</th>
+                </tr>
+              </thead>
+              <tbody id="citiesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         BLOCO 6: ROTEIRO PRONTO PARA A REUNIÃO COM A SUPERVISORA & SEBASTIAN
+         ===================================================================== -->
+    <section class="card-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <h2><i class="fa-solid fa-clipboard-list" style="color: #393E41;"></i> Pauta Estruturada para Reunião de 1h (Olhar Positivo, Crítico e Propositivo)</h2>
+          <p>Argumentação automática calculada com os dados reais da Yazo para apresentar a cada 2 dias.</p>
+        </div>
+        <button class="btn btn-primary" onclick="copyMeetingBriefing()">
+          <i class="fa-solid fa-copy"></i> Copiar Texto da Reunião
+        </button>
+      </div>
+
+      <div class="warroom-grid-3" id="warroomMeetingGrid">
+        <!-- Preenchido dinamicamente pelo JS -->
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         BLOCO 7: TABELA DIÁRIA COMPLETA (DIA A DIA, HORA PICO, META)
+         ===================================================================== -->
+    <section class="card-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <h2><i class="fa-solid fa-table" style="color: #3F88C5;"></i> Histórico Diário Detalhado (Meta vs Realizado)</h2>
+          <p>Auditoria dia a dia com horário de pico (ótimo para cruzar com horários de disparos de e-mail/stories).</p>
+        </div>
+      </div>
+
+      <div class="table-box" style="max-height: 440px; overflow-y: auto;">
+        <table class="ops-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Dia</th>
+              <th>Inscritos Validados</th>
+              <th>Acumulado</th>
+              <th>Hora de Pico</th>
+              <th>Top UTM do Dia</th>
+              <th>Status vs Meta Diária</th>
+            </tr>
+          </thead>
+          <tbody id="dailyAuditTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast-copy" id="toastMsg">Resumo copiado para a área de transferência!</div>
+
+  <script>
+    const GOAL_TOTAL = 30000;
+    const EVENT_START_DATE = '2026-11-25';
+
+    let yazoPayload = null;
+    let allRecords = [];
+    let filteredRecords = [];
+    let todayIso = '';
+    let yesterdayIso = '';
+    let requiredDailyRate = 0;
+
+    let chartHourly = null;
+    let chartDaily = null;
+    let chartCumulative = null;
+
+    function showToast(msg) {
+      const el = document.getElementById('toastMsg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => { el.style.display = 'none'; }, 3200);
+    }
+
+    function getLocalIsoDate(offsetDays = 0) {
+      const now = new Date();
+      now.setDate(now.getDate() + offsetDays);
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatDateBr(iso) {
+      if (!iso || !iso.includes('-')) return iso || '--';
+      const [y, m, d] = iso.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function getWeekdayPt(iso) {
+      const [y, m, d] = iso.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      return ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][dt.getDay()];
+    }
+
+    async function fetchYazoLive(forceRefresh = false) {
+      const btn = document.getElementById('btnSyncLive');
+      const icon = document.getElementById('syncIcon');
+      if (btn) btn.disabled = true;
+      if (icon) icon.classList.add('fa-spin');
+
+      if (forceRefresh) {
+        showToast('Conectando à API Yazo em tempo real (buscando todas as páginas)...');
+      }
+
+      try {
+        const url = forceRefresh ? 'api_yazo.php?refresh=1' : 'api_yazo.php';
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data && data.records && data.records.length > 0) {
+          yazoPayload = data;
+          bootstrapDashboard();
+          if (forceRefresh) {
+            showToast(`Sincronizado ao vivo! ${data.total_valid.toLocaleString('pt-BR')} inscritos validados.`);
+          }
+          return;
+        }
+      } catch (err) {
+        console.warn('API PHP local indisponível ou em modo estático; usando snapshot JS:', err);
+      } finally {
+        if (btn) btn.disabled = false;
+        if (icon) icon.classList.remove('fa-spin');
+      }
+
+      // Fallback para snapshot estático (GitHub Pages ou abertura local direta)
+      if (window.YAZO_OPERACAO_DATA && window.YAZO_OPERACAO_DATA.records) {
+        yazoPayload = window.YAZO_OPERACAO_DATA;
+        bootstrapDashboard();
+      } else {
+        document.getElementById('syncSourceLabel').textContent = 'Erro ao carregar base. Verifique api_yazo.php ou yazo_operacao_data.js.';
+      }
+    }
+
+    function bootstrapDashboard() {
+      allRecords = yazoPayload.records || [];
+      todayIso = getLocalIsoDate(0);
+      yesterdayIso = getLocalIsoDate(-1);
+
+      // Se os dados estiverem com data máxima maior que hoje do relógio local ou vice-versa, ajusta referência
+      const maxDataDate = allRecords.length ? allRecords[allRecords.length - 1].d : todayIso;
+      if (maxDataDate > todayIso) todayIso = maxDataDate;
+
+      const srcMap = {
+        live_api: 'API Yazo Tickets v1 (Tempo Real)',
+        cache: 'API Yazo Tickets v1 (Cache Local 5min)',
+        stale_cache: 'Cache Local Yazo (Backup)',
+        snapshot_js: 'Snapshot Auditado Yazo (Modo Estático / GitHub Pages)'
+      };
+      document.getElementById('syncSourceLabel').textContent = srcMap[yazoPayload.source] || yazoPayload.source;
+      document.getElementById('syncTimeLabel').textContent = yazoPayload.sync_time || '--';
+
+      if (yazoPayload.status_counts) {
+        const sc = yazoPayload.status_counts;
+        document.getElementById('statusBreakdownLabel').innerHTML =
+          `Base total API: <strong>${(yazoPayload.total_api || allRecords.length).toLocaleString('pt-BR')}</strong> • ` +
+          `<span style="color:#0F5144;">Válidos: <strong>${(sc.valid || 0).toLocaleString('pt-BR')}</strong></span> • ` +
+          `Aguardando: ${sc.awaiting_approval || 0} • Recusados/Canc.: ${(sc.declined || 0) + (sc.cancelled || 0)}`;
+      }
+
+      populateSelects();
+      updateGoalThermometer();
+      applyQuickPreset('all');
+    }
+
+    function populateSelects() {
+      const utmSet = new Set();
+      const perfilSet = new Set();
+      const ticketSet = new Set();
+      const originSet = new Set();
+
+      allRecords.forEach(r => {
+        utmSet.add(r.us ? r.us : '(sem_utm)');
+        if (r.p) perfilSet.add(r.p);
+        if (r.t) ticketSet.add(r.t);
+        if (r.o) {
+          r.o.split(' | ').forEach(part => {
+            if (part.trim()) originSet.add(part.trim());
+          });
+        }
+      });
+
+      const fill = (id, defaultLabel, items) => {
+        const el = document.getElementById(id);
+        const cur = el.value;
+        el.innerHTML = `<option value="ALL">${defaultLabel}</option>`;
+        Array.from(items).sort().forEach(v => {
+          el.innerHTML += `<option value="${v}">${v}</option>`;
+        });
+        if (Array.from(el.options).some(o => o.value === cur)) el.value = cur;
+      };
+
+      fill('fUtmSource', 'Todas as Origens UTM', utmSet);
+      fill('fPerfil', 'Todos os Perfis', perfilSet);
+      fill('fTicket', 'Todos os Ingressos', ticketSet);
+      fill('fOrigin', 'Todas as Respostas', originSet);
+
+      const minDate = allRecords.length ? allRecords[0].d : '2026-08-25';
+      const maxDate = allRecords.length ? allRecords[allRecords.length - 1].d : todayIso;
+      document.getElementById('fStartDate').value = minDate;
+      document.getElementById('fEndDate').value = maxDate;
+      document.getElementById('hourlySpecificDate').value = maxDate;
+    }
+
+    function updateGoalThermometer() {
+      const totalValid = allRecords.length;
+      const missing = Math.max(0, GOAL_TOTAL - totalValid);
+      const pct = Math.min(100, (totalValid / GOAL_TOTAL) * 100);
+
+      // Calcula dias restantes até 25/11/2026
+      const dNow = new Date(todayIso + 'T00:00:00');
+      const dEvent = new Date(EVENT_START_DATE + 'T00:00:00');
+      const diffDays = Math.max(1, Math.ceil((dEvent - dNow) / (1000 * 60 * 60 * 24)));
+      requiredDailyRate = Math.ceil(missing / diffDays);
+
+      // Contagens recentes
+      let todayCount = 0;
+      let yesterdayCount = 0;
+      const dayCounts = {};
+      const todayHours = Array(24).fill(0);
+      const yesterdayHours = Array(24).fill(0);
+
+      allRecords.forEach(r => {
+        dayCounts[r.d] = (dayCounts[r.d] || 0) + 1;
+        if (r.d === todayIso) {
+          todayCount++;
+          todayHours[r.h]++;
+        } else if (r.d === yesterdayIso) {
+          yesterdayCount++;
+          yesterdayHours[r.h]++;
+        }
+      });
+
+      const last48hCount = todayCount + yesterdayCount;
+      const target48h = requiredDailyRate * 2;
+      const pct48h = target48h > 0 ? ((last48hCount / target48h) * 100).toFixed(1) : '100';
+
+      // Média últimos 7 dias fechados (excluindo hoje parcial)
+      const sortedDates = Object.keys(dayCounts).sort().filter(d => d < todayIso);
+      const last7Dates = sortedDates.slice(-7);
+      const avg7d = last7Dates.length > 0
+        ? Math.round(last7Dates.reduce((s, d) => s + dayCounts[d], 0) / last7Dates.length)
+        : 0;
+      const projectedTotal = totalValid + (avg7d * diffDays);
+
+      // Pico de hoje e de ontem
+      let peakTodayH = 0, peakTodayV = 0;
+      todayHours.forEach((v, h) => { if (v > peakTodayV) { peakTodayV = v; peakTodayH = h; } });
+      let peakYestH = 0, peakYestV = 0;
+      yesterdayHours.forEach((v, h) => { if (v > peakYestV) { peakYestV = v; peakYestH = h; } });
+
+      // Preenche Cards
+      document.getElementById('kpiTotalValid').textContent = totalValid.toLocaleString('pt-BR');
+      document.getElementById('progressGoalFill').style.width = `${pct.toFixed(1)}%`;
+      document.getElementById('kpiGoalSub').innerHTML =
+        `<strong>${pct.toFixed(1)}%</strong> da meta de 30.000 • Faltam <strong>${missing.toLocaleString('pt-BR')}</strong>`;
+
+      document.getElementById('kpiRequiredDaily').textContent = `${requiredDailyRate.toLocaleString('pt-BR')}/dia`;
+      document.getElementById('kpiRequiredSub').innerHTML =
+        `Restam <strong>${diffDays} dias</strong> até 25/11 • Média últimos 7d: <strong>${avg7d}/dia</strong> (Projeção atual: <strong>~${projectedTotal.toLocaleString('pt-BR')}</strong>)`;
+
+      document.getElementById('kpiLast48h').textContent = last48hCount.toLocaleString('pt-BR');
+      const status48Badge = last48hCount >= target48h
+        ? `<span class="tag-pill tag-ok">Meta 48h batida</span>`
+        : `<span class="tag-pill tag-warn">Atingiu ${pct48h}% da meta 48h (${target48h.toLocaleString('pt-BR')})</span>`;
+      document.getElementById('kpiLast48hSub').innerHTML =
+        `Ontem: <strong>${yesterdayCount}</strong> + Hoje: <strong>${todayCount}</strong><br>${status48Badge}`;
+
+      document.getElementById('kpiTodayCount').textContent = `${todayCount.toLocaleString('pt-BR')} hoje`;
+      document.getElementById('kpiTodaySub').innerHTML =
+        `Pico hoje: <strong>${String(peakTodayH).padStart(2, '0')}h</strong> (${peakTodayV} inscr.) • Pico ontem: <strong>${String(peakYestH).padStart(2, '0')}h</strong> (${peakYestV} inscr.)`;
+
+      buildMeetingBriefing(totalValid, missing, diffDays, requiredDailyRate, avg7d, projectedTotal, yesterdayCount, todayCount, peakYestH, peakYestV);
+    }
+
+    function applyQuickPreset(preset) {
+      document.querySelectorAll('.preset-row .btn-preset').forEach(b => b.classList.remove('active'));
+      const btn = document.getElementById(`preset-${preset}`);
+      if (btn) btn.classList.add('active');
+
+      const minDate = allRecords.length ? allRecords[0].d : '2026-08-25';
+      const maxDate = allRecords.length ? allRecords[allRecords.length - 1].d : todayIso;
+
+      let start = minDate;
+      let end = maxDate;
+
+      if (preset === 'today') {
+        start = todayIso;
+        end = todayIso;
+        document.getElementById('hourlyCompareMode').value = 'filtered_sum';
+      } else if (preset === 'yesterday') {
+        start = yesterdayIso;
+        end = yesterdayIso;
+        document.getElementById('hourlyCompareMode').value = 'filtered_sum';
+      } else if (preset === '48h') {
+        start = yesterdayIso;
+        end = todayIso;
+        document.getElementById('hourlyCompareMode').value = 'compare_today_yesterday';
+      } else if (preset === '7d') {
+        start = getLocalIsoDate(-6);
+        end = maxDate;
+        document.getElementById('hourlyCompareMode').value = 'filtered_sum';
+      } else if (preset === 'nov') {
+        start = '2026-11-01';
+        end = '2026-11-30';
+      } else if (preset === 'out') {
+        start = '2026-10-01';
+        end = '2026-10-31';
+      } else {
+        document.getElementById('hourlyCompareMode').value = 'compare_today_yesterday';
+      }
+
+      document.getElementById('fStartDate').value = start;
+      document.getElementById('fEndDate').value = end;
+      runFilters();
+    }
+
+    function onFilterInput() {
+      document.querySelectorAll('.preset-row .btn-preset').forEach(b => b.classList.remove('active'));
+      runFilters();
+    }
+
+    function runFilters() {
+      const startDate = document.getElementById('fStartDate').value;
+      const endDate = document.getElementById('fEndDate').value;
+      const utmSource = document.getElementById('fUtmSource').value;
+      const perfil = document.getElementById('fPerfil').value;
+      const ticket = document.getElementById('fTicket').value;
+      const origin = document.getElementById('fOrigin').value;
+
+      filteredRecords = allRecords.filter(r => {
+        if (startDate && r.d < startDate) return false;
+        if (endDate && r.d > endDate) return false;
+        const rUtm = r.us ? r.us : '(sem_utm)';
+        if (utmSource !== 'ALL' && rUtm !== utmSource) return false;
+        if (perfil !== 'ALL' && r.p !== perfil) return false;
+        if (ticket !== 'ALL' && r.t !== ticket) return false;
+        if (origin !== 'ALL' && !(r.o || '').includes(origin)) return false;
+        return true;
+      });
+
+      document.getElementById('filteredCountBadge').textContent = `${filteredRecords.length.toLocaleString('pt-BR')} inscritos no filtro`;
+
+      renderHourlyChart();
+      renderDailyChart();
+      renderCumulativeChart();
+      renderUtmTable();
+      renderOriginSurveyTable();
+      renderInstitutionsAndCities();
+      renderDailyAuditTable();
+    }
+
+    function renderHourlyChart() {
+      const mode = document.getElementById('hourlyCompareMode').value;
+      const dateInput = document.getElementById('hourlySpecificDate');
+      dateInput.style.display = (mode === 'single_day') ? 'inline-block' : 'none';
+
+      const labels = Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, '0')}h`);
+      const datasets = [];
+      let insightHtml = '';
+
+      if (mode === 'compare_today_yesterday') {
+        const hToday = Array(24).fill(0);
+        const hYest = Array(24).fill(0);
+        allRecords.forEach(r => {
+          if (r.d === todayIso) hToday[r.h]++;
+          else if (r.d === yesterdayIso) hYest[r.h]++;
+        });
+
+        datasets.push({
+          label: `Hoje (${formatDateBr(todayIso)})`,
+          data: hToday,
+          backgroundColor: '#E94F37',
+          borderRadius: 5
+        });
+        datasets.push({
+          label: `Ontem (${formatDateBr(yesterdayIso)})`,
+          data: hYest,
+          backgroundColor: 'rgba(63, 136, 197, 0.72)',
+          borderRadius: 5
+        });
+
+        let maxTH = 0, maxTV = 0;
+        hToday.forEach((v, h) => { if (v > maxTV) { maxTV = v; maxTH = h; } });
+        let maxYH = 0, maxYV = 0;
+        hYest.forEach((v, h) => { if (v > maxYV) { maxYV = v; maxYH = h; } });
+
+        insightHtml = `<strong>Comparativo 48h:</strong> Hoje o maior pico foi às <strong>${String(maxTH).padStart(2,'0')}:00 (${maxTV} inscritos)</strong>. Ontem o pico ocorreu às <strong>${String(maxYH).padStart(2,'0')}:00 (${maxYV} inscritos)</strong>.`;
+      } else {
+        const sourceList = (mode === 'single_day')
+          ? allRecords.filter(r => r.d === dateInput.value)
+          : filteredRecords;
+        const hVals = Array(24).fill(0);
+        sourceList.forEach(r => { hVals[r.h]++; });
+
+        let maxH = 0, maxV = 0;
+        hVals.forEach((v, h) => { if (v > maxV) { maxV = v; maxH = h; } });
+
+        const colors = hVals.map((v, h) => (h === maxH && v > 0) ? '#E94F37' : '#3F88C5');
+        datasets.push({
+          label: mode === 'single_day' ? `Dia ${formatDateBr(dateInput.value)}` : 'Inscrições no Filtro',
+          data: hVals,
+          backgroundColor: colors,
+          borderRadius: 5
+        });
+
+        insightHtml = `<strong>Horário de Pico no Recorte:</strong> <strong>${String(maxH).padStart(2,'0')}:00 às ${String(maxH).padStart(2,'0')}:59</strong> com <strong>${maxV.toLocaleString('pt-BR')} inscritos</strong> (total de ${sourceList.length.toLocaleString('pt-BR')} no recorte).`;
+      }
+
+      document.getElementById('hourlyInsightBar').innerHTML = insightHtml;
+
+      const ctx = document.getElementById('warHourlyChart').getContext('2d');
+      if (chartHourly) chartHourly.destroy();
+      chartHourly = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { color: '#393E41', font: { weight: 600 } } },
+            tooltip: {
+              backgroundColor: '#1E2326',
+              titleColor: '#F6F7EB',
+              bodyColor: '#FFFFFF'
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#393E41', font: { size: 11, weight: 600 } } },
+            y: { beginAtZero: true, grid: { color: '#E2E5D5' }, ticks: { color: '#393E41', font: { weight: 600 } } }
+          }
+        }
+      });
+    }
+
+    function renderDailyChart() {
+      const dailyMap = {};
+      filteredRecords.forEach(r => { dailyMap[r.d] = (dailyMap[r.d] || 0) + 1; });
+      const dates = Object.keys(dailyMap).sort();
+      // Se tiver muitos dias, mostra os últimos 30 dias do filtro para legibilidade, ou todos se <= 45
+      const sliceDates = dates.length > 40 ? dates.slice(-30) : dates;
+      const vals = sliceDates.map(d => dailyMap[d]);
+      const goalLine = sliceDates.map(() => requiredDailyRate);
+
+      // Média móvel 7d
+      const ma7 = sliceDates.map((_, idx) => {
+        let sum = 0, cnt = 0;
+        for (let j = Math.max(0, idx - 6); j <= idx; j++) { sum += vals[j]; cnt++; }
+        return Math.round(sum / cnt);
+      });
+
+      let bestD = '--', bestV = 0, sumV = 0;
+      sliceDates.forEach((d, i) => {
+        sumV += vals[i];
+        if (vals[i] > bestV) { bestV = vals[i]; bestD = d; }
+      });
+      const avgSlice = sliceDates.length ? Math.round(sumV / sliceDates.length) : 0;
+      document.getElementById('dailyInsightBar').innerHTML =
+        `<strong>Ritmo no Gráfico (${sliceDates.length} dias exibidos):</strong> Média de <strong>${avgSlice}/dia</strong> vs Meta necessária de <strong>${requiredDailyRate}/dia</strong>. Melhor dia: <strong>${formatDateBr(bestD)} (${bestV} inscritos)</strong>.`;
+
+      const ctx = document.getElementById('warDailyChart').getContext('2d');
+      if (chartDaily) chartDaily.destroy();
+      chartDaily = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: sliceDates.map(d => `${d.slice(8,10)}/${d.slice(5,7)}`),
+          datasets: [
+            {
+              type: 'line',
+              label: `Meta Diária (${requiredDailyRate}/dia)`,
+              data: goalLine,
+              borderColor: '#E94F37',
+              borderDash: [6, 4],
+              borderWidth: 2.5,
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              type: 'line',
+              label: 'Média Móvel (7d)',
+              data: ma7,
+              borderColor: '#393E41',
+              borderWidth: 2,
+              tension: 0.3,
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              type: 'bar',
+              label: 'Inscritos/Dia',
+              data: vals,
+              backgroundColor: 'rgba(63, 136, 197, 0.8)',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { color: '#393E41', font: { weight: 600 } } },
+            tooltip: { backgroundColor: '#1E2326', titleColor: '#F6F7EB', bodyColor: '#FFFFFF' }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#393E41', font: { size: 11 } } },
+            y: { beginAtZero: true, grid: { color: '#E2E5D5' }, ticks: { color: '#393E41' } }
+          }
+        }
+      });
+    }
+
+    function renderCumulativeChart() {
+      const dailyMap = {};
+      allRecords.forEach(r => { dailyMap[r.d] = (dailyMap[r.d] || 0) + 1; });
+      const dates = Object.keys(dailyMap).sort();
+
+      let acc = 0;
+      const labels = [];
+      const accSeries = [];
+      const goalSeries = [];
+
+      dates.forEach(d => {
+        acc += dailyMap[d];
+        labels.push(`${d.slice(8,10)}/${d.slice(5,7)}`);
+        accSeries.push(acc);
+        goalSeries.push(GOAL_TOTAL);
+      });
+
+      const ctx = document.getElementById('warCumulativeChart').getContext('2d');
+      if (chartCumulative) chartCumulative.destroy();
+      chartCumulative = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Meta Mínima (30.000)',
+              data: goalSeries,
+              borderColor: '#E94F37',
+              borderDash: [6, 4],
+              borderWidth: 2,
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              label: 'Acumulado Real (Yazo)',
+              data: accSeries,
+              borderColor: '#44BBA4',
+              backgroundColor: 'rgba(68, 187, 164, 0.16)',
+              borderWidth: 3,
+              pointRadius: 0,
+              fill: true,
+              tension: 0.25
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { color: '#393E41', font: { weight: 600 } } },
+            tooltip: { backgroundColor: '#1E2326', titleColor: '#F6F7EB', bodyColor: '#FFFFFF' }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#393E41', maxTicksLimit: 12 } },
+            y: { beginAtZero: true, suggestedMax: 31000, grid: { color: '#E2E5D5' }, ticks: { color: '#393E41' } }
+          }
+        }
+      });
+    }
+
+    function renderUtmTable() {
+      const mapFilter = {};
+      const map48h = {};
+
+      filteredRecords.forEach(r => {
+        const key = r.us ? `${r.us} / ${r.um || '-'}` : '(sem_utm — Direto / Link sem repasse)';
+        mapFilter[key] = (mapFilter[key] || 0) + 1;
+      });
+
+      allRecords.forEach(r => {
+        if (r.d === todayIso || r.d === yesterdayIso) {
+          const key = r.us ? `${r.us} / ${r.um || '-'}` : '(sem_utm — Direto / Link sem repasse)';
+          map48h[key] = (map48h[key] || 0) + 1;
+        }
+      });
+
+      const total = filteredRecords.length || 1;
+      const sorted = Object.entries(mapFilter).sort((a, b) => b[1] - a[1]);
+
+      const tbody = document.getElementById('utmTableBody');
+      tbody.innerHTML = sorted.map(([key, count]) => {
+        const c48 = map48h[key] || 0;
+        const pct = ((count / total) * 100).toFixed(1);
+        const isUnassigned = key.startsWith('(sem_utm');
+        return `
+          <tr>
+            <td><strong style="color: ${isUnassigned ? '#7A848A' : '#1C5A8A'};">${key}</strong></td>
+            <td><strong>${count.toLocaleString('pt-BR')}</strong></td>
+            <td><span class="tag-pill ${c48 > 0 ? 'tag-info' : 'tag-neutral'}">${c48.toLocaleString('pt-BR')}</span></td>
+            <td>${pct}%</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderOriginSurveyTable() {
+      const mapFilter = {};
+      const map48h = {};
+
+      filteredRecords.forEach(r => {
+        const parts = (r.o || 'Não informado').split(' | ');
+        parts.forEach(p => {
+          const k = p.trim() || 'Não informado';
+          mapFilter[k] = (mapFilter[k] || 0) + 1;
+        });
+      });
+
+      allRecords.forEach(r => {
+        if (r.d === todayIso || r.d === yesterdayIso) {
+          const parts = (r.o || 'Não informado').split(' | ');
+          parts.forEach(p => {
+            const k = p.trim() || 'Não informado';
+            map48h[k] = (map48h[k] || 0) + 1;
+          });
+        }
+      });
+
+      const total = filteredRecords.length || 1;
+      const sorted = Object.entries(mapFilter).sort((a, b) => b[1] - a[1]);
+
+      document.getElementById('originSurveyTableBody').innerHTML = sorted.slice(0, 15).map(([k, count]) => {
+        const c48 = map48h[k] || 0;
+        const pct = ((count / total) * 100).toFixed(1);
+        return `
+          <tr>
+            <td><strong>${k}</strong></td>
+            <td><strong>${count.toLocaleString('pt-BR')}</strong></td>
+            <td><span class="tag-pill ${c48 > 0 ? 'tag-ok' : 'tag-neutral'}">${c48.toLocaleString('pt-BR')}</span></td>
+            <td>${pct}%</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderInstitutionsAndCities() {
+      const instMap = {};
+      const cityMap = {};
+
+      filteredRecords.forEach(r => {
+        if (r.i && r.i.trim().length > 1) {
+          const normI = r.i.trim().toUpperCase();
+          instMap[normI] = (instMap[normI] || 0) + 1;
+        }
+        if (r.c && r.c.trim().length > 1) {
+          const normC = r.c.trim();
+          cityMap[normC] = (cityMap[normC] || 0) + 1;
+        }
+      });
+
+      const topInst = Object.entries(instMap).sort((a, b) => b[1] - a[1]).slice(0, 15);
+      const topCity = Object.entries(cityMap).sort((a, b) => b[1] - a[1]).slice(0, 15);
+
+      document.getElementById('institutionsTableBody').innerHTML = topInst.length
+        ? topInst.map(([k, v]) => `<tr><td><strong>${k}</strong></td><td><strong>${v.toLocaleString('pt-BR')}</strong></td></tr>`).join('')
+        : '<tr><td colspan="2" style="color:#7A848A;">Sem dados no filtro</td></tr>';
+
+      document.getElementById('citiesTableBody').innerHTML = topCity.length
+        ? topCity.map(([k, v]) => `<tr><td><strong>${k}</strong></td><td><strong>${v.toLocaleString('pt-BR')}</strong></td></tr>`).join('')
+        : '<tr><td colspan="2" style="color:#7A848A;">Sem dados no filtro</td></tr>';
+    }
+
+    function renderDailyAuditTable() {
+      const dayStats = {};
+      filteredRecords.forEach(r => {
+        if (!dayStats[r.d]) {
+          dayStats[r.d] = { count: 0, hours: Array(24).fill(0), utms: {} };
+        }
+        dayStats[r.d].count++;
+        dayStats[r.d].hours[r.h]++;
+        const u = r.us || '(direto/sem utm)';
+        dayStats[r.d].utms[u] = (dayStats[r.d].utms[u] || 0) + 1;
+      });
+
+      const datesAsc = Object.keys(dayStats).sort();
+      let acc = 0;
+      const rows = [];
+
+      datesAsc.forEach(d => {
+        const st = dayStats[d];
+        acc += st.count;
+
+        let peakH = 0, peakV = 0;
+        st.hours.forEach((v, h) => { if (v > peakV) { peakV = v; peakH = h; } });
+
+        const topUtm = Object.entries(st.utms).sort((a, b) => b[1] - a[1])[0];
+        const hitGoal = st.count >= requiredDailyRate;
+        const pctGoal = requiredDailyRate > 0 ? Math.round((st.count / requiredDailyRate) * 100) : 100;
+
+        rows.push({
+          d,
+          weekday: getWeekdayPt(d),
+          count: st.count,
+          acc,
+          peakStr: `${String(peakH).padStart(2, '0')}h (${peakV})`,
+          topUtmStr: topUtm ? `${topUtm[0]} (${topUtm[1]})` : '-',
+          hitGoal,
+          pctGoal
+        });
+      });
+
+      // Mostra dos mais recentes para os mais antigos
+      rows.reverse();
+
+      document.getElementById('dailyAuditTableBody').innerHTML = rows.map(row => `
+        <tr>
+          <td><strong>${formatDateBr(row.d)}</strong></td>
+          <td>${row.weekday}</td>
+          <td><strong style="font-size: 0.95rem;">${row.count.toLocaleString('pt-BR')}</strong></td>
+          <td>${row.acc.toLocaleString('pt-BR')}</td>
+          <td><span class="tag-pill tag-info">${row.peakStr}</span></td>
+          <td>${row.topUtmStr}</td>
+          <td>
+            <span class="tag-pill ${row.hitGoal ? 'tag-ok' : 'tag-warn'}">
+              ${row.hitGoal ? 'Meta Batida' : `${row.pctGoal}% da meta`}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    let cachedMeetingText = '';
+
+    function buildMeetingBriefing(totalValid, missing, diffDays, reqRate, avg7d, projected, yestCount, todayCount, peakYH, peakYV) {
+      const gapDaily = Math.max(0, reqRate - avg7d);
+
+      // Conta UTMs nas últimas 48h
+      let ig48 = 0, rd48 = 0, noUtm48 = 0;
+      allRecords.forEach(r => {
+        if (r.d === todayIso || r.d === yesterdayIso) {
+          if (r.us === 'ig' || r.us === 'instagram') ig48++;
+          else if ((r.us || '').toLowerCase().includes('rd')) rd48++;
+          else if (!r.us) noUtm48++;
+        }
+      });
+
+      const grid = document.getElementById('warroomMeetingGrid');
+      grid.innerHTML = `
+        <div class="warroom-box pos">
+          <h3><i class="fa-solid fa-thumbs-up" style="color:#44BBA4;"></i> 1. Olhar Positivo (O que funciona)</h3>
+          <ul>
+            <li>Base oficial validada na Yazo já alcançou <strong>${totalValid.toLocaleString('pt-BR')} inscritos</strong> (${((totalValid/GOAL_TOTAL)*100).toFixed(1)}% dos 30k).</li>
+            <li>Nas últimas 48h entraram <strong>${(yestCount + todayCount).toLocaleString('pt-BR')} novos inscritos</strong> (Ontem: ${yestCount} | Hoje parcial: ${todayCount}).</li>
+            <li>O pico horário de ontem ocorreu às <strong>${String(peakYH).padStart(2,'0')}h (${peakYV} inscritos)</strong>, comprovando resposta imediata nos horários de divulgação.</li>
+            <li>Atribuição confirmada na ponta final (48h): <strong>${ig48} via Instagram (ig)</strong> e <strong>${rd48} via RD Station (e-mail)</strong>.</li>
+          </ul>
+        </div>
+
+        <div class="warroom-box crit">
+          <h3><i class="fa-solid fa-triangle-exclamation" style="color:#E94F37;"></i> 2. Olhar Crítico (Onde ajustar agora)</h3>
+          <ul>
+            <li><strong>Ritmo vs Meta 30k:</strong> Faltam <strong>${missing.toLocaleString('pt-BR')} inscritos</strong> em <strong>${diffDays} dias</strong>. Precisamos de <strong>${reqRate.toLocaleString('pt-BR')}/dia</strong>, mas a média dos últimos 7 dias está em <strong>${avg7d}/dia</strong>.</li>
+            <li><strong>Projeção sem aceleração:</strong> Se continuarmos no ritmo atual, fecharemos o evento em ~<strong>${projected.toLocaleString('pt-BR')}</strong> (déficit de ${gapDaily}/dia frente à meta).</li>
+            <li><strong>Perda de rastreio:</strong> ${noUtm48} das últimas 48h chegaram sem UTM na Yazo por falta de link direto ou repasse automático na Landing Page.</li>
+          </ul>
+        </div>
+
+        <div class="warroom-box prop">
+          <h3><i class="fa-solid fa-rocket" style="color:#3F88C5;"></i> 3. Olhar Propositivo ("O que mais fazer?")</h3>
+          <ul>
+            <li><strong>Tráfego Pago em CPA (R$ 30k):</strong> Virar a chave da campanha para Conversão Direta (estimativa de +200 a +400 inscritos/dia adicionais).</li>
+            <li><strong>Links Diretos com UTM nos Stories & E-mails:</strong> Apontar diretamente para a página da Yazo com <code>?utm_source=...</code> para não perder rastro entre domínios.</li>
+            <li><strong>Mutirão B2B com Faculdades (Lotes):</strong> "Escola ou universidade" já é um dos top 3 canais. Acionar coordenações das top instituições do ranking para inscrições em massa.</li>
+            <li><strong>Kit para Palestrantes + Base 2024/2025:</strong> Disparos no RD Station e WhatsApp com link rastreado.</li>
+          </ul>
+        </div>
+      `;
+
+      cachedMeetingText =
+`📊 *RESUMO WAR ROOM — FESTIVAL IGUASSU INOVA (META 30K)*
+Data de corte: ${formatDateBr(todayIso)} | Faltam ${diffDays} dias para 25/11
+
+1️⃣ *TERMÔMETRO DA META*
+• Inscritos validados (Yazo API): *${totalValid.toLocaleString('pt-BR')}* (${((totalValid/GOAL_TOTAL)*100).toFixed(1)}% de 30.000)
+• Faltam: *${missing.toLocaleString('pt-BR')}*
+• Meta diária necessária: *${reqRate.toLocaleString('pt-BR')}/dia*
+• Ritmo atual (média 7d): *${avg7d}/dia* (Ontem: ${yestCount} | Hoje: ${todayCount})
+• Projeção no ritmo atual: *~${projected.toLocaleString('pt-BR')}*
+
+2️⃣ *ANÁLISE DE HORÁRIO & UTMs (ÚLTIMAS 48H)*
+• Pico de conversão ontem: *${String(peakYH).padStart(2,'0')}:00h* (${peakYV} inscritos na hora)
+• Rastreio direto na Yazo (48h): Instagram (ig): ${ig48} | RD Station (e-mail): ${rd48} | Sem UTM: ${noUtm48}
+
+3️⃣ *DIAGNÓSTICO CRÍTICO*
+Precisamos acelerar em +${gapDaily} inscritos/dia acima da média atual. Links sem repasse de UTM na Landing Page estão mascarando parte da atribuição orgânica/stories.
+
+4️⃣ *O QUE MAIS VAMOS FAZER (PRÓXIMAS 48H)*
+• Focar verba paga (R$ 30k) em objetivo de Conversão (CPA no Pixel).
+• Usar links diretos para a Yazo com UTM em todos os Stories/E-mails para rastreio 100%.
+• Acionar coordenações das top universidades (lotes de alunos) + disparo na base anterior via RD/WhatsApp.`;
+    }
+
+    function copyMeetingBriefing() {
+      if (!cachedMeetingText) return;
+      navigator.clipboard.writeText(cachedMeetingText).then(() => {
+        showToast('Resumo completo para a Supervisora & Sebastian copiado!');
+      }).catch(() => {
+        alert(cachedMeetingText);
+      });
+    }
+
+    function exportFilteredCsv() {
+      if (!filteredRecords.length) {
+        alert('Nenhum registro no filtro atual.');
+        return;
+      }
+      let csv = 'Data;Hora;Minuto;Ingresso;Perfil;Origem_Pesquisa;utm_source;utm_medium;utm_campaign;Cidade;Instituicao\n';
+      filteredRecords.forEach(r => {
+        const clean = v => `"${String(v || '').replace(/"/g, '""')}"`;
+        csv += [
+          formatDateBr(r.d),
+          String(r.h).padStart(2, '0') + ':00',
+          r.m,
+          clean(r.t),
+          clean(r.p),
+          clean(r.o),
+          clean(r.us),
+          clean(r.um),
+          clean(r.uc),
+          clean(r.c),
+          clean(r.i)
+        ].join(';') + '\n';
+      });
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `warroom_yazo_${todayIso}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchYazoLive(false);
+    });
+  </script>
+</body>
+</html>

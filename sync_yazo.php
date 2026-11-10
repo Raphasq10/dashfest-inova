@@ -1,18 +1,43 @@
 <?php
 /**
- * Ponte PHP para sincronização da API Yazo Tickets com o Dashboard.
- * Executado pelo servidor Apache local sem restrições de CORS.
+ * Ponte PHP para sincronização da API Yazo Tickets com o data.js (Painel Geral).
+ * Compatível com Yazo API v1 (Bearer token, chave 'data', dynamicFormAnswers 'name').
  */
 
+@set_time_limit(120);
+@ini_set('memory_limit', '256M');
 header('Content-Type: application/json; charset=utf-8');
+date_default_timezone_set('America/Sao_Paulo');
 
-$token = isset($_POST['token']) ? trim($_POST['token']) : (isset($_GET['token']) ? trim($_GET['token']) : '');
+function loadSyncEnv($dir) {
+    foreach (['.env.local', '.env'] as $file) {
+        $path = $dir . DIRECTORY_SEPARATOR . $file;
+        if (file_exists($path)) {
+            $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if ($line === '' || strpos($line, '#') === 0 || strpos($line, '=') === false) continue;
+                list($k, $v) = explode('=', $line, 2);
+                $k = trim($k);
+                $v = trim($v, " \t\n\r\0\x0B\"'");
+                if (!isset($_ENV[$k])) {
+                    $_ENV[$k] = $v;
+                    putenv("$k=$v");
+                }
+            }
+        }
+    }
+}
 
-if (empty($token)) {
+loadSyncEnv(__DIR__);
+
+$token = trim($_POST['token'] ?? ($_GET['token'] ?? (getenv('YAZO_API_TOKEN') ?: ($_ENV['YAZO_API_TOKEN'] ?? ''))));
+
+if ($token === '') {
     echo json_encode([
         'success' => false,
-        'message' => 'Token de API da Yazo não informado.'
-    ]);
+        'message' => 'Token de API da Yazo não informado e não encontrado em .env.local.'
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -26,12 +51,15 @@ function yazoGet($endpoint, $token, $params = []) {
     }
 
     $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Bearer ' . $token,
-        'Accept: application/json',
-        'User-Agent: FestivalIguassuInova-Dashboard/1.0'
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $token,
+            'Accept: application/json',
+            'User-Agent: FestivalIguassuInova-Dashboard/2.0'
+        ]
     ]);
 
     $response = curl_exec($ch);
@@ -44,84 +72,136 @@ function yazoGet($endpoint, $token, $params = []) {
     return null;
 }
 
+function yazoGetBatch($urls, $token) {
+    $mh = curl_multi_init();
+    $handles = [];
+    foreach ($urls as $k => $url) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $token,
+                'Accept: application/json',
+                'User-Agent: FestivalIguassuInova-Dashboard/2.0'
+            ]
+        ]);
+        curl_multi_add_handle($mh, $ch);
+        $handles[$k] = $ch;
+    }
+
+    $running = null;
+    do {
+        curl_multi_exec($mh, $running);
+        if ($running > 0) curl_multi_select($mh, 0.2);
+    } while ($running > 0);
+
+    $out = [];
+    foreach ($handles as $k => $ch) {
+        $body = curl_multi_getcontent($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_multi_remove_handle($mh, $ch);
+        curl_close($ch);
+        $out[$k] = ($code >= 200 && $code < 300 && $body) ? json_decode($body, true) : null;
+    }
+    curl_multi_close($mh);
+    return $out;
+}
+
 // 1. Localiza o Evento
 $eventsData = yazoGet('/events', $token, ['size' => 50]);
 if (!$eventsData) {
     echo json_encode([
         'success' => false,
         'message' => 'Falha ao autenticar com a Yazo. Verifique se o Token é válido.'
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-$events = isset($eventsData['items']) ? $eventsData['items'] : $eventsData;
-$eventId = null;
-foreach ($events as $ev) {
-    $name = isset($ev['name']) ? strtoupper($ev['name']) : '';
-    if (strpos($name, 'IGUASSU') !== false || strpos($name, 'INOVA') !== false) {
-        $eventId = $ev['id'];
-        break;
+$events = $eventsData['data'] ?? ($eventsData['items'] ?? $eventsData);
+$eventId = getenv('YAZO_EVENT_ID') ?: null;
+if (!$eventId && is_array($events)) {
+    foreach ($events as $ev) {
+        $name = strtoupper($ev['name'] ?? '');
+        if (strpos($name, 'IGUASSU') !== false || strpos($name, 'INOVA') !== false) {
+            $eventId = $ev['id'];
+            break;
+        }
     }
-}
-
-if (!$eventId && !empty($events)) {
-    $eventId = $events[0]['id'];
+    if (!$eventId && !empty($events)) {
+        $eventId = $events[0]['id'];
+    }
 }
 
 if (!$eventId) {
     echo json_encode([
         'success' => false,
         'message' => 'Nenhum evento encontrado nesta conta Yazo.'
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// 2. Coleta Inscrições Paginadas
-$page = 1;
-$size = 100;
-$allRegistrations = [];
+// 2. Coleta Inscrições Paginadas em paralelo
+$first = yazoGet("/events/{$eventId}/registrations", $token, ['page' => 1, 'size' => 100]);
+if (!$first) {
+    echo json_encode(['success' => false, 'message' => 'Erro ao consultar inscrições.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
-do {
-    $regData = yazoGet("/events/{$eventId}/registrations", $token, ['page' => $page, 'size' => $size]);
-    if (!$regData || empty($regData['items'])) {
-        break;
+$allRegistrations = $first['data'] ?? ($first['items'] ?? []);
+$totalPages = (int)($first['totalPages'] ?? 1);
+
+for ($p = 2; $p <= $totalPages; $p += 15) {
+    $urls = [];
+    for ($j = $p; $j < $p + 15 && $j <= $totalPages; $j++) {
+        $urls[$j] = "{$baseUrl}/events/{$eventId}/registrations?page={$j}&size=100";
     }
-
-    foreach ($regData['items'] as $item) {
-        $allRegistrations[] = $item;
+    $batchRes = yazoGetBatch($urls, $token);
+    ksort($batchRes);
+    foreach ($batchRes as $res) {
+        $rows = $res['data'] ?? ($res['items'] ?? []);
+        foreach ($rows as $item) {
+            $allRegistrations[] = $item;
+        }
     }
+}
 
-    $totalPages = isset($regData['totalPages']) ? $regData['totalPages'] : 1;
-    $page++;
-} while ($page <= $totalPages && count($regData['items']) == $size);
-
-// 3. Formata Registros
+// 3. Formata Registros Válidos
 $records = [];
-foreach ($allRegistrations as $item) {
-    $user = isset($item['user']) ? $item['user'] : [];
-    $name = isset($user['name']) ? trim($user['name']) : '';
-    $email = isset($user['email']) ? trim($user['email']) : '';
+$tzSp = new DateTimeZone('America/Sao_Paulo');
+$tzUtc = new DateTimeZone('UTC');
 
-    $ticket = isset($item['ticket']) ? $item['ticket'] : [];
-    $tipo = isset($ticket['name']) ? $ticket['name'] : 'Geral';
+foreach ($allRegistrations as $item) {
+    if (($item['status'] ?? 'valid') !== 'valid') continue;
+
+    $user = $item['user'] ?? [];
+    $name = trim($user['name'] ?? '');
+    $email = trim($user['email'] ?? '');
+
+    $ticket = $item['ticket'] ?? [];
+    $tipo = $ticket['name'] ?? 'Geral';
 
     $perfil = 'Não informado';
     if (!empty($item['dynamicFormAnswers'])) {
         foreach ($item['dynamicFormAnswers'] as $ans) {
-            $lbl = strtolower(isset($ans['label']) ? $ans['label'] : (isset($ans['question']) ? $ans['question'] : ''));
+            $lbl = mb_strtolower($ans['name'] ?? ($ans['label'] ?? ($ans['question'] ?? '')), 'UTF-8');
             if (strpos($lbl, 'perfil') !== false || strpos($lbl, 'representa') !== false) {
-                $perfil = isset($ans['value']) ? $ans['value'] : (isset($ans['answer']) ? $ans['answer'] : $perfil);
+                $perfil = $ans['value'] ?? ($ans['answer'] ?? $perfil);
                 break;
             }
         }
     }
 
-    $createdAt = isset($item['createdAt']) ? $item['createdAt'] : '';
+    $createdAt = $item['createdAt'] ?? '';
     if (!$createdAt) continue;
 
-    $dt = new DateTime($createdAt);
-    // Fuso de Brasília
-    $dt->setTimezone(new DateTimeZone('America/Sao_Paulo'));
+    try {
+        $dt = new DateTime($createdAt, $tzUtc);
+        $dt->setTimezone($tzSp);
+    } catch (Exception $e) {
+        continue;
+    }
 
     $records[] = [
         'dt' => $dt->format('d/m/Y H:i'),
@@ -151,4 +231,4 @@ echo json_encode([
     'success' => true,
     'count' => count($records),
     'message' => 'Sincronização concluída com sucesso!'
-]);
+], JSON_UNESCAPED_UNICODE);
