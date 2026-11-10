@@ -211,36 +211,101 @@ $batchBody = [
 ];
 
 $apiUrl = "https://analyticsdata.googleapis.com/v1beta/properties/{$propertyId}:batchRunReports";
-$ch = curl_init($apiUrl);
-curl_setopt_array($ch, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST           => true,
-    CURLOPT_TIMEOUT        => 25,
-    CURLOPT_SSL_VERIFYPEER => true,
-    CURLOPT_HTTPHEADER     => [
-        'Authorization: Bearer ' . $accessToken,
-        'Content-Type: application/json'
-    ],
-    CURLOPT_POSTFIELDS => json_encode($batchBody)
-]);
 
-$resp = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curlErr = curl_error($ch);
-curl_close($ch);
+function callGa4Batch($apiUrl, $accessToken, $requests) {
+    $ch = curl_init($apiUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_TIMEOUT        => 25,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $accessToken,
+            'Content-Type: application/json'
+        ],
+        CURLOPT_POSTFIELDS => json_encode(['requests' => $requests])
+    ]);
+    $resp = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlErr = curl_error($ch);
+    curl_close($ch);
+    if ($curlErr || $httpCode !== 200) {
+        return ['ok' => false, 'code' => $httpCode, 'error' => json_decode((string)$resp, true) ?: $curlErr];
+    }
+    return ['ok' => true, 'data' => json_decode($resp, true)];
+}
 
-if ($curlErr || $httpCode !== 200) {
-    http_response_code($httpCode ?: 502);
+$batch1 = callGa4Batch($apiUrl, $accessToken, $batchBody['requests']);
+if (!$batch1['ok']) {
+    http_response_code($batch1['code'] ?: 502);
     echo json_encode([
         'status' => 'error',
-        'message' => 'Erro ao consultar Google Analytics Data API (HTTP ' . $httpCode . ')',
-        'details' => json_decode((string)$resp, true) ?: $curlErr
+        'message' => 'Erro ao consultar Google Analytics Data API (HTTP ' . $batch1['code'] . ')',
+        'details' => $batch1['error']
     ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-$raw = json_decode($resp, true);
+// Batch 2: Eventos do Funil, Canais de Mídia (sessionSourceMedium), Países e Canais Agrupados
+$batch2Requests = [
+    // 0: Eventos oficiais do funil (toda campanha)
+    [
+        'dateRanges' => [['startDate' => '2026-08-25', 'endDate' => 'today']],
+        'dimensions' => [['name' => 'eventName']],
+        'metrics' => [
+            ['name' => 'eventCount'],
+            ['name' => 'totalUsers']
+        ],
+        'limit' => 30
+    ],
+    // 1: Canais sessionSourceMedium (Performance Mídia Paga & Orgânico)
+    [
+        'dateRanges' => [['startDate' => '2026-08-25', 'endDate' => 'today']],
+        'dimensions' => [['name' => 'sessionSourceMedium'], ['name' => 'sessionDefaultChannelGroup']],
+        'metrics' => [
+            ['name' => 'sessions'],
+            ['name' => 'totalUsers'],
+            ['name' => 'engagedSessions'],
+            ['name' => 'engagementRate'],
+            ['name' => 'averageSessionDuration'],
+            ['name' => 'eventCount']
+        ],
+        'orderBys' => [['metric' => ['metricName' => 'sessions'], 'desc' => true]],
+        'limit' => 30
+    ],
+    // 2: Distribuição geográfica de click_ingressos
+    [
+        'dateRanges' => [['startDate' => '2026-08-25', 'endDate' => 'today']],
+        'dimensions' => [['name' => 'country']],
+        'metrics' => [['name' => 'eventCount'], ['name' => 'totalUsers']],
+        'dimensionFilter' => [
+            'filter' => [
+                'fieldName' => 'eventName',
+                'stringFilter' => ['matchType' => 'EXACT', 'value' => 'click_ingressos']
+            ]
+        ],
+        'orderBys' => [['metric' => ['metricName' => 'eventCount'], 'desc' => true]],
+        'limit' => 15
+    ],
+    // 3: Resumo por canal (sessionDefaultChannelGroup) para funil Pago vs Orgânico
+    [
+        'dateRanges' => [['startDate' => '2026-08-25', 'endDate' => 'today']],
+        'dimensions' => [['name' => 'sessionDefaultChannelGroup']],
+        'metrics' => [
+            ['name' => 'totalUsers'],
+            ['name' => 'sessions'],
+            ['name' => 'screenPageViews']
+        ],
+        'orderBys' => [['metric' => ['metricName' => 'sessions'], 'desc' => true]],
+        'limit' => 20
+    ]
+];
+
+$batch2 = callGa4Batch($apiUrl, $accessToken, $batch2Requests);
+
+$raw = $batch1['data'];
 $reports = $raw['reports'] ?? [];
+$reports2 = ($batch2['ok'] && !empty($batch2['data']['reports'])) ? $batch2['data']['reports'] : [];
 
 function extractTotals($report) {
     $row = $report['rows'][0]['metricValues'] ?? null;
@@ -278,6 +343,59 @@ foreach (($reports[4]['rows'] ?? []) as $r) {
     }
 }
 
+$funnelEvents = [];
+foreach (($reports2[0]['rows'] ?? []) as $r) {
+    $evName = $r['dimensionValues'][0]['value'] ?? '';
+    if ($evName !== '') {
+        $funnelEvents[$evName] = [
+            'count' => (int)($r['metricValues'][0]['value'] ?? 0),
+            'users' => (int)($r['metricValues'][1]['value'] ?? 0)
+        ];
+    }
+}
+
+$channelsList = [];
+foreach (($reports2[1]['rows'] ?? []) as $r) {
+    $sm = $r['dimensionValues'][0]['value'] ?? '(not set)';
+    $grp = $r['dimensionValues'][1]['value'] ?? 'Unassigned';
+    $sess = (int)($r['metricValues'][0]['value'] ?? 0);
+    $usr  = (int)($r['metricValues'][1]['value'] ?? 0);
+    $eng  = (int)($r['metricValues'][2]['value'] ?? 0);
+    $rate = round((float)($r['metricValues'][3]['value'] ?? 0) * 100, 2);
+    $avgS = (int)round((float)($r['metricValues'][4]['value'] ?? 0));
+    $evC  = (int)($r['metricValues'][5]['value'] ?? 0);
+    $channelsList[] = [
+        'channel' => $sm,
+        'group' => $grp,
+        'sessions' => $sess,
+        'users' => $usr,
+        'engagedSessions' => $eng,
+        'engagementRate' => $rate,
+        'avgTimeSec' => $avgS,
+        'eventCount' => $evC
+    ];
+}
+
+$countriesClick = [];
+foreach (($reports2[2]['rows'] ?? []) as $r) {
+    $country = $r['dimensionValues'][0]['value'] ?? 'Unknown';
+    $countriesClick[] = [
+        'country' => $country,
+        'count' => (int)($r['metricValues'][0]['value'] ?? 0),
+        'users' => (int)($r['metricValues'][1]['value'] ?? 0)
+    ];
+}
+
+$channelGroups = [];
+foreach (($reports2[3]['rows'] ?? []) as $r) {
+    $grp = $r['dimensionValues'][0]['value'] ?? 'Other';
+    $channelGroups[$grp] = [
+        'users' => (int)($r['metricValues'][0]['value'] ?? 0),
+        'sessions' => (int)($r['metricValues'][1]['value'] ?? 0),
+        'pageViews' => (int)($r['metricValues'][2]['value'] ?? 0)
+    ];
+}
+
 $output = [
     'status' => 'ok',
     'source' => 'live_ga4_api',
@@ -287,7 +405,11 @@ $output = [
     'yazo_page' => $effectiveTotals,
     'yazo_48h' => $effective48h,
     'site_global' => $globalTotals,
-    'daily_yazo' => $dailyYazo
+    'daily_yazo' => $dailyYazo,
+    'funnel_events' => $funnelEvents,
+    'channels' => $channelsList,
+    'countries_click' => $countriesClick,
+    'channel_groups' => $channelGroups
 ];
 
 file_put_contents($cacheFile, json_encode($output, JSON_UNESCAPED_UNICODE));

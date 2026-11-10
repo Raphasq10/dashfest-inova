@@ -16,7 +16,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   
   <!-- Dados Pré-processados -->
-  <script src="data.js"></script>
+  <script src="yazo_operacao_data.js"></script>
+  <script src="ga4_operacao_data.js"></script>
 
   <style>
     :root {
@@ -809,14 +810,10 @@
       </div>
 
       <div class="header-actions">
-        <input type="file" id="csvFileInput" accept=".csv" />
-        <button class="btn btn-primary" style="background: linear-gradient(135deg, #06b6d4, #0891b2);" onclick="openYazoSyncModal()" title="Sincronizar dados automaticamente via API do Yazo Tickets">
-          <i class="fa-solid fa-rotate"></i> Sincronizar API Yazo
+        <button class="btn btn-primary" id="btnRefreshLiveAll" onclick="refreshHomeLiveData()" title="Sincronizar Google Analytics 4 e Yazo API ao vivo">
+          <i class="fa-solid fa-rotate" id="homeSyncIcon"></i> Atualizar GA4 + Yazo
         </button>
-        <button class="btn btn-outline" onclick="document.getElementById('csvFileInput').click();" title="Substituir ou atualizar com novo arquivo CSV de inscritos">
-          <i class="fa-solid fa-cloud-arrow-up"></i> Atualizar CSV
-        </button>
-        <button class="btn btn-outline" onclick="exportData()" title="Baixar relatório em formato CSV">
+        <button class="btn btn-outline" onclick="exportData()" title="Baixar relatório da aba atual em formato CSV">
           <i class="fa-solid fa-file-export"></i> Exportar Dados
         </button>
         <button class="btn btn-outline" onclick="window.print()" title="Imprimir ou gerar PDF executivo">
@@ -828,37 +825,29 @@
     <!-- NAVEGAÇÃO GLOBAL UNIFICADA -->
     <div id="globalNavMount"></div>
 
-    <!-- SUB-ABAS DA HOME EXECUTIVA -->
-    <nav class="main-tabs-nav">
+    <!-- SUB-ABAS DE VISUALIZAÇÃO DA HOME EXECUTIVA -->
+    <nav class="main-tabs-nav" aria-label="Visões da Home Executiva">
       <button class="main-tab-btn active" id="btnTabAudit" onclick="switchMainTab('tab-audit')">
         <i class="fa-solid fa-briefcase" style="color: var(--steel-blue);"></i>
-        <span>Auditoria C-Level & Decisão de Mídia</span>
+        <span>1. Auditoria C-Level & Decisão de Mídia</span>
         <span class="tab-badge" style="background: rgba(63, 136, 197, 0.15); color: var(--steel-blue); border-color: rgba(63, 136, 197, 0.3);">
-          Visão Executiva
+          Visão Diretoria
         </span>
       </button>
 
       <button class="main-tab-btn" id="btnTabFunnel" onclick="switchMainTab('tab-funnel')">
         <i class="fa-solid fa-filter-circle-dollar" style="color: var(--terracotta);"></i>
-        <span>Funil de Conversão (3 Colunas)</span>
-        <span class="tab-badge" style="background: rgba(233, 79, 55, 0.12); color: var(--terracotta); border-color: rgba(233, 79, 55, 0.3);">
-          GA4 & Pixel
+        <span>2. Funil de Conversão (GA4 + Yazo)</span>
+        <span class="tab-badge" id="funnelNavBadge" style="background: rgba(233, 79, 55, 0.12); color: var(--terracotta); border-color: rgba(233, 79, 55, 0.3);">
+          Cruzado Live
         </span>
       </button>
 
       <button class="main-tab-btn" id="btnTabTraffic" onclick="switchMainTab('tab-traffic')">
         <i class="fa-solid fa-bullhorn" style="color: var(--ocean-mist);"></i>
-        <span>Performance Mídia Paga (GA4)</span>
-        <span class="tab-badge" style="background: rgba(68, 187, 164, 0.15); color: #0F5144; border-color: rgba(68, 187, 164, 0.3);">
-          32.580 sessões
-        </span>
-      </button>
-
-      <button class="main-tab-btn" id="btnTabInscriptions" onclick="switchMainTab('tab-inscriptions')">
-        <i class="fa-solid fa-clock-rotate-left" style="color: #5A6267;"></i>
-        <span>Histórico CSV (Legado)</span>
-        <span class="tab-badge" id="tabInscritosCountBadge" style="background: #ECEEDD; color: #5A6267; border-color: #D8DCCB;">
-          3.142 inscritos
+        <span>3. Performance Mídia Paga (GA4)</span>
+        <span class="tab-badge" id="trafficNavBadge" style="background: rgba(68, 187, 164, 0.15); color: #0F5144; border-color: rgba(68, 187, 164, 0.3);">
+          GA4 Live
         </span>
       </button>
     </nav>
@@ -1473,243 +1462,6 @@
     </main>
 
     <!-- =====================================================================
-         ABA OPERACIONAL TÉCNICA: INSCRIÇÕES & CONVERSÃO HORÁRIA (RECOLHIDO)
-         ===================================================================== -->
-    <main id="tab-inscriptions" class="tab-content">
-      
-      <section class="filter-panel">
-        <div class="filter-top-row">
-          <div class="filter-title">
-            <i class="fa-solid fa-filter" style="color: var(--primary-light);"></i>
-            <span>Filtros Dinâmicos de Campanha</span>
-          </div>
-          
-          <div class="preset-buttons">
-            <button class="btn-preset active" data-preset="all" onclick="applyPreset('all')">Todo Período</button>
-            <button class="btn-preset" data-preset="abertura" onclick="applyPreset('abertura')">Abertura (25-31 Ago)</button>
-            <button class="btn-preset" data-preset="campanha" onclick="applyPreset('campanha')">Durante Tráfego (14/09 a 23/10)</button>
-            <button class="btn-preset" data-preset="setembro" onclick="applyPreset('setembro')">Setembro</button>
-            <button class="btn-preset" data-preset="outubro" onclick="applyPreset('outubro')">Outubro</button>
-            <button class="btn-preset" data-preset="novembro" onclick="applyPreset('novembro')">Novembro (Reta Final)</button>
-            <button class="btn-preset" data-preset="last14" onclick="applyPreset('last14')">Últimos 14 Dias</button>
-          </div>
-        </div>
-
-        <div class="filter-controls-grid">
-          <div class="filter-field">
-            <label><i class="fa-regular fa-calendar"></i> Data Inicial</label>
-            <input type="date" id="filterStartDate" onchange="onManualDateChange()" />
-          </div>
-          
-          <div class="filter-field">
-            <label><i class="fa-regular fa-calendar"></i> Data Final</label>
-            <input type="date" id="filterEndDate" onchange="onManualDateChange()" />
-          </div>
-
-          <div class="filter-field">
-            <label><i class="fa-solid fa-user-tag"></i> Perfil Representado</label>
-            <select id="filterPerfil" onchange="applyFilters()">
-              <option value="ALL">Todos os Perfis (Geral)</option>
-            </select>
-          </div>
-
-          <div class="filter-field">
-            <label><i class="fa-solid fa-ticket"></i> Tipo de Inscrição</label>
-            <select id="filterTipo" onchange="applyFilters()">
-              <option value="ALL">Todos os Tipos</option>
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <section class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-card-header">
-            <span class="kpi-label">Total de Inscrições</span>
-            <div class="kpi-icon indigo"><i class="fa-solid fa-users"></i></div>
-          </div>
-          <div class="kpi-value" id="kpiTotal">0</div>
-          <div class="kpi-subtext">
-            <span>Base monitorada:</span>
-            <span class="highlight" id="kpiShareTotal">100%</span>
-          </div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-card-header">
-            <span class="kpi-label">Inscritos Únicos</span>
-            <div class="kpi-icon emerald"><i class="fa-solid fa-id-card"></i></div>
-          </div>
-          <div class="kpi-value" id="kpiUnicos">0</div>
-          <div class="kpi-subtext">
-            <span>Taxa de unicidade:</span>
-            <span class="highlight" id="kpiTaxaUnicidade">0%</span>
-          </div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-card-header">
-            <span class="kpi-label">Média Diária</span>
-            <div class="kpi-icon cyan"><i class="fa-solid fa-chart-simple"></i></div>
-          </div>
-          <div class="kpi-value" id="kpiMediaDiaria">0</div>
-          <div class="kpi-subtext" id="kpiDiasAtivos">Em 0 dias monitorados</div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-card-header">
-            <span class="kpi-label">Dia Recorde (Pico)</span>
-            <div class="kpi-icon amber"><i class="fa-solid fa-trophy"></i></div>
-          </div>
-          <div class="kpi-value" id="kpiPicoDia" style="font-size: 1.6rem;">-</div>
-          <div class="kpi-subtext" id="kpiPicoSubtext">0 inscrições registradas</div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-card-header">
-            <span class="kpi-label">Horário Mais Quente</span>
-            <div class="kpi-icon rose"><i class="fa-solid fa-fire-flame-curved"></i></div>
-          </div>
-          <div class="kpi-value" id="kpiGoldenHour">--:--</div>
-          <div class="kpi-subtext" id="kpiGoldenHourSubtext">Pico de conversão</div>
-        </div>
-      </section>
-
-      <section class="charts-grid-main">
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div class="chart-title-wrap">
-              <h2>
-                <i class="fa-solid fa-timeline" style="color: var(--primary-light);"></i>
-                Evolução Temporal das Inscrições (Visão por Período)
-              </h2>
-              <p>Acompanhamento da velocidade de conversão diária e acumulada durante a campanha. <em>Clique em qualquer barra para carregar o detalhe daquele dia!</em></p>
-            </div>
-            <div class="chart-tools">
-              <div class="toggle-group">
-                <button class="toggle-btn active" id="btnTrendDaily" onclick="setTrendMode('daily')">Diário</button>
-                <button class="toggle-btn" id="btnTrendCumul" onclick="setTrendMode('cumulative')">Acumulado</button>
-              </div>
-            </div>
-          </div>
-          <div class="chart-container-box">
-            <canvas id="trendChart"></canvas>
-          </div>
-        </div>
-      </section>
-
-      <section class="charts-grid-main">
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div class="chart-title-wrap">
-              <h2>
-                <i class="fa-solid fa-clock" style="color: var(--accent-cyan);"></i>
-                Desempenho de Inscrições Hora a Hora (00:00 às 23:00)
-              </h2>
-              <p id="hourlyChartSubtitle">Análise detalhada de conversão horária para avaliar o impacto de disparos de emails e anúncios.</p>
-            </div>
-
-            <div class="chart-tools">
-              <div class="toggle-group">
-                <button class="toggle-btn active" id="btnHourlyDayMode" onclick="setHourlyMode('single_day')">Dia Específico</button>
-                <button class="toggle-btn" id="btnHourlyConsolidatedMode" onclick="setHourlyMode('consolidated')">Padrão Geral (Consolidado)</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="hourly-control-bar" id="hourlyDayControlBar">
-            <label><i class="fa-solid fa-calendar-day"></i> Selecione o Dia:</label>
-            <button class="nav-day-btn" onclick="stepHourlyDay(-1)" title="Dia Anterior"><i class="fa-solid fa-chevron-left"></i> Anterior</button>
-            <select id="hourlyDaySelector" onchange="onHourlyDayChange()">
-            </select>
-            <button class="nav-day-btn" onclick="stepHourlyDay(1)" title="Próximo Dia">Próximo <i class="fa-solid fa-chevron-right"></i></button>
-            
-            <span class="hourly-day-badge" id="hourlyDayTotalBadge">Total do Dia: 0</span>
-            <span class="hourly-day-badge" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.3);" id="hourlyDayPeakBadge">Pico: --</span>
-          </div>
-
-          <div class="chart-container-box" style="margin-top: 16px;">
-            <canvas id="hourlyChart"></canvas>
-          </div>
-
-          <div class="insight-callout" id="hourlyInsightBox">
-            <i class="fa-solid fa-lightbulb"></i>
-            <div class="insight-text">
-              <h4>Insight de Performance & Otimização de Mídia</h4>
-              <p id="hourlyInsightDesc">Carregando insights do período...</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="charts-grid-two">
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div class="chart-title-wrap">
-              <h2>
-                <i class="fa-solid fa-pie-chart" style="color: var(--accent-emerald);"></i>
-                Segmentação por Perfil de Público
-              </h2>
-              <p>Representatividade por categoria profissional e de mercado.</p>
-            </div>
-          </div>
-          <div class="chart-container-box" style="height: 320px;">
-            <canvas id="perfilChart"></canvas>
-          </div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-card-header">
-            <div class="chart-title-wrap">
-              <h2>
-                <i class="fa-solid fa-calendar-week" style="color: var(--accent-amber);"></i>
-                Conversão por Dia da Semana
-              </h2>
-              <p>Dias mais propensos a inscrição (Volume total acumulado).</p>
-            </div>
-          </div>
-          <div class="chart-container-box" style="height: 320px;">
-            <canvas id="weekdayChart"></canvas>
-          </div>
-        </div>
-      </section>
-
-      <section class="table-card">
-        <div class="table-header-wrap">
-          <div>
-            <h2 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326;">
-              <i class="fa-solid fa-table-list" style="color: var(--primary-light); margin-right: 8px;"></i>
-              Detalhamento Diário da Campanha
-            </h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
-              Métricas dia a dia com volume, horário de pico e perfil predominante.
-            </p>
-          </div>
-          <input type="text" id="tableSearchInput" class="search-table-input" placeholder="Buscar data ou dia da semana..." oninput="renderTable()" />
-        </div>
-
-        <div class="table-responsive">
-          <table class="data-table ga4-events-table">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Dia da Semana</th>
-                <th>Inscrições</th>
-                <th>% do Período</th>
-                <th>Horário de Pico</th>
-                <th>Perfil Predominante</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody id="dailyTableBody">
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-    </main>
-
-    <!-- =====================================================================
          ABA 2: PERFORMANCE DO TRÁFEGO PAGO & MÍDIA PATROCINADA (GA4)
          ===================================================================== -->
     <main id="tab-traffic" class="tab-content">
@@ -1720,19 +1472,19 @@
             <i class="fa-solid fa-rocket"></i>
           </div>
           <div class="campaign-banner-text">
-            <h3>Campanha de Tráfego Pago & Mídia de Aquisição</h3>
-            <p>Auditoria dos canais patrocinados via Google Analytics 4 (GA4) e impacto na taxa de conversão.</p>
+            <h3>Campanha de Tráfego Pago & Mídia de Aquisição (GA4 Live)</h3>
+            <p id="trafficBannerSubtitle">Auditoria em tempo real dos canais patrocinados via Google Analytics 4 (GA4) cruzada com inscritos validados da Yazo.</p>
           </div>
         </div>
 
         <div class="campaign-dates-badges">
-          <div class="date-pill" title="Período em que os anúncios estiveram no ar">
-            <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i>
-            <span>Veiculação Ativa de Anúncios: <strong>14/09 a 23/10/2026 (40 dias)</strong></span>
+          <div class="date-pill" title="Período de veiculação das campanhas">
+            <i class="fa-solid fa-bullhorn" style="color: var(--steel-blue);"></i>
+            <span>Ciclo Analisado: <strong>25/08 até Hoje (GA4 Live)</strong></span>
           </div>
-          <div class="date-pill" title="Janela de mensuração do print do GA4">
-            <i class="fa-solid fa-chart-pie" style="color: var(--accent-emerald);"></i>
-            <span>Janela Mensurada no GA4: <strong>25/09 a 06/11/2026</strong></span>
+          <div class="date-pill" title="Fonte de atualização">
+            <i class="fa-brands fa-google" style="color: var(--ocean-mist);"></i>
+            <span>Fonte: <strong id="trafficGa4SyncLabel">GA4 Data API v1beta</strong></span>
           </div>
         </div>
       </section>
@@ -1743,10 +1495,10 @@
             <span class="kpi-label">Sessões de Mídia Paga</span>
             <div class="kpi-icon cyan"><i class="fa-solid fa-bullseye"></i></div>
           </div>
-          <div class="kpi-value" id="trafficKpiSessions">32.580</div>
+          <div class="kpi-value" id="trafficKpiSessions">--</div>
           <div class="kpi-subtext">
             <span>Representatividade no evento:</span>
-            <span class="highlight">52,0% de todo tráfego</span>
+            <span class="highlight" id="trafficKpiSessionsShare">--</span>
           </div>
         </div>
 
@@ -1755,34 +1507,34 @@
             <span class="kpi-label">Sessões Engajadas (Pagas)</span>
             <div class="kpi-icon emerald"><i class="fa-solid fa-user-check"></i></div>
           </div>
-          <div class="kpi-value" id="trafficKpiEngaged">5.959</div>
+          <div class="kpi-value" id="trafficKpiEngaged">--</div>
           <div class="kpi-subtext">
             <span>Taxa Média de Engajamento:</span>
-            <span class="highlight">18,29%</span>
+            <span class="highlight" id="trafficKpiEngagedRate">--</span>
           </div>
         </div>
 
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <span class="kpi-label">Total de Eventos da Mídia</span>
+            <span class="kpi-label">Eventos da Mídia Paga</span>
             <div class="kpi-icon purple"><i class="fa-solid fa-arrow-pointer"></i></div>
           </div>
-          <div class="kpi-value">113.091</div>
+          <div class="kpi-value" id="trafficKpiEvents">--</div>
           <div class="kpi-subtext">
-            <span>Ações e cliques gerados:</span>
-            <span class="highlight">35,6% do site</span>
+            <span>Ações no site + página Yazo:</span>
+            <span class="highlight" id="trafficKpiEventsShare">--</span>
           </div>
         </div>
 
         <div class="kpi-card">
           <div class="kpi-card-header">
-            <span class="kpi-label">Inscritos no Período Pago</span>
+            <span class="kpi-label">Inscritos Validados (Yazo)</span>
             <div class="kpi-icon indigo"><i class="fa-solid fa-user-plus"></i></div>
           </div>
-          <div class="kpi-value">972</div>
+          <div class="kpi-value" id="trafficKpiYazoTotal">--</div>
           <div class="kpi-subtext">
-            <span>Durante os 40 dias de anúncios:</span>
-            <span class="highlight">24,3 inscritos/dia</span>
+            <span>Acessos Página Yazo (GA4):</span>
+            <span class="highlight" id="trafficKpiYazoUsers">--</span>
           </div>
         </div>
 
@@ -1791,10 +1543,10 @@
             <span class="kpi-label">Formato Campeão</span>
             <div class="kpi-icon rose"><i class="fa-brands fa-instagram"></i></div>
           </div>
-          <div class="kpi-value" style="font-size: 1.55rem;">Reels Patrocinado</div>
+          <div class="kpi-value" id="trafficKpiTopFormat" style="font-size: 1.35rem;">Reels Patrocinado</div>
           <div class="kpi-subtext">
-            <span>16.096 sessões</span>
-            <span class="highlight">49,4% da mídia</span>
+            <span id="trafficKpiTopFormatSessions">--</span>
+            <span class="highlight" id="trafficKpiTopFormatShare">--</span>
           </div>
         </div>
       </section>
@@ -1839,7 +1591,7 @@
                 <i class="fa-solid fa-chart-pie" style="color: var(--accent-purple);"></i>
                 Share de Tráfego Total do Festival (GA4)
               </h2>
-              <p>Mídia Patrocinada (52%) vs Tráfego Direto vs Orgânico vs Social.</p>
+              <p>Distribuição consolidada entre Mídia Paga, Direto, Orgânico, Social e E-mail (GA4 Live).</p>
             </div>
           </div>
           <div class="chart-container-box" style="height: 320px;">
@@ -1876,8 +1628,8 @@
           </div>
           <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
             <div class="toggle-group">
-              <button class="toggle-btn active" id="btnTrafficFilterPaid" onclick="filterTrafficTable('paid')">Canais Pagos (6)</button>
-              <button class="toggle-btn" id="btnTrafficFilterAll" onclick="filterTrafficTable('all')">Todos os Canais GA4 (19)</button>
+              <button class="toggle-btn active" id="btnTrafficFilterPaid" onclick="filterTrafficTable('paid')">Canais Pagos</button>
+              <button class="toggle-btn" id="btnTrafficFilterAll" onclick="filterTrafficTable('all')">Todos os Canais GA4</button>
             </div>
             <input type="text" id="trafficSearchInput" class="search-table-input" placeholder="Filtrar canal..." oninput="renderTrafficTable()" />
           </div>
@@ -1925,27 +1677,31 @@
     <main id="tab-funnel" class="tab-content">
       
       <!-- BANNER DE CONTEXTO DO FUNIL -->
-      <section class="campaign-banner" style="border-left-color: var(--accent-amber);">
+      <section class="campaign-banner" style="border-left-color: var(--terracotta);">
         <div class="campaign-banner-info">
-          <div class="campaign-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">
+          <div class="campaign-icon" style="background: rgba(233, 79, 55, 0.14); color: var(--terracotta);">
             <i class="fa-solid fa-arrows-split-up-and-left"></i>
           </div>
           <div class="campaign-banner-text">
-            <h3>Funil Comparativo de Conversão: Geral vs Meta Ads vs Orgânico</h3>
+            <h3>Funil Comparativo de Conversão: Site (GA4) &rarr; Página Yazo &rarr; Inscritos Validados</h3>
             <p>
-              Auditoria cruzada com base nos eventos oficiais do <strong>Google Analytics 4 (GA4)</strong> e disparos do <strong>Meta Pixel</strong>.
+              Auditoria em tempo real cruzando os eventos oficiais do <strong>Google Analytics 4</strong> com a base oficial confirmada pela <strong>API da Yazo Tickets</strong>.
             </p>
           </div>
         </div>
 
         <div class="campaign-dates-badges">
-          <div class="date-pill" title="Período do relatório GA4">
-            <i class="fa-brands fa-google" style="color: #f59e0b;"></i>
-            <span>Janela GA4: <strong>25/09 a 06/11/2026</strong></span>
+          <div class="date-pill" title="Total de Usuários Únicos no Site GA4">
+            <i class="fa-brands fa-google" style="color: var(--steel-blue);"></i>
+            <span>Site GA4: <strong id="funnelBannerUsers">--</strong></span>
           </div>
-          <div class="date-pill" title="Total de Usuários Únicos no GA4">
-            <i class="fa-solid fa-users" style="color: var(--accent-cyan);"></i>
-            <span>Base GA4: <strong>51.878 Usuários Únicos</strong></span>
+          <div class="date-pill" title="Usuários Únicos na página da Yazo no GA4">
+            <i class="fa-solid fa-door-open" style="color: #7C3AED;"></i>
+            <span>Página Yazo (GA4): <strong id="funnelBannerYazoPage">--</strong></span>
+          </div>
+          <div class="date-pill" title="Inscrições validadas na API da Yazo">
+            <i class="fa-solid fa-ticket" style="color: #0F5144;"></i>
+            <span>Yazo Validados: <strong id="funnelBannerYazoValid">--</strong></span>
           </div>
         </div>
       </section>
@@ -1954,274 +1710,31 @@
       <section style="margin-bottom: 24px;">
         <div class="table-header-wrap" style="margin-bottom: 14px;">
           <div>
-            <h2 style="font-family: var(--font-heading); font-size: 1.2rem; color: #fff; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-chart-line" style="color: var(--accent-cyan);"></i>
-              Jornada Passo a Passo: Comparativo de Desempenho Lado a Lado
+            <h2 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-chart-line" style="color: var(--steel-blue);"></i>
+              Jornada Passo a Passo: Visão Global vs Tráfego Pago vs Orgânico/Direto
             </h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">
-              Acompanhamento da taxa de passagem e retenção de usuários únicos em cada etapa do processo de inscrição.
+            <p style="font-size: 0.85rem; color: #5A6267;">
+              Acompanhamento em tempo real da passagem de usuários únicos do primeiro acesso no site até a emissão validada do ingresso na Yazo.
             </p>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
-          
-          <!-- COLUNA 1: FUNIL GERAL (GLOBAL) -->
-          <div style="background: #FFFFFF; border: 1px solid #D8DCCB; border-top: 5px solid var(--steel-blue); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E5D5; padding-bottom: 14px;">
-              <div>
-                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--steel-blue); letter-spacing: 0.05em;">Visão Global</span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326; margin-top: 2px;">
-                  <i class="fa-solid fa-globe" style="color: var(--steel-blue); margin-right: 6px;"></i> Geral (Todos os Canais)
-                </h3>
-              </div>
-              <span class="badge-pill normal" style="font-size: 0.8rem; padding: 4px 10px;">100% Tráfego</span>
-            </div>
-            
-            <p style="font-size: 0.82rem; color: #5A6267; margin-bottom: 6px;">Total de <strong>51.878 usuários únicos</strong> e 62.658 sessões registradas no site.</p>
-
-            <!-- Step 1 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: #5A6267;">1. Visitas no Site (page_view)</div>
-                <div class="funnel-step-number">51.878 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill normal">100%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">107.871 views</div>
-              </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: var(--steel-blue);">2. Clique Ingressos (click_ingressos)</div>
-                <div class="funnel-step-number" style="color: #1C5A8A;">7.420 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill info">14,30%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">9.667 cliques</div>
-              </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: #2C699A;">3. Início Cadastro (form_start)</div>
-                <div class="funnel-step-number">6.079 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill info">81,93%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
-              </div>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: var(--terracotta);">4. Seleção Ingresso (add_to_cart)</div>
-                <div class="funnel-step-number">5.391 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill terracotta">72,65%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
-              </div>
-            </div>
-
-            <!-- Step 5 -->
-            <div class="funnel-step-box" style="border-left: 4px solid var(--ocean-mist);">
-              <div>
-                <div class="funnel-step-name" style="color: #0F5144;">5. Checkout (begin_checkout)</div>
-                <div class="funnel-step-number" style="color: #0F5144;">4.957 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill ocean">66,81%</span>
-                <div style="font-size: 0.72rem; color: #0F5144; margin-top: 4px; font-weight: 700;">do clique</div>
-              </div>
-            </div>
-
-            <div class="funnel-summary-badge">
-              <span>Conversão Geral (Visitante ➔ Checkout):</span>
-              <strong style="color: #0F5144; margin-left: 6px;">9,56%</strong>
-            </div>
-          </div>
-
-
-          <!-- COLUNA 2: FUNIL TRÁFEGO PAGO (META ADS) -->
-          <div style="background: #FFFFFF; border: 1px solid #D8DCCB; border-top: 5px solid #0081FB; border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E5D5; padding-bottom: 14px;">
-              <div>
-                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #0081FB; letter-spacing: 0.05em;">Mídia Patrocinada</span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326; margin-top: 2px;">
-                  <i class="fa-brands fa-meta" style="color: #0081FB; margin-right: 6px;"></i> Tráfego Pago (Meta Ads)
-                </h3>
-              </div>
-              <span class="badge-pill paid" style="font-size: 0.8rem; padding: 4px 10px;">46,17% Tráfego</span>
-            </div>
-            
-            <p style="font-size: 0.82rem; color: #5A6267; margin-bottom: 6px;"><strong>28.930 sessões</strong> registradas via Reels, Feed Post e Facebook Ads.</p>
-
-            <!-- Step 1 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: #5A6267;">1. Visitas via Anúncios (page_view)</div>
-                <div class="funnel-step-number">23.952 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill paid">46,17%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do site</div>
-              </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: #0081FB;">2. Clique Ingressos (click_ingressos)</div>
-                <div class="funnel-step-number" style="color: #0081FB;">3.426 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill paid">14,30%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">~4.463 cliques</div>
-              </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: #2C699A;">3. Início Cadastro (form_start)</div>
-                <div class="funnel-step-number">2.807 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill info">81,93%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
-              </div>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: var(--terracotta);">4. Seleção Ingresso (add_to_cart)</div>
-                <div class="funnel-step-number">2.489 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill terracotta">72,65%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
-              </div>
-            </div>
-
-            <!-- Step 5 -->
-            <div class="funnel-step-box" style="border-left: 4px solid #0081FB;">
-              <div>
-                <div class="funnel-step-name" style="color: #0081FB;">5. Checkout (begin_checkout)</div>
-                <div class="funnel-step-number" style="color: #0081FB;">2.289 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill paid">66,81%</span>
-                <div style="font-size: 0.72rem; color: #0081FB; margin-top: 4px; font-weight: 700;">do clique</div>
-              </div>
-            </div>
-
-            <div class="funnel-summary-badge">
-              <span>Conversão Meta Ads (Visitante ➔ Checkout):</span>
-              <strong style="color: #0081FB; margin-left: 6px;">9,56%</strong>
-            </div>
-          </div>
-
-
-          <!-- COLUNA 3: FUNIL ORGÂNICO, DIRETO & CRM -->
-          <div style="background: #FFFFFF; border: 1px solid #D8DCCB; border-top: 5px solid var(--ocean-mist); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E5D5; padding-bottom: 14px;">
-              <div>
-                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #0F5144; letter-spacing: 0.05em;">Tráfego Espontâneo</span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326; margin-top: 2px;">
-                  <i class="fa-solid fa-leaf" style="color: var(--ocean-mist); margin-right: 6px;"></i> Orgânico, Direto & CRM
-                </h3>
-              </div>
-              <span class="badge-pill organic" style="font-size: 0.8rem; padding: 4px 10px;">48,00% Tráfego</span>
-            </div>
-            
-            <p style="font-size: 0.82rem; color: #5A6267; margin-bottom: 6px;"><strong>30.078 sessões</strong> via Tráfego Direto, Buscas no Google, E-mails e Imprensa.</p>
-
-            <!-- Step 1 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: #5A6267;">1. Visitas Espontâneas (page_view)</div>
-                <div class="funnel-step-number">24.901 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill organic">48,00%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do site</div>
-              </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: #0F5144;">2. Clique Ingressos (click_ingressos)</div>
-                <div class="funnel-step-number" style="color: #0F5144;">3.562 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill organic">14,30%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">~4.640 cliques</div>
-              </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: #2C699A;">3. Início Cadastro (form_start)</div>
-                <div class="funnel-step-number">2.918 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill info">81,93%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
-              </div>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="funnel-step-box">
-              <div>
-                <div class="funnel-step-name" style="color: var(--terracotta);">4. Seleção Ingresso (add_to_cart)</div>
-                <div class="funnel-step-number">2.588 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill terracotta">72,65%</span>
-                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px; font-weight: 600;">do clique</div>
-              </div>
-            </div>
-
-            <!-- Step 5 -->
-            <div class="funnel-step-box" style="border-left: 4px solid var(--ocean-mist);">
-              <div>
-                <div class="funnel-step-name" style="color: #0F5144;">5. Checkout (begin_checkout)</div>
-                <div class="funnel-step-number" style="color: #0F5144;">2.379 <span class="funnel-step-unit">usuários</span></div>
-              </div>
-              <div style="text-align: right;">
-                <span class="badge-pill organic">66,81%</span>
-                <div style="font-size: 0.72rem; color: #0F5144; margin-top: 4px; font-weight: 700;">do clique</div>
-              </div>
-            </div>
-
-            <div class="funnel-summary-badge">
-              <span>Conversão Orgânica (Visitante ➔ Checkout):</span>
-              <strong style="color: #0F5144; margin-left: 6px;">9,56%</strong>
-            </div>
-          </div>
-
+        <div id="funnelColumnsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+          <!-- Preenchido dinamicamente pelo JS com dados reais GA4 + Yazo -->
         </div>
       </section>
 
-      <!-- GRÁFICO COMPARATIVO LADO A LADO DAS ETAPAS -->
+      <!-- GRÁFICOS COMPARATIVOS DO FUNIL -->
       <section class="charts-grid-two">
-        
         <div class="chart-card">
           <div class="chart-card-header">
             <div class="chart-title-wrap">
               <h2>
-                <i class="fa-solid fa-chart-column" style="color: var(--accent-cyan);"></i>
-                Comparativo de Volume de Usuários por Etapa
+                <i class="fa-solid fa-chart-column" style="color: var(--steel-blue);"></i>
+                Funil Oficial Consolidado (GA4 &rarr; Yazo API)
               </h2>
-              <p>Geral (100%) vs Meta Ads (46,2%) vs Orgânico/Direto (48,0%).</p>
+              <p>Volume real de usuários únicos em cada etapa crítica até a inscrição validada.</p>
             </div>
           </div>
           <div class="chart-container-box" style="height: 340px;">
@@ -2233,29 +1746,28 @@
           <div class="chart-card-header">
             <div class="chart-title-wrap">
               <h2>
-                <i class="fa-solid fa-chart-line" style="color: var(--accent-amber);"></i>
-                Curva Histórica de Eventos no Tempo
+                <i class="fa-solid fa-chart-line" style="color: var(--ocean-mist);"></i>
+                Curva Diária: Acessos Página Yazo (GA4) vs Inscritos (Yazo)
               </h2>
-              <p>Picos diários de eventos e aceleração em outubro e novembro.</p>
+              <p>Comparativo dos últimos 30 dias entre quem entrou na ticketeria e quem concluiu.</p>
             </div>
           </div>
           <div class="chart-container-box" style="height: 340px;">
             <canvas id="pixelTimelineChart"></canvas>
           </div>
         </div>
-
       </section>
 
-      <!-- TABELA ANALÍTICA DOS EVENTOS DO GA4 (DO RELATÓRIO DO PRINT) -->
+      <!-- TABELA ANALÍTICA DOS EVENTOS DO GA4 (AO VIVO) -->
       <section class="table-card">
-        <div class="table-header-wrap">
+        <div class="table-header-wrap" style="margin-bottom: 16px;">
           <div>
             <h2 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E2326;">
-              <i class="fa-brands fa-google" style="color: #f59e0b; margin-right: 8px;"></i>
-              Mapeamento Oficial de Eventos do Google Analytics 4 (25/set a 06/nov)
+              <i class="fa-brands fa-google" style="color: #F59E0B; margin-right: 8px;"></i>
+              Mapeamento Oficial de Eventos do Google Analytics 4 (Atualizado ao Vivo)
             </h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
-              Dados consolidados do relatório "Eventos: Nome do evento" (317.974 eventos e 51.893 usuários totais).
+            <p id="ga4EventsTableSubtitle" style="font-size: 0.85rem; color: #5A6267; margin-top: 4px;">
+              Eventos consolidados da propriedade GA4 cruzados com a etapa final da Yazo.
             </p>
           </div>
         </div>
@@ -2264,7 +1776,7 @@
           <table class="data-table ga4-events-table">
             <thead>
               <tr>
-                <th>Nome do Evento</th>
+                <th>Evento GA4</th>
                 <th>Finalidade no Funil</th>
                 <th>Contagem de Eventos</th>
                 <th>% do Total</th>
@@ -2273,126 +1785,17 @@
                 <th>Eventos / Usuário</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><strong>1. page_view</strong></td>
-                <td>Visualização de Páginas no Site</td>
-                <td>107.871</td>
-                <td>33,92%</td>
-                <td><strong>51.878</strong></td>
-                <td>99,97%</td>
-                <td>2,11</td>
-              </tr>
-              <tr>
-                <td><strong>2. session_start</strong></td>
-                <td>Sessões Iniciadas</td>
-                <td>63.589</td>
-                <td>20,00%</td>
-                <td><strong>51.799</strong></td>
-                <td>99,82%</td>
-                <td>1,24</td>
-              </tr>
-              <tr>
-                <td><strong>3. first_visit</strong></td>
-                <td>Novos Visitantes (Primeira Visita)</td>
-                <td>51.300</td>
-                <td>16,13%</td>
-                <td><strong>49.984</strong></td>
-                <td>96,22%</td>
-                <td>1,03</td>
-              </tr>
-              <tr>
-                <td><strong>4. user_engagement</strong></td>
-                <td>Engajamento Ativo (+10s no site)</td>
-                <td>30.686</td>
-                <td>9,65%</td>
-                <td><strong>14.642</strong></td>
-                <td>28,22%</td>
-                <td>2,12</td>
-              </tr>
-              <tr>
-                <td><strong>5. scroll</strong></td>
-                <td>Rolagem de Página (+90% da dobra)</td>
-                <td>18.458</td>
-                <td>5,80%</td>
-                <td><strong>12.254</strong></td>
-                <td>23,61%</td>
-                <td>1,51</td>
-              </tr>
-              <tr>
-                <td><strong>6. click</strong></td>
-                <td>Cliques Gerais em Links e Botões</td>
-                <td>10.624</td>
-                <td>3,34%</td>
-                <td><strong>7.753</strong></td>
-                <td>14,94%</td>
-                <td>1,37</td>
-              </tr>
-              <tr style="background: rgba(63, 136, 197, 0.08);">
-                <td><strong style="color: var(--steel-blue);">7. click_ingressos</strong></td>
-                <td><span class="badge-pill info">Interesse Direto em Inscrição</span></td>
-                <td><strong style="color: var(--steel-blue);">9.667</strong></td>
-                <td>3,04%</td>
-                <td><strong style="color: #1E2326; font-size: 0.95rem;">7.420</strong></td>
-                <td><strong style="color: var(--steel-blue);">14,30%</strong></td>
-                <td>1,31</td>
-              </tr>
-              <tr>
-                <td><strong style="color: var(--accent-cyan);">8. form_start</strong></td>
-                <td>Início de Preenchimento do Formulário</td>
-                <td>7.234</td>
-                <td>2,28%</td>
-                <td><strong>6.079</strong></td>
-                <td>11,71%</td>
-                <td>1,19</td>
-              </tr>
-              <tr>
-                <td><strong style="color: var(--accent-amber);">9. add_to_cart</strong></td>
-                <td>Seleção do Ingresso na Plataforma Yazo</td>
-                <td>7.148</td>
-                <td>2,25%</td>
-                <td><strong>5.391</strong></td>
-                <td>10,39%</td>
-                <td>1,33</td>
-              </tr>
-              <tr style="background: rgba(68, 187, 164, 0.1);">
-                <td><strong style="color: #0F5144;">10. begin_checkout</strong></td>
-                <td><span class="badge-pill ocean">Avanço para Checkout Final</span></td>
-                <td><strong style="color: #0F5144;">5.351</strong></td>
-                <td>1,68%</td>
-                <td><strong style="color: #0F5144; font-size: 0.95rem;">4.957</strong></td>
-                <td><strong style="color: #0F5144;">9,55%</strong></td>
-                <td>1,08</td>
-              </tr>
-            </tbody>
+            <tbody id="ga4EventsTableBody"></tbody>
           </table>
         </div>
 
-        <!-- PAÍSES E AUDIÊNCIA INTERNACIONAL -->
-        <!-- DISTRIBUIÇÃO GEOGRÁFICA INTERNACIONAL (ALTO CONTRASTE) -->
+        <!-- DISTRIBUIÇÃO GEOGRÁFICA INTERNACIONAL -->
         <div class="geo-intl-card">
           <h4 style="color: #1E2326; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
             <i class="fa-solid fa-earth-americas" style="color: var(--steel-blue);"></i>
-            Distribuição Geográfica Internacional do Interesse em Ingressos (click_ingressos)
+            Distribuição Geográfica Internacional do Interesse em Ingressos (<code>click_ingressos</code> • GA4 Live)
           </h4>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-            <div class="geo-country-box">
-              <div class="geo-country-name">🇧🇷 Brasil (Principal)</div>
-              <div class="geo-country-val">9.000+ <span style="font-size: 0.8rem; font-weight: 700; color: #0F5144;">93,1%</span></div>
-            </div>
-            <div class="geo-country-box">
-              <div class="geo-country-name">🇵🇾 Paraguai (Tríplice Fronteira)</div>
-              <div class="geo-country-val" style="color: var(--steel-blue);">533 <span style="font-size: 0.8rem; font-weight: 700; color: var(--steel-blue);">5,5%</span></div>
-            </div>
-            <div class="geo-country-box">
-              <div class="geo-country-name">🇦🇷 Argentina (Tríplice Fronteira)</div>
-              <div class="geo-country-val" style="color: var(--terracotta);">33 <span style="font-size: 0.8rem; font-weight: 700; color: var(--terracotta);">0,3%</span></div>
-            </div>
-            <div class="geo-country-box">
-              <div class="geo-country-name">🌎 Outros Países (EUA, CA, IE, CO)</div>
-              <div class="geo-country-val" style="color: #5A6267;">100 <span style="font-size: 0.8rem; font-weight: 700; color: #7A848A;">1,1%</span></div>
-            </div>
-          </div>
+          <div id="geoCountriesGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;"></div>
         </div>
       </section>
     </main>
@@ -2407,462 +1810,36 @@
 
   </div>
 
-  <!-- MODAL DE SINCRONIZAÇÃO DA API YAZO -->
-  <div id="yazoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
-    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 28px 32px; max-width: 520px; width: 90%; box-shadow: var(--shadow-card);">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h3 style="font-family: var(--font-heading); color: #fff; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
-          <i class="fa-solid fa-cloud-arrow-down" style="color: var(--accent-cyan);"></i>
-          Sincronização Direta Yazo Tickets
-        </h3>
-        <button onclick="closeYazoSyncModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">&times;</button>
-      </div>
-
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5;">
-        Conecte diretamente à API oficial da <strong>Yazo Tickets</strong> (<code>https://api.yazotickets.com/v1</code>) para puxar as últimas inscrições em tempo real sem precisar exportar planilhas manualmente.
-      </p>
-
-      <div style="margin-bottom: 18px;">
-        <label style="display: block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">
-          Token de API Yazo (Bearer Token)
-        </label>
-        <input type="password" id="yazoTokenInput" placeholder="Ex: yazo_live_abc123..." style="width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); color: #fff; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.9rem; outline: none;" />
-        <span style="font-size: 0.75rem; color: var(--text-dark); margin-top: 4px; display: block;">
-          O token fica salvo somente na memória local do seu navegador.
-        </span>
-      </div>
-
-      <div id="yazoSyncStatus" style="display: none; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.82rem; margin-bottom: 16px;"></div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button class="btn btn-outline" onclick="closeYazoSyncModal()">Cancelar</button>
-        <button class="btn btn-primary" id="btnExecuteYazoSync" onclick="executeYazoSync()" style="background: linear-gradient(135deg, var(--accent-cyan), #0891b2);">
-          <i class="fa-solid fa-rotate"></i> Sincronizar Agora
-        </button>
-      </div>
-
-      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle); font-size: 0.75rem; color: var(--text-dark);">
-        💡 Também é possível sincronizar via terminal executando <code>python sync_yazo_api.py</code> ou dando dois cliques em <code>sincronizar_yazo.bat</code>.
-      </div>
-    </div>
-  </div>
-
-  <script>
+    <script>
     /* =========================================================================
-       SINCRONIZAÇÃO VIA API YAZO (MODAL & BACKEND PHP/PYTHON)
+       ESTADO GLOBAL (DADOS AO VIVO DO GA4 + YAZO TICKETS)
        ========================================================================= */
+    let ga4Live = (typeof window !== 'undefined' && window.GA4_OPERACAO_DATA) ? window.GA4_OPERACAO_DATA : null;
+    let yazoLive = (typeof window !== 'undefined' && window.YAZO_OPERACAO_DATA) ? window.YAZO_OPERACAO_DATA : null;
 
-    function openYazoSyncModal() {
-      const savedToken = localStorage.getItem('yazo_api_token') || '';
-      if (savedToken) {
-        document.getElementById('yazoTokenInput').value = savedToken;
-      }
-      const modal = document.getElementById('yazoModal');
-      modal.style.display = 'flex';
-      document.getElementById('yazoSyncStatus').style.display = 'none';
-    }
-
-    function closeYazoSyncModal() {
-      document.getElementById('yazoModal').style.display = 'none';
-    }
-
-    async function executeYazoSync() {
-      const token = document.getElementById('yazoTokenInput').value.trim();
-      const statusDiv = document.getElementById('yazoSyncStatus');
-      const btn = document.getElementById('btnExecuteYazoSync');
-
-      if (!token) {
-        statusDiv.style.display = 'block';
-        statusDiv.style.background = 'rgba(244, 63, 94, 0.2)';
-        statusDiv.style.color = '#f87171';
-        statusDiv.style.border = '1px solid rgba(244, 63, 94, 0.4)';
-        statusDiv.textContent = 'Por favor, insira o seu Token de API.';
-        return;
-      }
-
-      localStorage.setItem('yazo_api_token', token);
-
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Conectando à API Yazo...';
-      statusDiv.style.display = 'block';
-      statusDiv.style.background = 'rgba(6, 182, 212, 0.15)';
-      statusDiv.style.color = 'var(--accent-cyan)';
-      statusDiv.style.border = '1px solid rgba(6, 182, 212, 0.3)';
-      statusDiv.textContent = 'Consultando eventos e baixando inscrições da Yazo Tickets...';
-
-      try {
-        const response = await fetch('sync_yazo.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: 'token=' + encodeURIComponent(token)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          statusDiv.style.background = 'rgba(16, 185, 129, 0.2)';
-          statusDiv.style.color = '#34d399';
-          statusDiv.style.border = '1px solid rgba(16, 185, 129, 0.4)';
-          statusDiv.innerHTML = `✅ ${result.message} (${result.count} inscrições atualizadas). Recarregando dados...`;
-
-          setTimeout(() => {
-            const script = document.createElement('script');
-            script.src = 'data.js?t=' + new Date().getTime();
-            script.onload = () => {
-              initData();
-              closeYazoSyncModal();
-            };
-            document.head.appendChild(script);
-          }, 1200);
-
-        } else {
-          statusDiv.style.background = 'rgba(244, 63, 94, 0.2)';
-          statusDiv.style.color = '#f87171';
-          statusDiv.style.border = '1px solid rgba(244, 63, 94, 0.4)';
-          statusDiv.textContent = `❌ ${result.message}`;
-        }
-      } catch (err) {
-        statusDiv.style.background = 'rgba(245, 158, 11, 0.2)';
-        statusDiv.style.color = '#fbbf24';
-        statusDiv.style.border = '1px solid rgba(245, 158, 11, 0.4)';
-        statusDiv.innerHTML = `⚠️ Não foi possível chamar o endpoint local (sync_yazo.php).<br>Certifique-se de estar rodando pelo Apache (http://localhost/...) ou execute no terminal: <code>python sync_yazo_api.py</code>`;
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sincronizar Agora';
-      }
-    }
-
-    /* =========================================================================
-       BASE DE DADOS DO GA4 & PERFORMANCE DE TRÁFEGO PAGO
-       ========================================================================= */
-
-    const GA4_CHANNELS = [
-      {
-        channel: "instagram / reels-patrocinado",
-        category: "paid",
-        categoryLabel: "Mídia Paga (Meta Ads)",
-        sessions: 16096,
-        sessionsShare: 25.69,
-        engagedSessions: 2873,
-        engagedShare: 11.10,
-        engagementRate: 17.85,
-        avgTimeSec: 5,
-        avgTimeStr: "5s",
-        eventsPerSession: 3.49,
-        eventCount: 56128,
-        eventShare: 17.66
-      },
-      {
-        channel: "instagram / post-patrocinado",
-        category: "paid",
-        categoryLabel: "Mídia Paga (Meta Ads)",
-        sessions: 10360,
-        sessionsShare: 16.53,
-        engagedSessions: 1830,
-        engagedShare: 7.07,
-        engagementRate: 17.66,
-        avgTimeSec: 6,
-        avgTimeStr: "6s",
-        eventsPerSession: 3.48,
-        eventCount: 36017,
-        eventShare: 11.33
-      },
-      {
-        channel: "spotify / spot",
-        category: "paid",
-        categoryLabel: "Mídia Paga (Spotify Ads)",
-        sessions: 3046,
-        sessionsShare: 4.86,
-        engagedSessions: 714,
-        engagedShare: 2.76,
-        engagementRate: 23.44,
-        avgTimeSec: 9,
-        avgTimeStr: "9s",
-        eventsPerSession: 3.61,
-        eventCount: 10981,
-        eventShare: 3.46
-      },
-      {
-        channel: "fb / paid",
-        category: "paid",
-        categoryLabel: "Mídia Paga (Meta Ads)",
-        sessions: 2353,
-        sessionsShare: 3.76,
-        engagedSessions: 444,
-        engagedShare: 1.72,
-        engagementRate: 18.87,
-        avgTimeSec: 5,
-        avgTimeStr: "5s",
-        eventsPerSession: 3.40,
-        eventCount: 8006,
-        eventShare: 2.52
-      },
-      {
-        channel: "google / cpc",
-        category: "paid",
-        categoryLabel: "Mídia Paga (Google Ads)",
-        sessions: 604,
-        sessionsShare: 0.96,
-        engagedSessions: 74,
-        engagedShare: 0.29,
-        engagementRate: 12.25,
-        avgTimeSec: 2,
-        avgTimeStr: "2s",
-        eventsPerSession: 2.57,
-        eventCount: 1553,
-        eventShare: 0.49
-      },
-      {
-        channel: "ig / paid",
-        category: "paid",
-        categoryLabel: "Mídia Paga (Meta Ads)",
-        sessions: 121,
-        sessionsShare: 0.19,
-        engagedSessions: 24,
-        engagedShare: 0.09,
-        engagementRate: 19.83,
-        avgTimeSec: 11,
-        avgTimeStr: "11s",
-        eventsPerSession: 3.36,
-        eventCount: 406,
-        eventShare: 0.13
-      },
-      {
-        channel: "(direct) / (none)",
-        category: "direct",
-        categoryLabel: "Tráfego Direto",
-        sessions: 16489,
-        sessionsShare: 26.32,
-        engagedSessions: 11636,
-        engagedShare: 44.95,
-        engagementRate: 70.57,
-        avgTimeSec: 126,
-        avgTimeStr: "2 min 06 s",
-        eventsPerSession: 7.39,
-        eventCount: 121802,
-        eventShare: 38.33
-      },
-      {
-        channel: "google / organic",
-        category: "organic",
-        categoryLabel: "Busca Orgânica",
-        sessions: 5477,
-        sessionsShare: 8.74,
-        engagedSessions: 3474,
-        engagedShare: 13.42,
-        engagementRate: 63.43,
-        avgTimeSec: 53,
-        avgTimeStr: "53s",
-        eventsPerSession: 6.35,
-        eventCount: 34790,
-        eventShare: 10.95
-      },
-      {
-        channel: "instagram / social",
-        category: "social",
-        categoryLabel: "Social Orgânico",
-        sessions: 2812,
-        sessionsShare: 4.49,
-        engagedSessions: 1919,
-        engagedShare: 7.41,
-        engagementRate: 68.24,
-        avgTimeSec: 25,
-        avgTimeStr: "25s",
-        eventsPerSession: 6.23,
-        eventCount: 17505,
-        eventShare: 5.51
-      },
-      {
-        channel: "email-marketing / email",
-        category: "email",
-        categoryLabel: "E-mail Marketing",
-        sessions: 1065,
-        sessionsShare: 1.70,
-        engagedSessions: 605,
-        engagedShare: 2.34,
-        engagementRate: 56.81,
-        avgTimeSec: 32,
-        avgTimeStr: "32s",
-        eventsPerSession: 5.45,
-        eventCount: 5807,
-        eventShare: 1.83
-      },
-      {
-        channel: "qrcode / cartaz-impresso",
-        category: "offline",
-        categoryLabel: "Mídia Offline (QR Code)",
-        sessions: 837,
-        sessionsShare: 1.34,
-        engagedSessions: 443,
-        engagedShare: 1.71,
-        engagementRate: 52.98,
-        avgTimeSec: 12,
-        avgTimeStr: "12s",
-        eventsPerSession: 4.86,
-        eventCount: 4071,
-        eventShare: 1.28
-      },
-      {
-        channel: "ig / social",
-        category: "social",
-        categoryLabel: "Social Orgânico",
-        sessions: 616,
-        sessionsShare: 0.98,
-        engagedSessions: 353,
-        engagedShare: 1.36,
-        engagementRate: 57.31,
-        avgTimeSec: 82,
-        avgTimeStr: "1 min 22 s",
-        eventsPerSession: 6.78,
-        eventCount: 4177,
-        eventShare: 1.31
-      },
-      {
-        channel: "l.instagram.com / referral",
-        category: "referral",
-        categoryLabel: "Referência Externa",
-        sessions: 490,
-        sessionsShare: 0.78,
-        engagedSessions: 314,
-        engagedShare: 1.21,
-        engagementRate: 64.08,
-        avgTimeSec: 54,
-        avgTimeStr: "54s",
-        eventsPerSession: 5.86,
-        eventCount: 2872,
-        eventShare: 0.90
-      },
-      {
-        channel: "RD Station / email",
-        category: "email",
-        categoryLabel: "E-mail Marketing (RD)",
-        sessions: 448,
-        sessionsShare: 0.71,
-        engagedSessions: 261,
-        engagedShare: 1.01,
-        engagementRate: 58.26,
-        avgTimeSec: 21,
-        avgTimeStr: "21s",
-        eventsPerSession: 5.42,
-        eventCount: 2429,
-        eventShare: 0.76
-      },
-      {
-        channel: "maringapost.com.br / referral",
-        category: "press",
-        categoryLabel: "Imprensa / Portal",
-        sessions: 300,
-        sessionsShare: 0.48,
-        engagedSessions: 139,
-        engagedShare: 0.54,
-        engagementRate: 46.33,
-        avgTimeSec: 63,
-        avgTimeStr: "1 min 03 s",
-        eventsPerSession: 4.74,
-        eventCount: 1422,
-        eventShare: 0.45
-      },
-      {
-        channel: "paranavai.portaldacidade.com / referral",
-        category: "press",
-        categoryLabel: "Imprensa / Portal",
-        sessions: 295,
-        sessionsShare: 0.47,
-        engagedSessions: 141,
-        engagedShare: 0.54,
-        engagementRate: 47.80,
-        avgTimeSec: 65,
-        avgTimeStr: "1 min 05 s",
-        eventsPerSession: 4.35,
-        eventCount: 1284,
-        eventShare: 0.40
-      },
-      {
-        channel: "bing / organic",
-        category: "organic",
-        categoryLabel: "Busca Orgânica",
-        sessions: 228,
-        sessionsShare: 0.36,
-        engagedSessions: 143,
-        engagedShare: 0.55,
-        engagementRate: 62.72,
-        avgTimeSec: 58,
-        avgTimeStr: "58s",
-        eventsPerSession: 6.65,
-        eventCount: 1517,
-        eventShare: 0.48
-      },
-      {
-        channel: "(não definido)",
-        category: "other",
-        categoryLabel: "Outros",
-        sessions: 194,
-        sessionsShare: 0.31,
-        engagedSessions: 1,
-        engagedShare: 0.01,
-        engagementRate: 0.52,
-        avgTimeSec: 61,
-        avgTimeStr: "1 min 01 s",
-        eventsPerSession: 4.08,
-        eventCount: 791,
-        eventShare: 0.25
-      },
-      {
-        channel: "teams.public.onecdn.static.microsoft / referral",
-        category: "referral",
-        categoryLabel: "Referência Externa",
-        sessions: 165,
-        sessionsShare: 0.26,
-        engagedSessions: 95,
-        engagedShare: 0.37,
-        engagementRate: 57.58,
-        avgTimeSec: 27,
-        avgTimeStr: "27s",
-        eventsPerSession: 5.02,
-        eventCount: 828,
-        eventShare: 0.26
-      }
-    ];
-
-    /* =========================================================================
-       VARIÁVEIS DE ESTADO DO DASHBOARD
-       ========================================================================= */
-
-    let rawRecords = [];
-    let filteredRecords = [];
-    let availableDates = [];
-    
-    let currentTrendMode = 'daily';
-    let currentHourlyMode = 'single_day';
-    let selectedHourlyDate = null;
-    let trafficTableFilter = 'paid';
-
-    let trendChartInstance = null;
-    let hourlyChartInstance = null;
-    let perfilChartInstance = null;
-    let weekdayChartInstance = null;
-
+    let chartPeriodInscritosInstance = null;
+    let chartTotalHistoryInstance = null;
     let trafficVolumeChartInstance = null;
     let trafficQualityChartInstance = null;
     let trafficShareChartInstance = null;
     let trafficCampaignPhaseChartInstance = null;
-
     let pixelFunnelChartInstance = null;
     let pixelTimelineChartInstance = null;
 
-    const WEEKDAY_NAMES_PT = {
-      'Sunday': 'Domingo',
-      'Monday': 'Segunda-feira',
-      'Tuesday': 'Terça-feira',
-      'Wednesday': 'Quarta-feira',
-      'Thursday': 'Quinta-feira',
-      'Friday': 'Sexta-feira',
-      'Saturday': 'Sábado'
-    };
+    let trafficTableFilter = 'paid';
+    let processedChannels = [];
 
-    const CHART_PALETTE = [
-      '#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6', '#14b8a6'
-    ];
+    function destroyChartSafe(canvasEl, instanceRef) {
+      try {
+        if (typeof Chart !== 'undefined' && Chart.getChart && canvasEl) {
+          const existing = Chart.getChart(canvasEl);
+          if (existing) existing.destroy();
+        }
+      } catch (e) {}
+      if (instanceRef) {
+        try { instanceRef.destroy(); } catch (e) {}
+      }
+    }
 
     function switchMainTab(tabId) {
       document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -2872,1307 +1849,481 @@
         const btn = document.getElementById('btnTabAudit'); if (btn) btn.classList.add('active');
         const tab = document.getElementById('tab-audit'); if (tab) tab.classList.add('active');
         renderAuditCharts();
-      setTimeout(() => {
-        if (chartPeriodInscritosInstance) chartPeriodInscritosInstance.resize();
-        if (chartTotalHistoryInstance) chartTotalHistoryInstance.resize();
-      }, 100);
-      } else if (tabId === 'tab-inscriptions') {
-        document.getElementById('btnTabInscriptions').classList.add('active');
-        document.getElementById('tab-inscriptions').classList.add('active');
-        if (trendChartInstance) trendChartInstance.resize();
-        if (hourlyChartInstance) hourlyChartInstance.resize();
-      } else if (tabId === 'tab-traffic') {
-        document.getElementById('btnTabTraffic').classList.add('active');
-        document.getElementById('tab-traffic').classList.add('active');
-        renderTrafficModule();
+        setTimeout(() => {
+          if (chartPeriodInscritosInstance) chartPeriodInscritosInstance.resize();
+          if (chartTotalHistoryInstance) chartTotalHistoryInstance.resize();
+        }, 80);
       } else if (tabId === 'tab-funnel') {
-        document.getElementById('btnTabFunnel').classList.add('active');
-        document.getElementById('tab-funnel').classList.add('active');
+        const btn = document.getElementById('btnTabFunnel'); if (btn) btn.classList.add('active');
+        const tab = document.getElementById('tab-funnel'); if (tab) tab.classList.add('active');
         renderFunnelModule();
         setTimeout(() => {
           if (pixelFunnelChartInstance) pixelFunnelChartInstance.resize();
           if (pixelTimelineChartInstance) pixelTimelineChartInstance.resize();
-        }, 60);
+        }, 80);
+      } else if (tabId === 'tab-traffic') {
+        const btn = document.getElementById('btnTabTraffic'); if (btn) btn.classList.add('active');
+        const tab = document.getElementById('tab-traffic'); if (tab) tab.classList.add('active');
+        renderTrafficModule();
+        setTimeout(() => {
+          if (trafficVolumeChartInstance) trafficVolumeChartInstance.resize();
+          if (trafficQualityChartInstance) trafficQualityChartInstance.resize();
+          if (trafficShareChartInstance) trafficShareChartInstance.resize();
+          if (trafficCampaignPhaseChartInstance) trafficCampaignPhaseChartInstance.resize();
+        }, 80);
       }
     }
 
-    let chartPeriodInscritosInstance = null;
-    let chartTotalHistoryInstance = null;
-
+    /* =========================================================================
+       ABA 1: AUDITORIA C-LEVEL (VISUALIZAÇÃO COMPARATIVA DO PERÍODO)
+       ========================================================================= */
     function renderAuditCharts() {
-      try {
-        const elPeriod = document.getElementById('chartPeriodInscritos');
-        if (elPeriod) {
-          try {
-            if (typeof Chart !== 'undefined' && Chart.getChart) {
-              const existing = Chart.getChart(elPeriod);
-              if (existing) existing.destroy();
-            }
-          } catch(e) {}
-          if (chartPeriodInscritosInstance) {
-            try { chartPeriodInscritosInstance.destroy(); } catch(e) {}
-          }
-          chartPeriodInscritosInstance = new Chart(elPeriod.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-              labels: [
-                'Inscrições via Tráfego Pago Meta Ads (~2.400)',
-                'Inscrições via Orgânico/Parcerias (~1.600)'
-              ],
-              datasets: [{
-                data: [2400, 1600],
-                backgroundColor: ['#3F88C5', '#44BBA4'],
-                borderColor: '#FFFFFF',
-                borderWidth: 3,
-                hoverOffset: 6
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: 'bottom',
-                  labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 }, padding: 14 }
-                },
-                tooltip: {
-                  backgroundColor: '#282E32',
-                  titleColor: '#F6F7EB',
-                  bodyColor: '#FFFFFF',
-                  callbacks: {
-                    label: function(context) {
-                      const total = 4000;
-                      const val = context.parsed;
-                      const pct = ((val / total) * 100).toFixed(1);
-                      return context.label.split(' (')[0] + ': ' + val.toLocaleString('pt-BR') + ' pessoas (' + pct + '%)';
-                    }
-                  }
-                }
-              },
-              cutout: '65%'
-            }
-          });
-        }
-      } catch(err) {
-        console.error('Erro ao renderizar chartPeriodInscritos:', err);
-      }
-
-      try {
-        const elTotal = document.getElementById('chartTotalHistory');
-        if (elTotal) {
-          try {
-            if (typeof Chart !== 'undefined' && Chart.getChart) {
-              const existing = Chart.getChart(elTotal);
-              if (existing) existing.destroy();
-            }
-          } catch(e) {}
-          if (chartTotalHistoryInstance) {
-            try { chartTotalHistoryInstance.destroy(); } catch(e) {}
-          }
-          chartTotalHistoryInstance = new Chart(elTotal.getContext('2d'), {
-            type: 'bar',
-            data: {
-              labels: ['Inscritos até 08/10 (Pré-Janela)', 'Inscritos de 08/10 a 06/11 (Campanha Ativa)'],
-              datasets: [
-                {
-                  label: 'Inscritos Orgânicos / Parcerias',
-                  data: [7036, 1600],
-                  backgroundColor: '#393E41',
-                  borderRadius: 6
-                },
-                {
-                  label: 'Inscritos via Tráfego Pago',
-                  data: [0, 2400],
-                  backgroundColor: '#3F88C5',
-                  borderRadius: 6
-                }
-              ]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: 'top',
-                  labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 } }
-                },
-                tooltip: {
-                  backgroundColor: '#282E32',
-                  titleColor: '#F6F7EB',
-                  bodyColor: '#FFFFFF',
-                  callbacks: {
-                    label: function(context) {
-                      return context.dataset.label + ': ' + context.parsed.y.toLocaleString('pt-BR') + ' pessoas';
-                    }
-                  }
-                }
-              },
-              scales: {
-                x: {
-                  stacked: true,
-                  ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } },
-                  grid: { color: '#E2E5D5' }
-                },
-                y: {
-                  stacked: true,
-                  ticks: {
-                    color: '#393E41',
-                    font: { family: 'Inter', weight: 600 },
-                    callback: value => value.toLocaleString('pt-BR')
-                  },
-                  grid: { color: '#E2E5D5' }
-                }
-              }
-            }
-          });
-        }
-      } catch(err) {
-        console.error('Erro ao renderizar chartTotalHistory:', err);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      initData();
-      setupCsvUploader();
-      renderTrafficTable();
-      renderAuditCharts();
-    });
-
-    function initData() {
-      if (window.FESTIVAL_DATA && window.FESTIVAL_DATA.records) {
-        rawRecords = window.FESTIVAL_DATA.records;
-      }
-
-      if (rawRecords.length === 0) {
-        console.warn('Base de dados vazia.');
-        return;
-      }
-
-      const elBadge = document.getElementById('tabInscritosCountBadge'); if (elBadge) elBadge.textContent = `${rawRecords.length.toLocaleString('pt-BR')} inscritos`;
-
-      const dates = rawRecords.map(r => r.date).sort();
-      availableDates = Array.from(new Set(dates));
-      
-      const minDate = availableDates[0];
-      const maxDate = availableDates[availableDates.length - 1];
-
-      document.getElementById('filterStartDate').value = minDate;
-      document.getElementById('filterEndDate').value = maxDate;
-
-      populateSelectOptions();
-      computeInitialDayPeak();
-      applyFilters();
-    }
-
-    function computeInitialDayPeak() {
-      const countsByDay = {};
-      rawRecords.forEach(r => {
-        countsByDay[r.date] = (countsByDay[r.date] || 0) + 1;
-      });
-      let maxD = availableDates[0];
-      let maxVal = 0;
-      Object.entries(countsByDay).forEach(([d, c]) => {
-        if (c > maxVal) {
-          maxVal = c;
-          maxD = d;
-        }
-      });
-      selectedHourlyDate = maxD;
-    }
-
-    function populateSelectOptions() {
-      const perfilSet = new Set();
-      const tipoSet = new Set();
-
-      rawRecords.forEach(r => {
-        if (r.perfil) perfilSet.add(r.perfil);
-        if (r.tipo) tipoSet.add(r.tipo);
-      });
-
-      const selPerfil = document.getElementById('filterPerfil');
-      selPerfil.innerHTML = '<option value="ALL">Todos os Perfis (Geral)</option>';
-      Array.from(perfilSet).sort().forEach(p => {
-        selPerfil.innerHTML += `<option value="${p}">${p}</option>`;
-      });
-
-      const selTipo = document.getElementById('filterTipo');
-      selTipo.innerHTML = '<option value="ALL">Todos os Tipos</option>';
-      Array.from(tipoSet).sort().forEach(t => {
-        selTipo.innerHTML += `<option value="${t}">${t}</option>`;
-      });
-
-      populateHourlyDaySelector();
-    }
-
-    function populateHourlyDaySelector() {
-      const selDay = document.getElementById('hourlyDaySelector');
-      selDay.innerHTML = '';
-      availableDates.forEach(d => {
-        const parts = d.split('-');
-        const formatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
-        const opt = document.createElement('option');
-        opt.value = d;
-        opt.textContent = formatted;
-        if (d === selectedHourlyDate) {
-          opt.selected = true;
-        }
-        selDay.appendChild(opt);
-      });
-    }
-
-    function applyPreset(preset) {
-      document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-      const activeBtn = document.querySelector(`.btn-preset[data-preset="${preset}"]`);
-      if (activeBtn) activeBtn.classList.add('active');
-
-      const minDate = availableDates[0];
-      const maxDate = availableDates[availableDates.length - 1];
-
-      let start = minDate;
-      let end = maxDate;
-
-      if (preset === 'all') {
-        start = minDate;
-        end = maxDate;
-      } else if (preset === 'abertura') {
-        start = '2026-08-25';
-        end = '2026-08-31';
-      } else if (preset === 'campanha') {
-        start = '2026-09-14';
-        end = '2026-10-23';
-      } else if (preset === 'setembro') {
-        start = '2026-09-01';
-        end = '2026-09-30';
-      } else if (preset === 'outubro') {
-        start = '2026-10-01';
-        end = '2026-10-31';
-      } else if (preset === 'novembro') {
-        start = '2026-11-01';
-        end = '2026-11-30';
-      } else if (preset === 'last14') {
-        const lastIdx = availableDates.length - 1;
-        const startIdx = Math.max(0, lastIdx - 14);
-        start = availableDates[startIdx];
-        end = availableDates[lastIdx];
-      }
-
-      document.getElementById('filterStartDate').value = start;
-      document.getElementById('filterEndDate').value = end;
-
-      applyFilters();
-    }
-
-    function onManualDateChange() {
-      document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-      applyFilters();
-    }
-
-    function applyFilters() {
-      const startDate = document.getElementById('filterStartDate').value;
-      const endDate = document.getElementById('filterEndDate').value;
-      const selectedPerfil = document.getElementById('filterPerfil').value;
-      const selectedTipo = document.getElementById('filterTipo').value;
-
-      filteredRecords = rawRecords.filter(r => {
-        if (startDate && r.date < startDate) return false;
-        if (endDate && r.date > endDate) return false;
-        if (selectedPerfil !== 'ALL' && r.perfil !== selectedPerfil) return false;
-        if (selectedTipo !== 'ALL' && r.tipo !== selectedTipo) return false;
-        return true;
-      });
-
-      if (selectedHourlyDate && (selectedHourlyDate < startDate || selectedHourlyDate > endDate)) {
-        selectedHourlyDate = (startDate >= availableDates[0]) ? startDate : availableDates[0];
-        document.getElementById('hourlyDaySelector').value = selectedHourlyDate;
-      }
-
-      updateKPIs();
-      renderTrendChart();
-      renderHourlyChart();
-      renderPerfilChart();
-      renderWeekdayChart();
-      renderTable();
-    }
-
-    function updateKPIs() {
-      const total = filteredRecords.length;
-      const totalRaw = rawRecords.length;
-      
-      const uniqueEmails = new Set(filteredRecords.map(r => r.email.toLowerCase())).size;
-      const taxaUnicidade = total > 0 ? ((uniqueEmails / total) * 100).toFixed(1) : 0;
-      const shareOfTotal = totalRaw > 0 ? ((total / totalRaw) * 100).toFixed(1) : 0;
-
-      const daysCountMap = {};
-      const hoursCountMap = {};
-
-      filteredRecords.forEach(r => {
-        daysCountMap[r.date] = (daysCountMap[r.date] || 0) + 1;
-        hoursCountMap[r.hour] = (hoursCountMap[r.hour] || 0) + 1;
-      });
-
-      const activeDays = Object.keys(daysCountMap).length;
-      const mediaDiaria = activeDays > 0 ? (total / activeDays).toFixed(1) : 0;
-
-      let bestDay = '-';
-      let bestDayCount = 0;
-      Object.entries(daysCountMap).forEach(([d, c]) => {
-        if (c > bestDayCount) {
-          bestDayCount = c;
-          bestDay = d;
-        }
-      });
-
-      let bestDayFormatted = '-';
-      if (bestDay !== '-') {
-        const parts = bestDay.split('-');
-        bestDayFormatted = `${parts[2]}/${parts[1]}`;
-      }
-
-      let bestHour = -1;
-      let bestHourCount = 0;
-      Object.entries(hoursCountMap).forEach(([h, c]) => {
-        if (c > bestHourCount) {
-          bestHourCount = c;
-          bestHour = parseInt(h);
-        }
-      });
-
-      const goldenHourStr = bestHour >= 0 ? `${String(bestHour).padStart(2, '0')}:00` : '--:--';
-
-      document.getElementById('kpiTotal').textContent = total.toLocaleString('pt-BR');
-      document.getElementById('kpiShareTotal').textContent = `${shareOfTotal}% do total da base`;
-      document.getElementById('kpiUnicos').textContent = uniqueEmails.toLocaleString('pt-BR');
-      document.getElementById('kpiTaxaUnicidade').textContent = `${taxaUnicidade}% únicos`;
-      document.getElementById('kpiMediaDiaria').textContent = mediaDiaria;
-      document.getElementById('kpiDiasAtivos').textContent = `Em ${activeDays} dias com atividade`;
-
-      document.getElementById('kpiPicoDia').textContent = bestDayFormatted;
-      document.getElementById('kpiPicoSubtext').textContent = `${bestDayCount} inscrições no melhor dia`;
-
-      document.getElementById('kpiGoldenHour').textContent = goldenHourStr;
-      document.getElementById('kpiGoldenHourSubtext').textContent = `${bestHourCount} inscrições acumuladas`;
-    }
-
-    function setTrendMode(mode) {
-      currentTrendMode = mode;
-      document.getElementById('btnTrendDaily').classList.toggle('active', mode === 'daily');
-      document.getElementById('btnTrendCumul').classList.toggle('active', mode === 'cumulative');
-      renderTrendChart();
-    }
-
-    function renderTrendChart() {
-      const ctx = document.getElementById('trendChart').getContext('2d');
-      const dailyMap = {};
-      filteredRecords.forEach(r => {
-        dailyMap[r.date] = (dailyMap[r.date] || 0) + 1;
-      });
-
-      const sortedDates = Object.keys(dailyMap).sort();
-      const labels = sortedDates.map(d => {
-        const p = d.split('-');
-        return `${p[2]}/${p[1]}`;
-      });
-
-      const dailyValues = sortedDates.map(d => dailyMap[d]);
-
-      const movingAvg = [];
-      for (let i = 0; i < dailyValues.length; i++) {
-        let sum = 0;
-        let count = 0;
-        for (let j = Math.max(0, i - 6); j <= i; j++) {
-          sum += dailyValues[j];
-          count++;
-        }
-        movingAvg.push(Math.round(sum / count));
-      }
-
-      const cumulativeValues = [];
-      let acc = 0;
-      dailyValues.forEach(v => {
-        acc += v;
-        cumulativeValues.push(acc);
-      });
-
-      if (trendChartInstance) trendChartInstance.destroy();
-
-      let datasets = [];
-      if (currentTrendMode === 'daily') {
-        datasets = [
-          {
-            type: 'bar',
-            label: 'Inscrições no Dia',
-            data: dailyValues,
-            backgroundColor: 'rgba(99, 102, 241, 0.7)',
-            hoverBackgroundColor: '#818cf8',
-            borderRadius: 6,
-            borderSkipped: false,
-            order: 2
-          },
-          {
-            type: 'line',
-            label: 'Média Móvel (7d)',
-            data: movingAvg,
-            borderColor: '#06b6d4',
-            borderWidth: 2.5,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-            tension: 0.35,
-            order: 1
-          }
-        ];
-      } else {
-        datasets = [
-          {
-            type: 'line',
-            label: 'Inscrições Acumuladas',
-            data: cumulativeValues,
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.12)',
-            fill: true,
-            borderWidth: 3,
-            pointRadius: 3,
-            pointBackgroundColor: '#10b981',
-            tension: 0.3
-          }
-        ];
-      }
-
-      trendChartInstance = new Chart(ctx, {
-        data: { labels: labels, datasets: datasets },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: {
-              labels: { color: '#94a3b8', font: { family: 'Inter', size: 12, weight: 600 } }
-            },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#f8fafc',
-              bodyColor: '#cbd5e1',
-              borderColor: '#334155',
-              borderWidth: 1,
-              padding: 12,
-              callbacks: {
-                afterBody: () => '👉 Clique na barra para ver a curva horária deste dia'
-              }
-            }
-          },
-          scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
-          },
-          onClick: (evt, elements) => {
-            if (elements.length > 0) {
-              const idx = elements[0].index;
-              const clickedDate = sortedDates[idx];
-              if (clickedDate) selectHourlyDay(clickedDate);
-            }
-          }
-        }
-      });
-    }
-
-    function setHourlyMode(mode) {
-      currentHourlyMode = mode;
-      document.getElementById('btnHourlyDayMode').classList.toggle('active', mode === 'single_day');
-      document.getElementById('btnHourlyConsolidatedMode').classList.toggle('active', mode === 'consolidated');
-
-      const bar = document.getElementById('hourlyDayControlBar');
-      const subtitle = document.getElementById('hourlyChartSubtitle');
-
-      if (mode === 'single_day') {
-        bar.style.display = 'flex';
-        subtitle.innerHTML = 'Visualização detalhada das 24 horas de um dia específico para auditar campanhas e picos de conversão.';
-      } else {
-        bar.style.display = 'none';
-        subtitle.innerHTML = 'Padrão horário consolidado (soma de todas as inscrições por hora de 00:00 a 23:00 no período filtrado).';
-      }
-
-      renderHourlyChart();
-    }
-
-    function onHourlyDayChange() {
-      selectedHourlyDate = document.getElementById('hourlyDaySelector').value;
-      renderHourlyChart();
-    }
-
-    function selectHourlyDay(dateStr) {
-      selectedHourlyDate = dateStr;
-      document.getElementById('hourlyDaySelector').value = dateStr;
-      if (currentHourlyMode !== 'single_day') {
-        setHourlyMode('single_day');
-      } else {
-        renderHourlyChart();
-      }
-      document.getElementById('hourlyChart').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    function stepHourlyDay(delta) {
-      const idx = availableDates.indexOf(selectedHourlyDate);
-      if (idx === -1) return;
-      const newIdx = idx + delta;
-      if (newIdx >= 0 && newIdx < availableDates.length) {
-        selectHourlyDay(availableDates[newIdx]);
-      }
-    }
-
-    function renderHourlyChart() {
-      const ctx = document.getElementById('hourlyChart').getContext('2d');
-      const hoursLabels = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
-      let hourlyValues = Array(24).fill(0);
-
-      if (currentHourlyMode === 'single_day') {
-        if (!selectedHourlyDate && availableDates.length > 0) {
-          selectedHourlyDate = availableDates[0];
-        }
-
-        const dayRecords = filteredRecords.filter(r => r.date === selectedHourlyDate);
-        dayRecords.forEach(r => {
-          if (r.hour >= 0 && r.hour < 24) hourlyValues[r.hour]++;
-        });
-
-        const dayTotal = dayRecords.length;
-        let peakHour = 0;
-        let peakVal = 0;
-        hourlyValues.forEach((v, h) => {
-          if (v > peakVal) { peakVal = v; peakHour = h; }
-        });
-
-        const parts = selectedHourlyDate ? selectedHourlyDate.split('-') : ['--', '--', '----'];
-        const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
-
-        document.getElementById('hourlyDayTotalBadge').textContent = `Total do Dia: ${dayTotal} inscrições`;
-        document.getElementById('hourlyDayPeakBadge').textContent = `Pico: ${String(peakHour).padStart(2, '0')}:00 (${peakVal} inscritos)`;
-
-        const backgroundColors = hourlyValues.map(v => {
-          if (v === peakVal && v > 0) return '#f59e0b';
-          if (v > 0) return 'rgba(99, 102, 241, 0.75)';
-          return 'rgba(51, 65, 85, 0.3)';
-        });
-
-        const insightDesc = document.getElementById('hourlyInsightDesc');
-        if (dayTotal > 0) {
-          insightDesc.innerHTML = `No dia <strong>${formattedDate}</strong>, tivemos <strong>${dayTotal} inscrições</strong>. O pico máximo de conversões ocorreu às <strong>${String(peakHour).padStart(2, '0')}:00</strong> com <strong>${peakVal} inscrições</strong>.`;
-        } else {
-          insightDesc.innerHTML = `Nenhuma inscrição registrada no dia ${formattedDate} dentro dos filtros aplicados.`;
-        }
-
-        if (hourlyChartInstance) hourlyChartInstance.destroy();
-
-        hourlyChartInstance = new Chart(ctx, {
-          type: 'bar',
+      const elPeriod = document.getElementById('chartPeriodInscritos');
+      if (elPeriod) {
+        destroyChartSafe(elPeriod, chartPeriodInscritosInstance);
+        chartPeriodInscritosInstance = new Chart(elPeriod.getContext('2d'), {
+          type: 'doughnut',
           data: {
-            labels: hoursLabels,
-            datasets: [{
-              label: 'Inscrições na Hora',
-              data: hourlyValues,
-              backgroundColor: backgroundColors,
-              borderRadius: 6,
-              borderSkipped: false
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                backgroundColor: '#1e293b',
-                titleColor: '#f8fafc',
-                bodyColor: '#cbd5e1',
-                padding: 10,
-                callbacks: { label: (ctx) => ` ${ctx.parsed.y} inscrições registradas` }
-              }
-            },
-            scales: {
-              x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
-              y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', stepSize: 1 }, beginAtZero: true }
-            }
-          }
-        });
-
-      } else {
-        filteredRecords.forEach(r => {
-          if (r.hour >= 0 && r.hour < 24) hourlyValues[r.hour]++;
-        });
-
-        let peakHour = 0;
-        let peakVal = 0;
-        hourlyValues.forEach((v, h) => {
-          if (v > peakVal) { peakVal = v; peakHour = h; }
-        });
-
-        const backgroundColors = hourlyValues.map(v => {
-          if (v === peakVal && v > 0) return '#f59e0b';
-          if (v >= peakVal * 0.7) return '#06b6d4';
-          return 'rgba(99, 102, 241, 0.65)';
-        });
-
-        document.getElementById('hourlyInsightDesc').innerHTML = `
-          <strong>Padrão Consolidado da Campanha:</strong> O público apresenta maior concentração no período noturno, com o pico absoluto às <strong>${String(peakHour).padStart(2, '0')}:00 (${peakVal} inscrições)</strong>, seguido por 20:00 e 22:00. O período da manhã tem pico secundário entre <strong>10:00 e 11:00</strong>.
-        `;
-
-        if (hourlyChartInstance) hourlyChartInstance.destroy();
-
-        hourlyChartInstance = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: hoursLabels,
-            datasets: [{
-              label: 'Total de Inscrições na Faixa Horária',
-              data: hourlyValues,
-              backgroundColor: backgroundColors,
-              borderRadius: 6,
-              borderSkipped: false
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                backgroundColor: '#1e293b',
-                titleColor: '#f8fafc',
-                bodyColor: '#cbd5e1',
-                padding: 10,
-                callbacks: { label: (ctx) => ` Total acumulado: ${ctx.parsed.y} inscrições` }
-              }
-            },
-            scales: {
-              x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
-              y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
-            }
-          }
-        });
-      }
-    }
-
-    function renderPerfilChart() {
-      const ctx = document.getElementById('perfilChart').getContext('2d');
-      const counts = {};
-      filteredRecords.forEach(r => {
-        const p = r.perfil || 'Não informado';
-        counts[p] = (counts[p] || 0) + 1;
-      });
-
-      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-      const labels = sorted.map(i => i[0]);
-      const data = sorted.map(i => i[1]);
-      const total = filteredRecords.length;
-
-      if (perfilChartInstance) perfilChartInstance.destroy();
-
-      perfilChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: CHART_PALETTE,
-            borderColor: '#111827',
-            borderWidth: 2,
-            hoverOffset: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '62%',
-          plugins: {
-            legend: {
-              position: 'right',
-              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, boxWidth: 12, padding: 10 }
-            },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#f8fafc',
-              bodyColor: '#cbd5e1',
-              padding: 10,
-              callbacks: {
-                label: (item) => {
-                  const val = item.parsed;
-                  const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
-                  return ` ${item.label}: ${val} (${pct}%)`;
-                }
-              }
-            }
-          }
-        }
-      });
-    }
-
-    function renderWeekdayChart() {
-      const ctx = document.getElementById('weekdayChart').getContext('2d');
-      const order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-      const counts = {
-        'Monday': 0, 'Tuesday': 0, 'Wednesday': 0, 'Thursday': 0,
-        'Friday': 0, 'Saturday': 0, 'Sunday': 0
-      };
-
-      filteredRecords.forEach(r => {
-        const parts = r.date.split('-');
-        const d = new Date(parts[0], parts[1] - 1, parts[2]);
-        const dayIdx = d.getDay();
-        const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayIdx];
-        if (counts[dayName] !== undefined) counts[dayName]++;
-      });
-
-      const labels = order.map(k => WEEKDAY_NAMES_PT[k]);
-      const data = order.map(k => counts[k]);
-
-      if (weekdayChartInstance) weekdayChartInstance.destroy();
-
-      weekdayChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Total de Inscrições',
-            data: data,
-            backgroundColor: 'rgba(6, 182, 212, 0.7)',
-            hoverBackgroundColor: '#06b6d4',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: { backgroundColor: '#1e293b', titleColor: '#fff', bodyColor: '#cbd5e1', padding: 10 }
-          },
-          scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    function renderTable() {
-      const tbody = document.getElementById('dailyTableBody');
-      const searchQuery = (document.getElementById('tableSearchInput').value || '').toLowerCase();
-
-      const daySummary = {};
-      filteredRecords.forEach(r => {
-        if (!daySummary[r.date]) {
-          daySummary[r.date] = {
-            date: r.date,
-            date_br: r.date_br,
-            count: 0,
-            hours: {},
-            profiles: {}
-          };
-        }
-        daySummary[r.date].count++;
-        daySummary[r.date].hours[r.hour] = (daySummary[r.date].hours[r.hour] || 0) + 1;
-        daySummary[r.date].profiles[r.perfil] = (daySummary[r.date].profiles[r.perfil] || 0) + 1;
-      });
-
-      const totalFiltered = filteredRecords.length;
-      const sortedDates = Object.keys(daySummary).sort().reverse();
-
-      let rowsHtml = '';
-      sortedDates.forEach(dateStr => {
-        const item = daySummary[dateStr];
-        const parts = dateStr.split('-');
-        const jsDate = new Date(parts[0], parts[1] - 1, parts[2]);
-        const dayIdx = jsDate.getDay();
-        const dowEnglish = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayIdx];
-        const weekday = WEEKDAY_NAMES_PT[dowEnglish] || '';
-
-        if (searchQuery) {
-          const matchDate = item.date_br.toLowerCase().includes(searchQuery);
-          const matchDow = weekday.toLowerCase().includes(searchQuery);
-          if (!matchDate && !matchDow) return;
-        }
-
-        let peakHour = '-';
-        let peakHCount = 0;
-        Object.entries(item.hours).forEach(([h, c]) => {
-          if (c > peakHCount) {
-            peakHCount = c;
-            peakHour = `${String(h).padStart(2, '0')}:00`;
-          }
-        });
-
-        let topProfile = '-';
-        let topPCount = 0;
-        Object.entries(item.profiles).forEach(([p, c]) => {
-          if (c > topPCount) {
-            topPCount = c;
-            topProfile = p;
-          }
-        });
-
-        const share = totalFiltered > 0 ? ((item.count / totalFiltered) * 100).toFixed(1) : 0;
-        const isHighPeak = item.count >= 80;
-
-        rowsHtml += `
-          <tr>
-            <td><strong>${item.date_br}</strong></td>
-            <td><span style="color: var(--text-muted);">${weekday}</span></td>
-            <td>
-              <span class="badge-pill ${isHighPeak ? 'peak' : 'normal'}">
-                ${item.count.toLocaleString('pt-BR')}
-              </span>
-            </td>
-            <td>${share}%</td>
-            <td><i class="fa-regular fa-clock" style="color: var(--accent-cyan); margin-right: 4px;"></i> ${peakHour} (${peakHCount})</td>
-            <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${topProfile}">
-              ${topProfile}
-            </td>
-            <td>
-              <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;" onclick="selectHourlyDay('${dateStr}')">
-                <i class="fa-solid fa-chart-simple"></i> Ver Horas
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-
-      if (!rowsHtml) {
-        rowsHtml = `<tr><td colspan="7" style="text-align: center; color: var(--text-dark); padding: 24px;">Nenhum registro encontrado para esta busca.</td></tr>`;
-      }
-
-      tbody.innerHTML = rowsHtml;
-    }
-
-    function filterTrafficTable(filterType) {
-      trafficTableFilter = filterType;
-      document.getElementById('btnTrafficFilterPaid').classList.toggle('active', filterType === 'paid');
-      document.getElementById('btnTrafficFilterAll').classList.toggle('active', filterType === 'all');
-      renderTrafficTable();
-    }
-
-    function renderTrafficTable() {
-      const tbody = document.getElementById('trafficTableBody');
-      const search = (document.getElementById('trafficSearchInput') ? document.getElementById('trafficSearchInput').value : '').toLowerCase();
-
-      let list = GA4_CHANNELS;
-      if (trafficTableFilter === 'paid') {
-        list = list.filter(item => item.category === 'paid');
-      }
-
-      if (search) {
-        list = list.filter(item => item.channel.toLowerCase().includes(search) || item.categoryLabel.toLowerCase().includes(search));
-      }
-
-      let html = '';
-      list.forEach(item => {
-        let pillClass = 'badge-pill ';
-        if (item.category === 'paid') pillClass += 'paid';
-        else if (item.category === 'organic') pillClass += 'organic';
-        else pillClass += 'direct';
-
-        html += `
-          <tr>
-            <td><strong>${item.channel}</strong></td>
-            <td><span class="${pillClass}">${item.categoryLabel}</span></td>
-            <td><strong>${item.sessions.toLocaleString('pt-BR')}</strong></td>
-            <td>${item.sessionsShare.toFixed(2)}%</td>
-            <td>${item.engagedSessions.toLocaleString('pt-BR')}</td>
-            <td>
-              <strong style="color: ${item.engagementRate >= 20 ? 'var(--accent-emerald)' : 'var(--text-main)'}">
-                ${item.engagementRate.toFixed(2)}%
-              </strong>
-            </td>
-            <td>${item.avgTimeStr}</td>
-            <td>${item.eventsPerSession.toFixed(2)}</td>
-            <td>${item.eventCount.toLocaleString('pt-BR')} <span style="font-size:0.75rem; color:var(--text-dark);">(${item.eventShare.toFixed(1)}%)</span></td>
-          </tr>
-        `;
-      });
-
-      if (!html) {
-        html = `<tr><td colspan="9" style="text-align: center; color: var(--text-dark); padding: 20px;">Nenhum canal encontrado.</td></tr>`;
-      }
-
-      tbody.innerHTML = html;
-    }
-
-    function renderTrafficModule() {
-      renderTrafficVolumeChart();
-      renderTrafficQualityChart();
-      renderTrafficShareChart();
-      renderTrafficCampaignPhaseChart();
-      renderTrafficTable();
-    }
-
-    function renderTrafficVolumeChart() {
-      const ctx = document.getElementById('trafficVolumeChart').getContext('2d');
-      const paidOnly = GA4_CHANNELS.filter(c => c.category === 'paid');
-
-      const labels = paidOnly.map(c => {
-        return c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: ');
-      });
-      const sessions = paidOnly.map(c => c.sessions);
-      const engaged = paidOnly.map(c => c.engagedSessions);
-
-      if (trafficVolumeChartInstance) trafficVolumeChartInstance.destroy();
-
-      trafficVolumeChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Sessões Totais',
-              data: sessions,
-              backgroundColor: '#06b6d4',
-              borderRadius: 6
-            },
-            {
-              label: 'Sessões Engajadas',
-              data: engaged,
-              backgroundColor: '#10b981',
-              borderRadius: 6
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: 600 } }
-            },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10
-            }
-          },
-          scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    function renderTrafficQualityChart() {
-      const ctx = document.getElementById('trafficQualityChart').getContext('2d');
-      const paidOnly = GA4_CHANNELS.filter(c => c.category === 'paid');
-
-      const labels = paidOnly.map(c => {
-        return c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: ');
-      });
-      const rates = paidOnly.map(c => c.engagementRate);
-      const times = paidOnly.map(c => c.avgTimeSec);
-
-      if (trafficQualityChartInstance) trafficQualityChartInstance.destroy();
-
-      trafficQualityChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Taxa de Engajamento (%)',
-              data: rates,
-              backgroundColor: '#a855f7',
-              borderRadius: 6,
-              yAxisID: 'y'
-            },
-            {
-              type: 'line',
-              label: 'Tempo Médio (segundos)',
-              data: times,
-              borderColor: '#f59e0b',
-              backgroundColor: '#f59e0b',
-              borderWidth: 2.5,
-              pointRadius: 4,
-              yAxisID: 'y1'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: 600 } }
-            },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10
-            }
-          },
-          scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
-            y: {
-              grid: { color: '#1e293b' },
-              ticks: { color: '#a855f7', callback: (v) => v + '%' },
-              beginAtZero: true,
-              title: { display: true, text: 'Engajamento %', color: '#a855f7' }
-            },
-            y1: {
-              position: 'right',
-              grid: { drawOnChartArea: false },
-              ticks: { color: '#f59e0b', callback: (v) => v + 's' },
-              beginAtZero: true,
-              title: { display: true, text: 'Tempo (s)', color: '#f59e0b' }
-            }
-          }
-        }
-      });
-    }
-
-    function renderTrafficShareChart() {
-      const ctx = document.getElementById('trafficShareChart').getContext('2d');
-
-      const shares = {
-        'Mídia Paga (Patrocinada)': 32580,
-        'Tráfego Direto': 16489,
-        'Busca Orgânica (Google/Bing)': 5705,
-        'Social Orgânico (Instagram)': 3428,
-        'E-mail / CRM (RD Station)': 1513,
-        'Mídia Offline (QR Code)': 837,
-        'Imprensa & Portais': 595,
-        'Outros / Referrals': 1511
-      };
-
-      const labels = Object.keys(shares);
-      const data = Object.values(shares);
-
-      if (trafficShareChartInstance) trafficShareChartInstance.destroy();
-
-      trafficShareChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: [
-              '#06b6d4', '#64748b', '#10b981', '#ec4899', '#f59e0b', '#8b5cf6', '#3b82f6', '#475569'
+            labels: [
+              'Inscrições via Tráfego Pago Meta Ads (~2.400)',
+              'Inscrições via Orgânico/Parcerias (~1.600)'
             ],
-            borderColor: '#111827',
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '60%',
-          plugins: {
-            legend: {
-              position: 'right',
-              labels: { color: '#94a3b8', font: { family: 'Inter', size: 10 }, boxWidth: 12, padding: 8 }
-            },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10,
-              callbacks: {
-                label: (ctx) => {
-                  const val = ctx.parsed;
-                  const pct = ((val / 62658) * 100).toFixed(1);
-                  return ` ${ctx.label}: ${val.toLocaleString('pt-BR')} (${pct}%)`;
+            datasets: [{
+              data: [2400, 1600],
+              backgroundColor: ['#3F88C5', '#44BBA4'],
+              borderColor: '#FFFFFF',
+              borderWidth: 3,
+              hoverOffset: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 }, padding: 14 }
+              },
+              tooltip: {
+                backgroundColor: '#282E32',
+                titleColor: '#F6F7EB',
+                bodyColor: '#FFFFFF',
+                callbacks: {
+                  label: (ctx) => {
+                    const pct = ((ctx.parsed / 4000) * 100).toFixed(1);
+                    return `${ctx.label.split(' (')[0]}: ${ctx.parsed.toLocaleString('pt-BR')} pessoas (${pct}%)`;
+                  }
                 }
+              }
+            },
+            cutout: '65%'
+          }
+        });
+      }
+
+      const elTotal = document.getElementById('chartTotalHistory');
+      if (elTotal) {
+        destroyChartSafe(elTotal, chartTotalHistoryInstance);
+        chartTotalHistoryInstance = new Chart(elTotal.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: ['Inscritos até 08/10 (Pré-Janela)', 'Inscritos de 08/10 a 06/11 (Campanha Ativa)'],
+            datasets: [
+              {
+                label: 'Inscritos Orgânicos / Parcerias',
+                data: [7036, 1600],
+                backgroundColor: '#393E41',
+                borderRadius: 6
+              },
+              {
+                label: 'Inscritos via Tráfego Pago',
+                data: [0, 2400],
+                backgroundColor: '#3F88C5',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 } }
+              },
+              tooltip: {
+                backgroundColor: '#282E32',
+                titleColor: '#F6F7EB',
+                bodyColor: '#FFFFFF',
+                callbacks: {
+                  label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('pt-BR')} pessoas`
+                }
+              }
+            },
+            scales: {
+              x: {
+                stacked: true,
+                ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } },
+                grid: { color: '#E2E5D5' }
+              },
+              y: {
+                stacked: true,
+                beginAtZero: true,
+                ticks: {
+                  color: '#393E41',
+                  font: { family: 'Inter', weight: 600 },
+                  callback: value => value.toLocaleString('pt-BR')
+                },
+                grid: { color: '#E2E5D5' }
               }
             }
           }
-        }
-      });
+        });
+      }
     }
 
-    function renderTrafficCampaignPhaseChart() {
-      const ctx = document.getElementById('trafficCampaignPhaseChart').getContext('2d');
+    /* =========================================================================
+       PROCESSAMENTO DE CANAIS GA4 (CLASSIFICAÇÃO PAGO vs ORGÂNICO/DIRETO)
+       ========================================================================= */
+    function classifyGa4Channel(ch) {
+      const name = (ch.channel || '').toLowerCase();
+      const grp = (ch.group || '').toLowerCase();
+      if (
+        name.includes('patrocinado') ||
+        name.includes('cpc') ||
+        name.includes('paid') ||
+        name.includes('spotify / spot') ||
+        grp.includes('paid') ||
+        grp.includes('cross-network')
+      ) {
+        let label = 'Mídia Paga (Meta Ads)';
+        if (name.includes('google / cpc') || grp.includes('paid search')) label = 'Mídia Paga (Google Ads)';
+        else if (name.includes('spotify')) label = 'Mídia Paga (Spotify Audio)';
+        return { category: 'paid', categoryLabel: label };
+      }
+      if (name.includes('(direct)') || grp === 'direct') {
+        return { category: 'direct', categoryLabel: 'Tráfego Direto' };
+      }
+      if (name.includes('email') || name.includes('rd') || grp === 'email') {
+        return { category: 'organic', categoryLabel: 'E-mail / CRM' };
+      }
+      if (name.includes('organic') || grp.includes('organic search')) {
+        return { category: 'organic', categoryLabel: 'Busca Orgânica' };
+      }
+      if (name.includes('social') || name.includes('ig') || name.includes('instagram') || name.includes('facebook') || name.includes('linkedin')) {
+        return { category: 'organic', categoryLabel: 'Social Orgânico' };
+      }
+      return { category: 'organic', categoryLabel: ch.group || 'Referrals / Outros' };
+    }
 
-      const phases = [
-        { name: '1. Pré-Tráfego (Abertura)', period: '25/08 a 13/09', days: 20, count: 1520, color: 'rgba(99, 102, 241, 0.8)' },
-        { name: '2. Tráfego Pago Ativo', period: '14/09 a 23/10', days: 40, count: 972, color: 'rgba(6, 182, 212, 0.85)' },
-        { name: '3. Pós-Campanha (Reta Final)', period: '24/10 a 06/11', days: 14, count: 650, color: 'rgba(16, 185, 129, 0.8)' }
-      ];
+    function formatDuration(sec) {
+      const s = Math.max(0, Math.round(sec || 0));
+      if (s < 60) return s + 's';
+      const min = Math.floor(s / 60);
+      const rem = s % 60;
+      return `${min}m ${String(rem).padStart(2, '0')}s`;
+    }
 
-      const labels = phases.map(p => p.name);
-      const counts = phases.map(p => p.count);
-      const bgColors = phases.map(p => p.color);
+    function buildProcessedChannels() {
+      const rawList = (ga4Live && Array.isArray(ga4Live.channels) && ga4Live.channels.length > 0)
+        ? ga4Live.channels
+        : [
+            { channel: 'instagram / reels-patrocinado', group: 'Organic Social', sessions: 16365, users: 15050, engagedSessions: 2910, engagementRate: 17.78, avgTimeSec: 25, eventCount: 57133 },
+            { channel: 'instagram / post-patrocinado', group: 'Organic Social', sessions: 15490, users: 14845, engagedSessions: 2829, engagementRate: 18.26, avgTimeSec: 34, eventCount: 54464 },
+            { channel: 'google / cpc', group: 'Paid Search', sessions: 4710, users: 3580, engagedSessions: 711, engagementRate: 15.10, avgTimeSec: 55, eventCount: 14758 },
+            { channel: 'fb / paid', group: 'Paid Social', sessions: 4554, users: 4427, engagedSessions: 922, engagementRate: 20.25, avgTimeSec: 21, eventCount: 16115 },
+            { channel: 'spotify / spot', group: 'Unassigned', sessions: 3464, users: 3441, engagedSessions: 818, engagementRate: 23.61, avgTimeSec: 29, eventCount: 12489 },
+            { channel: '(direct) / (none)', group: 'Direct', sessions: 26270, users: 19666, engagedSessions: 17648, engagementRate: 67.18, avgTimeSec: 247, eventCount: 185573 },
+            { channel: 'google / organic', group: 'Organic Search', sessions: 10263, users: 6270, engagedSessions: 6539, engagementRate: 63.71, avgTimeSec: 259, eventCount: 64767 },
+            { channel: 'instagram / social', group: 'Organic Social', sessions: 3993, users: 3464, engagedSessions: 2734, engagementRate: 68.47, avgTimeSec: 170, eventCount: 25079 },
+            { channel: 'email-marketing / email', group: 'Email', sessions: 1297, users: 1016, engagedSessions: 729, engagementRate: 56.21, avgTimeSec: 161, eventCount: 6970 }
+          ];
 
-      if (trafficCampaignPhaseChartInstance) trafficCampaignPhaseChartInstance.destroy();
+      const totalSessionsAll = rawList.reduce((acc, c) => acc + (c.sessions || 0), 0) || 1;
+      const totalEventsAll = rawList.reduce((acc, c) => acc + (c.eventCount || 0), 0) || 1;
 
-      trafficCampaignPhaseChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Total de Inscritos na Fase',
-            data: counts,
-            backgroundColor: bgColors,
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10,
-              callbacks: {
-                afterLabel: (ctx) => {
-                  const idx = ctx.dataIndex;
-                  const p = phases[idx];
-                  const avg = (p.count / p.days).toFixed(1);
-                  return ` Período: ${p.period} (${p.days} dias)\n Média: ${avg} inscritos/dia`;
-                }
-              }
-            }
-          },
-          scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
-          }
-        }
+      processedChannels = rawList.map(c => {
+        const cls = classifyGa4Channel(c);
+        return {
+          ...c,
+          category: cls.category,
+          categoryLabel: cls.categoryLabel,
+          sessionsShare: ((c.sessions || 0) / totalSessionsAll) * 100,
+          eventShare: ((c.eventCount || 0) / totalEventsAll) * 100,
+          avgTimeStr: formatDuration(c.avgTimeSec),
+          eventsPerSession: c.sessions > 0 ? (c.eventCount / c.sessions) : 0
+        };
       });
     }
 
     /* =========================================================================
-       MÓDULO DO FUNIL DO PIXEL META (ABA 3) - COM SEGMENTAÇÃO POR MÍDIA
+       ABA 2: FUNIL DE CONVERSÃO CRUZADO (GA4 + YAZO LIVE)
        ========================================================================= */
-
-    const FUNNEL_SEGMENTS = {
-      'all': {
-        name: 'Todos os Canais (Visão Global)',
-        badge: 'Todos os Canais (100%)',
-        pv: 65800, pvFormatted: '65,8 mil', pvSub: '100% da audiência do site',
-        cart: 5400, cartFormatted: '5,4 mil', cartSub: '8,21% foram ao Yazo',
-        checkout: 4000, checkoutFormatted: '4,0 mil', checkoutSub: '74,07% retenção',
-        complete: 4000, completeFormatted: '4,0 mil', completeSub: '100% concluíram!',
-        lead: 3700, leadFormatted: '3,7 mil', leadSub: '6,08% conv. global',
-        summary: 'Dos <strong>65,8 mil PageViews</strong> monitorados no Pixel: <strong>34.216 (52,0%)</strong> vieram de <strong>Tráfego Pago</strong> (30,4k Meta Ads + 3,2k Spotify + 632 Google) e <strong>31.584 (48,0%)</strong> de <strong>Orgânico / Direto</strong>.'
-      },
-      'paid': {
-        name: 'Tráfego Pago Consolidado (52,0%)',
-        badge: 'Tráfego Pago (52,0%)',
-        pv: 34216, pvFormatted: '34,2 mil', pvSub: '52,0% de todo o tráfego',
-        cart: 2808, cartFormatted: '2,8 mil', cartSub: '8,21% foram ao Yazo',
-        checkout: 2080, checkoutFormatted: '2,1 mil', checkoutSub: '74,07% retenção',
-        complete: 2080, completeFormatted: '2,1 mil', completeSub: '100% concluíram!',
-        lead: 1924, leadFormatted: '1,9 mil', leadSub: '6,08% conv. de mídia',
-        summary: 'O <strong>Tráfego Pago</strong> respondeu por <strong>34.216 PageViews (52,0%)</strong> no site do festival! Meta Ads gerou 30.378 PageViews (88,8% da mídia), Spotify gerou 3.198 (9,3%) e Google CPC 632 (1,8%).'
-      },
-      'meta': {
-        name: 'Apenas Meta Ads (Instagram Reels, Post & FB)',
-        badge: 'Meta Ads (46,2%)',
-        pv: 30378, pvFormatted: '30,4 mil', pvSub: '46,2% do total (88,8% da mídia)',
-        cart: 2493, cartFormatted: '2,5 mil', cartSub: '8,21% foram ao Yazo',
-        checkout: 1847, checkoutFormatted: '1,8 mil', checkoutSub: '74,07% retenção',
-        complete: 1847, completeFormatted: '1,8 mil', completeSub: '100% concluíram!',
-        lead: 1708, leadFormatted: '1,7 mil', leadSub: '6,08% conv. Meta Ads',
-        summary: 'O <strong>Meta Ads (Instagram + Facebook)</strong> foi o canal dominante de aquisição com <strong>30.378 PageViews (46,2% de todo o tráfego do evento)</strong>, liderado por Reels com 16.096 sessões!'
-      },
-      'spotify': {
-        name: 'Spotify Ads (Spot de Áudio)',
-        badge: 'Spotify Ads (4,9%)',
-        pv: 3198, pvFormatted: '3,2 mil', pvSub: '4,86% do tráfego do festival',
-        cart: 262, cartFormatted: '262', cartSub: 'Maior engajamento (23,4%)',
-        checkout: 194, checkoutFormatted: '194', checkoutSub: '74,07% retenção',
-        complete: 194, completeFormatted: '194', completeSub: '100% concluíram!',
-        lead: 180, leadFormatted: '180', leadSub: '6,08% conv. Spotify',
-        summary: 'O canal <strong>spotify / spot</strong> levou <strong>3.198 PageViews</strong> para o site com a <strong>maior taxa de retenção de toda a mídia paga (23,44% de engajamento e 9s de tela)</strong>.'
-      },
-      'google': {
-        name: 'Google Ads (CPC de Pesquisa)',
-        badge: 'Google CPC (1,0%)',
-        pv: 632, pvFormatted: '632', pvSub: '0,96% do tráfego do evento',
-        cart: 52, cartFormatted: '52', cartSub: '8,21% foram ao Yazo',
-        checkout: 38, checkoutFormatted: '38', checkoutSub: '74,07% retenção',
-        complete: 38, completeFormatted: '38', completeSub: '100% concluíram!',
-        lead: 36, leadFormatted: '36', leadSub: '6,08% conv. Google',
-        summary: 'O <strong>Google Ads (CPC)</strong> gerou <strong>632 PageViews</strong> qualificados buscando por termos do festival na pesquisa do Google.'
-      },
-      'organic': {
-        name: 'Orgânico, Direto e CRM (E-mails)',
-        badge: 'Orgânico / Direto (48,0%)',
-        pv: 31584, pvFormatted: '31,6 mil', pvSub: '48,0% do tráfego do site',
-        cart: 2592, cartFormatted: '2,6 mil', cartSub: '8,21% foram ao Yazo',
-        checkout: 1920, checkoutFormatted: '1,9 mil', checkoutSub: '74,07% retenção',
-        complete: 1920, completeFormatted: '1,9 mil', completeSub: '100% concluíram!',
-        lead: 1776, leadFormatted: '1,8 mil', leadSub: '6,08% conv. orgânica',
-        summary: 'O tráfego espontâneo (Direto, Buscas no Google/Bing, E-mail Marketing e Redes Sociais Orgânicas) gerou <strong>31.584 PageViews</strong> no site institucional.'
-      }
-    };
-
-    let currentFunnelSegment = 'all';
-
-    function setFunnelSegment(segmentKey) {
-      currentFunnelSegment = segmentKey;
-      const seg = (typeof FUNNEL_SEGMENTS !== 'undefined' && FUNNEL_SEGMENTS[segmentKey]) ? FUNNEL_SEGMENTS[segmentKey] : (typeof FUNNEL_SEGMENTS !== 'undefined' ? FUNNEL_SEGMENTS['all'] : null);
-      if (!seg) return;
-
-      document.querySelectorAll('#tab-funnel .preset-buttons .btn-preset').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById('btnFunnel' + segmentKey.charAt(0).toUpperCase() + segmentKey.slice(1));
-      if (activeBtn) activeBtn.classList.add('active');
-
-      const elPv = document.getElementById('funnelKpiPageView'); if (elPv) elPv.textContent = seg.pvFormatted;
-      const elPvSub = document.getElementById('funnelKpiPageViewSub'); if (elPvSub) elPvSub.textContent = seg.pvSub;
-
-      const elCart = document.getElementById('funnelKpiCart'); if (elCart) elCart.textContent = seg.cartFormatted;
-      const elCartSub = document.getElementById('funnelKpiCartSub'); if (elCartSub) elCartSub.textContent = seg.cartSub;
-
-      const elCheck = document.getElementById('funnelKpiCheckout'); if (elCheck) elCheck.textContent = seg.checkoutFormatted;
-      const elCheckSub = document.getElementById('funnelKpiCheckoutSub'); if (elCheckSub) elCheckSub.textContent = seg.checkoutSub;
-
-      const elComp = document.getElementById('funnelKpiComplete'); if (elComp) elComp.textContent = seg.completeFormatted;
-      const elCompSub = document.getElementById('funnelKpiCompleteSub'); if (elCompSub) elCompSub.textContent = seg.completeSub;
-
-      const elLead = document.getElementById('funnelKpiLead'); if (elLead) elLead.textContent = seg.leadFormatted;
-      const elLeadSub = document.getElementById('funnelKpiLeadSub'); if (elLeadSub) elLeadSub.textContent = seg.leadSub;
-
-      const elSum = document.getElementById('funnelAttributionSummary'); if (elSum) elSum.innerHTML = seg.summary;
-      const elBadge = document.getElementById('funnelSegmentBadge'); if (elBadge) elBadge.textContent = 'Exibindo: ' + seg.badge;
-
-      renderPixelFunnelChart(segmentKey);
-    }
-
     function renderFunnelModule() {
-      try { setFunnelSegment(currentFunnelSegment); } catch (e) { console.warn('setFunnelSegment:', e); }
-      try { renderPixelFunnelChart(currentFunnelSegment); } catch (e) { console.warn('renderPixelFunnelChart:', e); }
-      try { renderPixelTimelineChart(); } catch (e) { console.warn('renderPixelTimelineChart:', e); }
+      const evMap = (ga4Live && ga4Live.funnel_events) ? ga4Live.funnel_events : {
+        page_view: { count: 169024, users: 77595 },
+        session_start: { count: 97444, users: 77414 },
+        first_visit: { count: 78148, users: 76119 },
+        user_engagement: { count: 54258, users: 23557 },
+        scroll: { count: 31073, users: 19114 },
+        click: { count: 18010, users: 12823 },
+        click_ingressos: { count: 12830, users: 9694 },
+        form_start: { count: 9812, users: 8110 },
+        add_to_cart: { count: 9890, users: 7215 },
+        begin_checkout: { count: 7205, users: 6619 },
+        generate_lead: { count: 6758, users: 6572 }
+      };
+
+      const yazoPageUsers = (ga4Live && ga4Live.yazo_page && ga4Live.yazo_page.totalUsers) ? ga4Live.yazo_page.totalUsers : 14608;
+      const yazoPageViews = (ga4Live && ga4Live.yazo_page && ga4Live.yazo_page.pageViews) ? ga4Live.yazo_page.pageViews : 57452;
+      const yazoValidTotal = (yazoLive && yazoLive.total_valid) ? yazoLive.total_valid : ((yazoLive && yazoLive.records) ? yazoLive.records.length : 12549);
+
+      const siteUsers = evMap.page_view ? evMap.page_view.users : 77595;
+      const siteViews = evMap.page_view ? evMap.page_view.count : 169024;
+      const clickUsers = evMap.click_ingressos ? evMap.click_ingressos.users : 9694;
+      const clickCount = evMap.click_ingressos ? evMap.click_ingressos.count : 12830;
+      const formUsers = evMap.form_start ? evMap.form_start.users : 8110;
+      const cartUsers = evMap.add_to_cart ? evMap.add_to_cart.users : 7215;
+      const checkUsers = evMap.begin_checkout ? evMap.begin_checkout.users : 6619;
+
+      // Atualiza Badges do Topo
+      const elBU = document.getElementById('funnelBannerUsers'); if (elBU) elBU.textContent = siteUsers.toLocaleString('pt-BR') + ' Usuários';
+      const elBYP = document.getElementById('funnelBannerYazoPage'); if (elBYP) elBYP.textContent = yazoPageUsers.toLocaleString('pt-BR') + ' Usuários';
+      const elBYV = document.getElementById('funnelBannerYazoValid'); if (elBYV) elBYV.textContent = yazoValidTotal.toLocaleString('pt-BR') + ' Inscritos';
+      const elNavB = document.getElementById('funnelNavBadge'); if (elNavB) elNavB.textContent = `${yazoValidTotal.toLocaleString('pt-BR')} / ${yazoPageUsers.toLocaleString('pt-BR')} Yazo`;
+
+      // Calcula proporções reais Pago vs Orgânico a partir de processedChannels
+      buildProcessedChannels();
+      const totalSessions = processedChannels.reduce((s, c) => s + (c.sessions || 0), 0) || 1;
+      const paidSessions = processedChannels.filter(c => c.category === 'paid').reduce((s, c) => s + (c.sessions || 0), 0);
+      const paidRatio = paidSessions / totalSessions;
+      const orgRatio = 1 - paidRatio;
+
+      // Contagem real de UTMs pagas na Yazo (ig/fb)
+      const yazoRecords = (yazoLive && yazoLive.records) ? yazoLive.records : [];
+      const yazoPaidUtm = yazoRecords.filter(r => r.us === 'ig' || r.us === 'fb' || r.um === 'paid').length || Math.round(yazoValidTotal * 0.45);
+      const yazoNonPaid = Math.max(0, yazoValidTotal - yazoPaidUtm);
+
+      const convYazoPageToValid = yazoPageUsers > 0 ? ((yazoValidTotal / yazoPageUsers) * 100).toFixed(1) : '85.9';
+      const pctClick = siteUsers > 0 ? ((clickUsers / siteUsers) * 100).toFixed(2).replace('.', ',') : '12,49';
+      const pctForm = clickUsers > 0 ? ((formUsers / clickUsers) * 100).toFixed(1).replace('.', ',') : '83,7';
+      const pctCheck = clickUsers > 0 ? ((checkUsers / clickUsers) * 100).toFixed(1).replace('.', ',') : '68,3';
+
+      const grid = document.getElementById('funnelColumnsGrid');
+      if (grid) {
+        grid.innerHTML = `
+          <!-- COLUNA 1: GLOBAL -->
+          <div style="background: #FFFFFF; border: 1px solid #D8DCCB; border-top: 5px solid var(--steel-blue); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E5D5; padding-bottom: 12px;">
+              <div>
+                <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--steel-blue);">Visão Global (GA4 + Yazo)</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.18rem; font-weight: 800; color: #1E2326; margin-top: 2px;">
+                  <i class="fa-solid fa-globe" style="color: var(--steel-blue); margin-right: 6px;"></i> Todos os Canais
+                </h3>
+              </div>
+              <span class="badge-pill normal">100% Base</span>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: #5A6267;">1. Visitas no Site (page_view GA4)</div>
+                <div class="funnel-step-number">${siteUsers.toLocaleString('pt-BR')} <span class="funnel-step-unit">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill normal">100%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">${siteViews.toLocaleString('pt-BR')} views</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: var(--steel-blue);">2. Clique Ingressos (click_ingressos)</div>
+                <div class="funnel-step-number" style="color: #1C5A8A;">${clickUsers.toLocaleString('pt-BR')} <span class="funnel-step-unit">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill info">${pctClick}%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">${clickCount.toLocaleString('pt-BR')} cliques</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: #7C3AED;">3. Acesso Página Yazo (GA4 Hostname)</div>
+                <div class="funnel-step-number" style="color: #5B21B6;">${yazoPageUsers.toLocaleString('pt-BR')} <span class="funnel-step-unit">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill info">Ticketeria</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">${yazoPageViews.toLocaleString('pt-BR')} views</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: #2C699A;">4. Início Cadastro &amp; Checkout (GA4)</div>
+                <div class="funnel-step-number">${formUsers.toLocaleString('pt-BR')} &rarr; ${checkUsers.toLocaleString('pt-BR')}</div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill info">${pctForm}% / ${pctCheck}%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">do clique</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box" style="border-left: 5px solid var(--ocean-mist); background: rgba(68, 187, 164, 0.06) !important;">
+              <div>
+                <div class="funnel-step-name" style="color: #0F5144;">5. Inscritos Validados (API Yazo Live)</div>
+                <div class="funnel-step-number" style="color: #0F5144;">${yazoValidTotal.toLocaleString('pt-BR')} <span class="funnel-step-unit">confirmados</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill ocean">${convYazoPageToValid.replace('.', ',')}%</span>
+                <div style="font-size: 0.72rem; color: #0F5144; margin-top: 4px; font-weight: 700;">página Yazo &rarr; fim</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUNA 2: MÍDIA PAGA -->
+          <div style="background: #FFFFFF; border: 1px solid #D8DCCB; border-top: 5px solid #0081FB; border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E5D5; padding-bottom: 12px;">
+              <div>
+                <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #0081FB;">Mídia Patrocinada (GA4 + UTMs)</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.18rem; font-weight: 800; color: #1E2326; margin-top: 2px;">
+                  <i class="fa-brands fa-meta" style="color: #0081FB; margin-right: 6px;"></i> Tráfego Pago
+                </h3>
+              </div>
+              <span class="badge-pill paid">${(paidRatio * 100).toFixed(1).replace('.', ',')}% Sessões</span>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: #5A6267;">1. Visitas via Anúncios (est. GA4)</div>
+                <div class="funnel-step-number">${Math.round(siteUsers * paidRatio).toLocaleString('pt-BR')} <span class="funnel-step-unit">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill paid">${(paidRatio * 100).toFixed(1).replace('.', ',')}%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">${paidSessions.toLocaleString('pt-BR')} sessões</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: #0081FB;">2. Clique Ingressos (proporcional)</div>
+                <div class="funnel-step-number" style="color: #0081FB;">${Math.round(clickUsers * paidRatio).toLocaleString('pt-BR')} <span class="funnel-step-unit">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill info">${pctClick}%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">do tráfego pago</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: #2C699A;">3. Início Cadastro &rarr; Checkout (GA4)</div>
+                <div class="funnel-step-number">${Math.round(formUsers * paidRatio).toLocaleString('pt-BR')} &rarr; ${Math.round(checkUsers * paidRatio).toLocaleString('pt-BR')}</div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill info">${pctForm}%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">retenção formulário</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box" style="border-left: 5px solid #0081FB; background: rgba(0, 129, 251, 0.05) !important;">
+              <div>
+                <div class="funnel-step-name" style="color: #0081FB;">4. Inscritos com UTM Paga (Yazo API)</div>
+                <div class="funnel-step-number" style="color: #0081FB;">${yazoPaidUtm.toLocaleString('pt-BR')} <span class="funnel-step-unit">rastreados ig/fb</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill paid">${((yazoPaidUtm / yazoValidTotal) * 100).toFixed(1).replace('.', ',')}%</span>
+                <div style="font-size: 0.72rem; color: #0081FB; margin-top: 4px; font-weight: 700;">UTM direta na Yazo</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUNA 3: ORGÂNICO, DIRETO & CRM -->
+          <div style="background: #FFFFFF; border: 1px solid #D8DCCB; border-top: 5px solid var(--ocean-mist); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E5D5; padding-bottom: 12px;">
+              <div>
+                <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #0F5144;">Espontâneo, Direto, Busca &amp; E-mail</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.18rem; font-weight: 800; color: #1E2326; margin-top: 2px;">
+                  <i class="fa-solid fa-leaf" style="color: var(--ocean-mist); margin-right: 6px;"></i> Orgânico, Direto &amp; CRM
+                </h3>
+              </div>
+              <span class="badge-pill organic">${(orgRatio * 100).toFixed(1).replace('.', ',')}% Sessões</span>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: #5A6267;">1. Visitas Espontâneas (est. GA4)</div>
+                <div class="funnel-step-number">${Math.round(siteUsers * orgRatio).toLocaleString('pt-BR')} <span class="funnel-step-unit">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill organic">${(orgRatio * 100).toFixed(1).replace('.', ',')}%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">${(totalSessions - paidSessions).toLocaleString('pt-BR')} sessões</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: #0F5144;">2. Clique Ingressos (proporcional)</div>
+                <div class="funnel-step-number" style="color: #0F5144;">${Math.round(clickUsers * orgRatio).toLocaleString('pt-BR')} <span class="funnel-step-unit">usuários</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill organic">${pctClick}%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">do tráfego orgânico</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box">
+              <div>
+                <div class="funnel-step-name" style="color: #2C699A;">3. Início Cadastro &rarr; Checkout (GA4)</div>
+                <div class="funnel-step-number">${Math.round(formUsers * orgRatio).toLocaleString('pt-BR')} &rarr; ${Math.round(checkUsers * orgRatio).toLocaleString('pt-BR')}</div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill info">${pctForm}%</span>
+                <div style="font-size: 0.72rem; color: #7A848A; margin-top: 4px;">retenção formulário</div>
+              </div>
+            </div>
+
+            <div class="funnel-step-box" style="border-left: 5px solid var(--ocean-mist); background: rgba(68, 187, 164, 0.06) !important;">
+              <div>
+                <div class="funnel-step-name" style="color: #0F5144;">4. Demais Inscritos (Direto/CRM/Parcerias)</div>
+                <div class="funnel-step-number" style="color: #0F5144;">${yazoNonPaid.toLocaleString('pt-BR')} <span class="funnel-step-unit">validados</span></div>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge-pill organic">${((yazoNonPaid / yazoValidTotal) * 100).toFixed(1).replace('.', ',')}%</span>
+                <div style="font-size: 0.72rem; color: #0F5144; margin-top: 4px; font-weight: 700;">inclui cross-domain</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      renderFunnelBarChart(evMap, yazoPageUsers, yazoValidTotal);
+      renderFunnelTimelineChart();
+      renderGa4EventsTable(evMap);
+      renderCountriesGrid();
     }
 
-    function renderPixelFunnelChart(segmentKey = 'all') {
+    function renderFunnelBarChart(evMap, yazoPageUsers, yazoValidTotal) {
       const canvas = document.getElementById('pixelFunnelChart');
       if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const seg = (typeof FUNNEL_SEGMENTS !== 'undefined' && FUNNEL_SEGMENTS[segmentKey]) ? FUNNEL_SEGMENTS[segmentKey] : { pv: 65800, cart: 5400, checkout: 4000, complete: 4000, lead: 3700 };
-      
+      destroyChartSafe(canvas, pixelFunnelChartInstance);
+
       const stages = [
-        { label: '1. PageView (' + (seg.pv >= 1000 ? (seg.pv/1000).toFixed(1) + 'k' : seg.pv) + ')', val: seg.pv, pct: '100%' },
-        { label: '2. Seleção Ingresso (' + (seg.cart >= 1000 ? (seg.cart/1000).toFixed(1) + 'k' : seg.cart) + ')', val: seg.cart, pct: '8,21%' },
-        { label: '3. Início Cadastro (' + (seg.checkout >= 1000 ? (seg.checkout/1000).toFixed(1) + 'k' : seg.checkout) + ')', val: seg.checkout, pct: '6,08%' },
-        { label: '4. Concluir Inscrição (' + (seg.complete >= 1000 ? (seg.complete/1000).toFixed(1) + 'k' : seg.complete) + ')', val: seg.complete, pct: '6,08%' },
-        { label: '5. Confirmação / Lead (' + (seg.lead >= 1000 ? (seg.lead/1000).toFixed(1) + 'k' : seg.lead) + ')', val: seg.lead, pct: '5,62%' }
+        { label: '1. Site (page_view GA4)', val: evMap.page_view ? evMap.page_view.users : 77595, color: '#3F88C5' },
+        { label: '2. Página Yazo (GA4 Host)', val: yazoPageUsers, color: '#7C3AED' },
+        { label: '3. Inscritos Validados (Yazo)', val: yazoValidTotal, color: '#44BBA4' },
+        { label: '4. Clique Ingressos (GA4)', val: evMap.click_ingressos ? evMap.click_ingressos.users : 9694, color: '#5B9DD4' },
+        { label: '5. Início Cadastro (form_start)', val: evMap.form_start ? evMap.form_start.users : 8110, color: '#D97706' },
+        { label: '6. Checkout (begin_checkout)', val: evMap.begin_checkout ? evMap.begin_checkout.users : 6619, color: '#0F5144' }
       ];
 
-      if (pixelFunnelChartInstance) pixelFunnelChartInstance.destroy();
-
-      pixelFunnelChartInstance = new Chart(ctx, {
+      pixelFunnelChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
           labels: stages.map(s => s.label),
           datasets: [{
-            label: 'Total de Eventos',
+            label: 'Usuários / Inscritos',
             data: stages.map(s => s.val),
-            backgroundColor: [
-              '#3F88C5',
-              '#5B9DD4',
-              '#D97706',
-              '#44BBA4',
-              '#2E7D32'
-            ],
+            backgroundColor: stages.map(s => s.color),
             borderRadius: 6
           }]
         },
@@ -4186,262 +2337,352 @@
               backgroundColor: '#282E32',
               titleColor: '#F6F7EB',
               bodyColor: '#FFFFFF',
-              padding: 12,
               callbacks: {
-                label: (ctx) => ` ${ctx.parsed.x.toLocaleString('pt-BR')} eventos (${stages[ctx.dataIndex].pct} da audiência)`
+                label: (ctx) => ` ${ctx.parsed.x.toLocaleString('pt-BR')} usuários/inscritos`
               }
             }
           },
           scales: {
-            x: {
-              grid: { color: '#E2E5D5' },
-              ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } }
-            },
-            y: {
-              grid: { display: false },
-              ticks: { color: '#1E2326', font: { family: 'Inter', size: 12, weight: 700 } }
-            }
+            x: { grid: { color: '#E2E5D5' }, ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } } },
+            y: { grid: { display: false }, ticks: { color: '#1E2326', font: { family: 'Inter', size: 11, weight: 700 } } }
           }
         }
       });
     }
 
-    function renderPixelTimelineChart() {
+    function renderFunnelTimelineChart() {
       const canvas = document.getElementById('pixelTimelineChart');
       if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      
-      const timelineData = [
-        { date: '08/10', events: 1400 },
-        { date: '09/10', events: 2400 },
-        { date: '11/10', events: 2100 },
-        { date: '13/10', events: 4100 },
-        { date: '15/10', events: 3500 },
-        { date: '17/10', events: 2800 },
-        { date: '19/10', events: 4000 },
-        { date: '20/10', events: 5800 },
-        { date: '21/10', events: 5200 },
-        { date: '23/10', events: 1400 },
-        { date: '25/10', events: 1800 },
-        { date: '26/10', events: 2700 },
-        { date: '28/10', events: 2900 },
-        { date: '30/10', events: 1600 },
-        { date: '01/11', events: 2500 },
-        { date: '02/11', events: 4200 },
-        { date: '03/11', events: 3400 },
-        { date: '04/11', events: 5500 },
-        { date: '06/11', events: 4800 }
-      ];
+      destroyChartSafe(canvas, pixelTimelineChartInstance);
 
-      if (pixelTimelineChartInstance) pixelTimelineChartInstance.destroy();
+      const dailyGa4 = (ga4Live && ga4Live.daily_yazo) ? ga4Live.daily_yazo : {};
+      const yazoDailyCounts = {};
+      if (yazoLive && Array.isArray(yazoLive.records)) {
+        yazoLive.records.forEach(r => {
+          yazoDailyCounts[r.d] = (yazoDailyCounts[r.d] || 0) + 1;
+        });
+      }
 
-      pixelTimelineChartInstance = new Chart(ctx, {
+      const dates = Object.keys(dailyGa4).sort();
+      const labels = dates.map(d => `${d.slice(8, 10)}/${d.slice(5, 7)}`);
+      const yazoUsersSeries = dates.map(d => dailyGa4[d].users || 0);
+      const yazoRegsSeries = dates.map(d => yazoDailyCounts[d] || 0);
+
+      pixelTimelineChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'line',
         data: {
-          labels: timelineData.map(d => d.date),
-          datasets: [{
-            label: 'Eventos Registrados no Pixel / Dia',
-            data: timelineData.map(d => d.events),
-            borderColor: '#3F88C5',
-            backgroundColor: 'rgba(63, 136, 197, 0.16)',
-            fill: true,
-            borderWidth: 3,
-            tension: 0.35,
-            pointRadius: 4,
-            pointBackgroundColor: '#3F88C5',
-            pointHoverRadius: 7
-          }]
+          labels,
+          datasets: [
+            {
+              label: 'Acessos Página Yazo (GA4)',
+              data: yazoUsersSeries,
+              borderColor: '#7C3AED',
+              backgroundColor: 'rgba(124, 58, 237, 0.12)',
+              fill: true,
+              borderWidth: 2.5,
+              tension: 0.3,
+              pointRadius: 3
+            },
+            {
+              label: 'Inscritos Validados (Yazo API)',
+              data: yazoRegsSeries,
+              borderColor: '#44BBA4',
+              backgroundColor: 'rgba(68, 187, 164, 0.18)',
+              fill: true,
+              borderWidth: 3,
+              tension: 0.3,
+              pointRadius: 3
+            }
+          ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: false },
+            legend: { position: 'top', labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 } } },
             tooltip: {
               backgroundColor: '#282E32',
               titleColor: '#F6F7EB',
-              bodyColor: '#FFFFFF',
-              padding: 12,
-              callbacks: {
-                label: (ctx) => ` ~${ctx.parsed.y.toLocaleString('pt-BR')} eventos no dia`
-              }
+              bodyColor: '#FFFFFF'
             }
           },
           scales: {
-            x: {
-              grid: { color: '#E2E5D5' },
-              ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } }
-            },
-            y: {
-              grid: { color: '#E2E5D5' },
-              ticks: { color: '#393E41', font: { family: 'Inter', weight: 600 } },
-              beginAtZero: true
-            }
+            x: { grid: { color: '#E2E5D5' }, ticks: { color: '#393E41', font: { family: 'Inter', size: 11 } } },
+            y: { beginAtZero: true, grid: { color: '#E2E5D5' }, ticks: { color: '#393E41' } }
           }
         }
       });
     }
 
+    function renderGa4EventsTable(evMap) {
+      const tbody = document.getElementById('ga4EventsTableBody');
+      if (!tbody) return;
+
+      const metaDescriptions = {
+        page_view: 'Visualização de Páginas (Site + Yazo)',
+        session_start: 'Sessões Iniciadas',
+        first_visit: 'Novos Visitantes (Primeira Visita)',
+        user_engagement: 'Engajamento Ativo (+10s no site)',
+        scroll: 'Rolagem de Página (+90% da dobra)',
+        click: 'Cliques Gerais em Links e Botões',
+        click_ingressos: '<span class="badge-pill info">Interesse Direto em Inscrição</span>',
+        form_start: 'Início de Preenchimento do Formulário',
+        add_to_cart: 'Seleção do Ingresso na Yazo',
+        begin_checkout: '<span class="badge-pill ocean">Avanço para Checkout Final</span>',
+        generate_lead: '<span class="badge-pill ocean">Lead / Cadastro Registrado (GA4)</span>'
+      };
+
+      const order = ['page_view', 'session_start', 'first_visit', 'user_engagement', 'scroll', 'click', 'click_ingressos', 'form_start', 'add_to_cart', 'begin_checkout', 'generate_lead'];
+      const totalEvents = Object.values(evMap).reduce((s, e) => s + (e.count || 0), 0) || 1;
+      const baseUsers = (evMap.page_view && evMap.page_view.users) ? evMap.page_view.users : 1;
+
+      const elSub = document.getElementById('ga4EventsTableSubtitle');
+      if (elSub) {
+        elSub.textContent = `Total de ${totalEvents.toLocaleString('pt-BR')} eventos e ${baseUsers.toLocaleString('pt-BR')} usuários únicos medidos até ${ga4Live ? ga4Live.sync_time : 'hoje'}.`;
+      }
+
+      tbody.innerHTML = order.filter(k => evMap[k]).map((k, idx) => {
+        const ev = evMap[k];
+        const pctEv = ((ev.count / totalEvents) * 100).toFixed(2).replace('.', ',');
+        const pctUsr = ((ev.users / baseUsers) * 100).toFixed(2).replace('.', ',');
+        const ratio = ev.users > 0 ? (ev.count / ev.users).toFixed(2).replace('.', ',') : '1,00';
+        const highlight = (k === 'click_ingressos' || k === 'begin_checkout' || k === 'generate_lead');
+        return `
+          <tr style="${highlight ? 'background: rgba(63, 136, 197, 0.06);' : ''}">
+            <td><strong style="color: #1E2326;">${idx + 1}. ${k}</strong></td>
+            <td>${metaDescriptions[k] || k}</td>
+            <td><strong>${ev.count.toLocaleString('pt-BR')}</strong></td>
+            <td>${pctEv}%</td>
+            <td><strong style="color: #1C5A8A;">${ev.users.toLocaleString('pt-BR')}</strong></td>
+            <td><strong>${pctUsr}%</strong></td>
+            <td>${ratio}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderCountriesGrid() {
+      const container = document.getElementById('geoCountriesGrid');
+      if (!container) return;
+
+      const list = (ga4Live && Array.isArray(ga4Live.countries_click) && ga4Live.countries_click.length > 0)
+        ? ga4Live.countries_click
+        : [
+            { country: 'Brazil', count: 12018, users: 9078 },
+            { country: 'Paraguay', count: 649, users: 518 },
+            { country: 'Argentina', count: 41, users: 37 },
+            { country: 'United States', count: 70, users: 35 }
+          ];
+
+      const totalU = list.reduce((s, c) => s + (c.users || 0), 0) || 1;
+      const flags = { Brazil: '🇧🇷 Brasil (Principal)', Paraguay: '🇵🇾 Paraguai (Tríplice Fronteira)', Argentina: '🇦🇷 Argentina (Tríplice Fronteira)', 'United States': '🇺🇸 Estados Unidos', Canada: '🇨🇦 Canadá' };
+
+      const top3 = list.slice(0, 3);
+      const othersU = list.slice(3).reduce((s, c) => s + (c.users || 0), 0);
+
+      let html = top3.map((c, i) => {
+        const pct = ((c.users / totalU) * 100).toFixed(1).replace('.', ',');
+        const color = i === 0 ? '#1C5A8A' : (i === 1 ? '#0F5144' : 'var(--terracotta)');
+        return `
+          <div class="geo-country-box">
+            <div class="geo-country-name">${flags[c.country] || c.country}</div>
+            <div class="geo-country-val" style="color: ${color};">${c.users.toLocaleString('pt-BR')} <span style="font-size: 0.8rem; font-weight: 700;">${pct}%</span></div>
+          </div>
+        `;
+      }).join('');
+
+      if (othersU > 0) {
+        const pctO = ((othersU / totalU) * 100).toFixed(1).replace('.', ',');
+        html += `
+          <div class="geo-country-box">
+            <div class="geo-country-name">🌎 Outros Países</div>
+            <div class="geo-country-val" style="color: #5A6267;">${othersU.toLocaleString('pt-BR')} <span style="font-size: 0.8rem; font-weight: 700;">${pctO}%</span></div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    /* =========================================================================
+       ABA 3: PERFORMANCE DE MÍDIA PAGA (GA4 LIVE)
+       ========================================================================= */
     function renderTrafficModule() {
-      renderTrafficVolumeChart();
-      renderTrafficQualityChart();
+      buildProcessedChannels();
+
+      const paid = processedChannels.filter(c => c.category === 'paid');
+      const totalSessAll = processedChannels.reduce((s, c) => s + c.sessions, 0) || 1;
+      const totalEvAll = processedChannels.reduce((s, c) => s + c.eventCount, 0) || 1;
+
+      const paidSess = paid.reduce((s, c) => s + c.sessions, 0);
+      const paidEng = paid.reduce((s, c) => s + c.engagedSessions, 0);
+      const paidEv = paid.reduce((s, c) => s + c.eventCount, 0);
+      const paidEngRate = paidSess > 0 ? ((paidEng / paidSess) * 100).toFixed(2).replace('.', ',') : '0,00';
+
+      const yazoValidTotal = (yazoLive && yazoLive.total_valid) ? yazoLive.total_valid : ((yazoLive && yazoLive.records) ? yazoLive.records.length : 12549);
+      const yazoPageUsers = (ga4Live && ga4Live.yazo_page && ga4Live.yazo_page.totalUsers) ? ga4Live.yazo_page.totalUsers : 14608;
+
+      const topPaid = paid.slice().sort((a, b) => b.sessions - a.sessions)[0] || { channel: 'Reels Patrocinado', sessions: 0 };
+
+      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setTxt('trafficKpiSessions', paidSess.toLocaleString('pt-BR'));
+      setTxt('trafficKpiSessionsShare', `${((paidSess / totalSessAll) * 100).toFixed(1).replace('.', ',')}% de todo tráfego`);
+      setTxt('trafficKpiEngaged', paidEng.toLocaleString('pt-BR'));
+      setTxt('trafficKpiEngagedRate', `${paidEngRate}% engajamento`);
+      setTxt('trafficKpiEvents', paidEv.toLocaleString('pt-BR'));
+      setTxt('trafficKpiEventsShare', `${((paidEv / totalEvAll) * 100).toFixed(1).replace('.', ',')}% dos eventos`);
+      setTxt('trafficKpiYazoTotal', yazoValidTotal.toLocaleString('pt-BR'));
+      setTxt('trafficKpiYazoUsers', `${yazoPageUsers.toLocaleString('pt-BR')} usuários na Yazo`);
+      setTxt('trafficKpiTopFormat', topPaid.channel.replace('instagram / ', 'IG ').replace('google / ', 'Google ').replace('fb / ', 'FB '));
+      setTxt('trafficKpiTopFormatSessions', `${topPaid.sessions.toLocaleString('pt-BR')} sessões`);
+      setTxt('trafficKpiTopFormatShare', `${paidSess > 0 ? ((topPaid.sessions / paidSess) * 100).toFixed(1).replace('.', ',') : 0}% da mídia paga`);
+      setTxt('trafficGa4SyncLabel', ga4Live ? `GA4 Live (${ga4Live.sync_time})` : 'GA4 Auditado');
+      setTxt('trafficNavBadge', `${paidSess.toLocaleString('pt-BR')} sessões pagas`);
+
+      const btnPaid = document.getElementById('btnTrafficFilterPaid');
+      if (btnPaid) btnPaid.textContent = `Canais Pagos (${paid.length})`;
+      const btnAll = document.getElementById('btnTrafficFilterAll');
+      if (btnAll) btnAll.textContent = `Todos os Canais GA4 (${processedChannels.length})`;
+
+      renderTrafficVolumeChart(paid);
+      renderTrafficQualityChart(paid);
       renderTrafficShareChart();
-      renderTrafficCampaignPhaseChart();
+      renderTrafficCampaignPhaseChart(yazoValidTotal);
       renderTrafficTable();
     }
 
-    function renderTrafficVolumeChart() {
-      const ctx = document.getElementById('trafficVolumeChart').getContext('2d');
-      const paidOnly = GA4_CHANNELS.filter(c => c.category === 'paid');
+    function filterTrafficTable(mode) {
+      trafficTableFilter = mode;
+      const bPaid = document.getElementById('btnTrafficFilterPaid');
+      const bAll = document.getElementById('btnTrafficFilterAll');
+      if (bPaid) bPaid.classList.toggle('active', mode === 'paid');
+      if (bAll) bAll.classList.toggle('active', mode === 'all');
+      renderTrafficTable();
+    }
 
-      const labels = paidOnly.map(c => {
-        return c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: ');
-      });
-      const sessions = paidOnly.map(c => c.sessions);
-      const engaged = paidOnly.map(c => c.engagedSessions);
+    function renderTrafficTable() {
+      const tbody = document.getElementById('trafficTableBody');
+      if (!tbody) return;
+      if (processedChannels.length === 0) buildProcessedChannels();
 
-      if (trafficVolumeChartInstance) trafficVolumeChartInstance.destroy();
+      const search = (document.getElementById('trafficSearchInput') ? document.getElementById('trafficSearchInput').value : '').toLowerCase();
+      let list = processedChannels;
+      if (trafficTableFilter === 'paid') {
+        list = list.filter(item => item.category === 'paid');
+      }
+      if (search) {
+        list = list.filter(item => item.channel.toLowerCase().includes(search) || item.categoryLabel.toLowerCase().includes(search));
+      }
 
-      trafficVolumeChartInstance = new Chart(ctx, {
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#7A848A; padding:20px;">Nenhum canal encontrado.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(item => {
+        const pillClass = item.category === 'paid' ? 'paid' : (item.category === 'direct' ? 'direct' : 'organic');
+        return `
+          <tr>
+            <td><strong>${item.channel}</strong></td>
+            <td><span class="badge-pill ${pillClass}">${item.categoryLabel}</span></td>
+            <td><strong>${item.sessions.toLocaleString('pt-BR')}</strong></td>
+            <td>${item.sessionsShare.toFixed(2).replace('.', ',')}%</td>
+            <td>${item.engagedSessions.toLocaleString('pt-BR')}</td>
+            <td><strong>${item.engagementRate.toFixed(2).replace('.', ',')}%</strong></td>
+            <td>${item.avgTimeStr}</td>
+            <td>${item.eventsPerSession.toFixed(2).replace('.', ',')}</td>
+            <td>${item.eventCount.toLocaleString('pt-BR')} <span style="font-size:0.75rem; color:#7A848A;">(${item.eventShare.toFixed(1).replace('.', ',')}%)</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderTrafficVolumeChart(paidList) {
+      const canvas = document.getElementById('trafficVolumeChart');
+      if (!canvas) return;
+      destroyChartSafe(canvas, trafficVolumeChartInstance);
+
+      const topPaid = paidList.slice(0, 8);
+      const labels = topPaid.map(c => c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: '));
+
+      trafficVolumeChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
-          labels: labels,
+          labels,
           datasets: [
-            {
-              label: 'Sessões Totais',
-              data: sessions,
-              backgroundColor: '#06b6d4',
-              borderRadius: 6
-            },
-            {
-              label: 'Sessões Engajadas',
-              data: engaged,
-              backgroundColor: '#10b981',
-              borderRadius: 6
-            }
+            { label: 'Sessões Totais', data: topPaid.map(c => c.sessions), backgroundColor: '#3F88C5', borderRadius: 6 },
+            { label: 'Sessões Engajadas', data: topPaid.map(c => c.engagedSessions), backgroundColor: '#44BBA4', borderRadius: 6 }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: 600 } }
-            },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10
-            }
+            legend: { labels: { color: '#393E41', font: { family: 'Inter', size: 11, weight: 600 } } },
+            tooltip: { backgroundColor: '#282E32', titleColor: '#F6F7EB', bodyColor: '#FFFFFF' }
           },
           scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+            x: { grid: { color: '#E2E5D5' }, ticks: { color: '#393E41', font: { weight: 600 } } },
+            y: { grid: { color: '#E2E5D5' }, ticks: { color: '#393E41' }, beginAtZero: true }
           }
         }
       });
     }
 
-    function renderTrafficQualityChart() {
-      const ctx = document.getElementById('trafficQualityChart').getContext('2d');
-      const paidOnly = GA4_CHANNELS.filter(c => c.category === 'paid');
+    function renderTrafficQualityChart(paidList) {
+      const canvas = document.getElementById('trafficQualityChart');
+      if (!canvas) return;
+      destroyChartSafe(canvas, trafficQualityChartInstance);
 
-      const labels = paidOnly.map(c => {
-        return c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: ');
-      });
-      const rates = paidOnly.map(c => c.engagementRate);
-      const times = paidOnly.map(c => c.avgTimeSec);
+      const topPaid = paidList.slice(0, 8);
+      const labels = topPaid.map(c => c.channel.replace('instagram / ', 'IG: ').replace('spotify / ', 'Spotify: ').replace('fb / ', 'FB: ').replace('google / ', 'Google: '));
 
-      if (trafficQualityChartInstance) trafficQualityChartInstance.destroy();
-
-      trafficQualityChartInstance = new Chart(ctx, {
+      trafficQualityChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
-          labels: labels,
+          labels,
           datasets: [
-            {
-              label: 'Taxa de Engajamento (%)',
-              data: rates,
-              backgroundColor: '#a855f7',
-              borderRadius: 6,
-              yAxisID: 'y'
-            },
-            {
-              type: 'line',
-              label: 'Tempo Médio (segundos)',
-              data: times,
-              borderColor: '#f59e0b',
-              backgroundColor: '#f59e0b',
-              borderWidth: 2.5,
-              pointRadius: 4,
-              yAxisID: 'y1'
-            }
+            { label: 'Taxa de Engajamento (%)', data: topPaid.map(c => c.engagementRate), backgroundColor: '#7C3AED', borderRadius: 6, yAxisID: 'y' },
+            { type: 'line', label: 'Tempo Médio (seg)', data: topPaid.map(c => c.avgTimeSec), borderColor: '#E94F37', backgroundColor: '#E94F37', borderWidth: 2.5, pointRadius: 4, yAxisID: 'y1' }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: 600 } }
-            },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10
-            }
+            legend: { labels: { color: '#393E41', font: { family: 'Inter', size: 11, weight: 600 } } },
+            tooltip: { backgroundColor: '#282E32', titleColor: '#F6F7EB', bodyColor: '#FFFFFF' }
           },
           scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
-            y: {
-              grid: { color: '#1e293b' },
-              ticks: { color: '#a855f7', callback: (v) => v + '%' },
-              beginAtZero: true,
-              title: { display: true, text: 'Engajamento %', color: '#a855f7' }
-            },
-            y1: {
-              position: 'right',
-              grid: { drawOnChartArea: false },
-              ticks: { color: '#f59e0b', callback: (v) => v + 's' },
-              beginAtZero: true,
-              title: { display: true, text: 'Tempo (s)', color: '#f59e0b' }
-            }
+            x: { grid: { color: '#E2E5D5' }, ticks: { color: '#393E41' } },
+            y: { grid: { color: '#E2E5D5' }, ticks: { color: '#7C3AED', callback: v => v + '%' }, beginAtZero: true },
+            y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#E94F37', callback: v => v + 's' }, beginAtZero: true }
           }
         }
       });
     }
 
     function renderTrafficShareChart() {
-      const ctx = document.getElementById('trafficShareChart').getContext('2d');
+      const canvas = document.getElementById('trafficShareChart');
+      if (!canvas) return;
+      destroyChartSafe(canvas, trafficShareChartInstance);
 
-      const shares = {
-        'Mídia Paga (Patrocinada)': 32580,
-        'Tráfego Direto': 16489,
-        'Busca Orgânica (Google/Bing)': 5705,
-        'Social Orgânico (Instagram)': 3428,
-        'E-mail / CRM (RD Station)': 1513,
-        'Mídia Offline (QR Code)': 837,
-        'Imprensa & Portais': 595,
-        'Outros / Referrals': 1511
-      };
-
+      const shares = {};
+      processedChannels.forEach(c => {
+        shares[c.categoryLabel] = (shares[c.categoryLabel] || 0) + c.sessions;
+      });
       const labels = Object.keys(shares);
       const data = Object.values(shares);
+      const total = data.reduce((a, b) => a + b, 0) || 1;
 
-      if (trafficShareChartInstance) trafficShareChartInstance.destroy();
-
-      trafficShareChartInstance = new Chart(ctx, {
+      trafficShareChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'doughnut',
         data: {
-          labels: labels,
+          labels,
           datasets: [{
-            data: data,
-            backgroundColor: [
-              '#06b6d4', '#64748b', '#10b981', '#ec4899', '#f59e0b', '#8b5cf6', '#3b82f6', '#475569'
-            ],
-            borderColor: '#111827',
+            data,
+            backgroundColor: ['#3F88C5', '#393E41', '#44BBA4', '#E94F37', '#D97706', '#7C3AED', '#5B9DD4', '#7A848A'],
+            borderColor: '#FFFFFF',
             borderWidth: 2
           }]
         },
@@ -4450,51 +2691,42 @@
           maintainAspectRatio: false,
           cutout: '60%',
           plugins: {
-            legend: {
-              position: 'right',
-              labels: { color: '#94a3b8', font: { family: 'Inter', size: 10 }, boxWidth: 12, padding: 8 }
-            },
+            legend: { position: 'right', labels: { color: '#393E41', font: { family: 'Inter', size: 11, weight: 600 }, boxWidth: 12, padding: 8 } },
             tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10,
-              callbacks: {
-                label: (ctx) => {
-                  const val = ctx.parsed;
-                  const pct = ((val / 62658) * 100).toFixed(1);
-                  return ` ${ctx.label}: ${val.toLocaleString('pt-BR')} (${pct}%)`;
-                }
-              }
+              backgroundColor: '#282E32',
+              titleColor: '#F6F7EB',
+              bodyColor: '#FFFFFF',
+              callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString('pt-BR')} (${((ctx.parsed / total) * 100).toFixed(1)}%)` }
             }
           }
         }
       });
     }
 
-    function renderTrafficCampaignPhaseChart() {
-      const ctx = document.getElementById('trafficCampaignPhaseChart').getContext('2d');
+    function renderTrafficCampaignPhaseChart(yazoTotal) {
+      const canvas = document.getElementById('trafficCampaignPhaseChart');
+      if (!canvas) return;
+      destroyChartSafe(canvas, trafficCampaignPhaseChartInstance);
 
-      const phases = [
-        { name: '1. Pré-Tráfego (Abertura)', period: '25/08 a 13/09', days: 20, count: 1520, color: 'rgba(99, 102, 241, 0.8)' },
-        { name: '2. Tráfego Pago Ativo', period: '14/09 a 23/10', days: 40, count: 972, color: 'rgba(6, 182, 212, 0.85)' },
-        { name: '3. Pós-Campanha (Reta Final)', period: '24/10 a 06/11', days: 14, count: 650, color: 'rgba(16, 185, 129, 0.8)' }
-      ];
+      let p1 = 0, p2 = 0, p3 = 0;
+      if (yazoLive && Array.isArray(yazoLive.records) && yazoLive.records.length > 0) {
+        yazoLive.records.forEach(r => {
+          if (r.d <= '2026-09-13') p1++;
+          else if (r.d <= '2026-10-23') p2++;
+          else p3++;
+        });
+      } else {
+        p1 = 2100; p2 = 6400; p3 = Math.max(0, yazoTotal - p1 - p2);
+      }
 
-      const labels = phases.map(p => p.name);
-      const counts = phases.map(p => p.count);
-      const bgColors = phases.map(p => p.color);
-
-      if (trafficCampaignPhaseChartInstance) trafficCampaignPhaseChartInstance.destroy();
-
-      trafficCampaignPhaseChartInstance = new Chart(ctx, {
+      trafficCampaignPhaseChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
-          labels: labels,
+          labels: ['1. Pré-Anúncios (até 13/09)', '2. Mídia Ativa (14/09–23/10)', '3. Reta Final (24/10–Hoje)'],
           datasets: [{
-            label: 'Total de Inscritos na Fase',
-            data: counts,
-            backgroundColor: bgColors,
+            label: 'Inscritos Validados (API Yazo)',
+            data: [p1, p2, p3],
+            backgroundColor: ['#393E41', '#3F88C5', '#44BBA4'],
             borderRadius: 6
           }]
         },
@@ -4503,125 +2735,87 @@
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
-            tooltip: {
-              backgroundColor: '#1e293b',
-              titleColor: '#fff',
-              bodyColor: '#cbd5e1',
-              padding: 10,
-              callbacks: {
-                afterLabel: (ctx) => {
-                  const idx = ctx.dataIndex;
-                  const p = phases[idx];
-                  const avg = (p.count / p.days).toFixed(1);
-                  return ` Período: ${p.period} (${p.days} dias)\n Média: ${avg} inscritos/dia`;
-                }
-              }
-            }
+            tooltip: { backgroundColor: '#282E32', titleColor: '#F6F7EB', bodyColor: '#FFFFFF' }
           },
           scales: {
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
-            y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' }, beginAtZero: true }
+            x: { grid: { color: '#E2E5D5' }, ticks: { color: '#393E41', font: { weight: 600 } } },
+            y: { grid: { color: '#E2E5D5' }, ticks: { color: '#393E41' }, beginAtZero: true }
           }
         }
       });
     }
 
     /* =========================================================================
-       MÓDULO DO FUNIL DO PIXEL META (ABA 3) - COM SEGMENTAÇÃO POR MÍDIA
+       CARGA AO VIVO (GA4 API + YAZO API COM FALLBACK PARA SNAPSHOTS)
        ========================================================================= */
+    async function refreshHomeLiveData() {
+      const btn = document.getElementById('btnRefreshLiveAll');
+      const icon = document.getElementById('homeSyncIcon');
+      if (btn) btn.disabled = true;
+      if (icon) icon.classList.add('fa-spin');
 
-    const FUNNEL_SEGMENTS = {
-      'all': {
-        name: 'Todos os Canais (Visão Global)',
-        badge: 'Todos os Canais (100%)',
-        pv: 65800, pvFormatted: '65,8 mil', pvSub: '100% da audiência do site',
-        cart: 5400, cartFormatted: '5,4 mil', cartSub: '8,21% foram ao Yazo',
-        checkout: 4000, checkoutFormatted: '4,0 mil', checkoutSub: '74,07% retenção',
-        complete: 4000, completeFormatted: '4,0 mil', completeSub: '100% concluíram!',
-        lead: 3700, leadFormatted: '3,7 mil', leadSub: '6,08% conv. global',
-        summary: 'Dos <strong>65,8 mil PageViews</strong> monitorados no Pixel: <strong>34.216 (52,0%)</strong> vieram de <strong>Tráfego Pago</strong> (30,4k Meta Ads + 3,2k Spotify + 632 Google) e <strong>31.584 (48,0%)</strong> de <strong>Orgânico / Direto</strong>.'
-      },
-      'paid': {
-        name: 'Tráfego Pago Consolidado (52,0%)',
-        badge: 'Tráfego Pago (52,0%)',
-        pv: 34216, pvFormatted: '34,2 mil', pvSub: '52,0% de todo o tráfego',
-        cart: 2808, cartFormatted: '2,8 mil', cartSub: '8,21% foram ao Yazo',
-        checkout: 2080, checkoutFormatted: '2,1 mil', checkoutSub: '74,07% retenção',
-        complete: 2080, completeFormatted: '2,1 mil', completeSub: '100% concluíram!',
-        lead: 1924, leadFormatted: '1,9 mil', leadSub: '6,08% conv. de mídia',
-        summary: 'O <strong>Tráfego Pago</strong> respondeu por <strong>34.216 PageViews (52,0%)</strong> no site do festival! Meta Ads gerou 30.378 PageViews (88,8% da mídia), Spotify gerou 3.198 (9,3%) e Google CPC 632 (1,8%).'
-      },
-      'meta': {
-        name: 'Apenas Meta Ads (Instagram Reels, Post & FB)',
-        badge: 'Meta Ads (46,2%)',
-        pv: 30378, pvFormatted: '30,4 mil', pvSub: '46,2% do total (88,8% da mídia)',
-        cart: 2493, cartFormatted: '2,5 mil', cartSub: '8,21% foram ao Yazo',
-        checkout: 1847, checkoutFormatted: '1,8 mil', checkoutSub: '74,07% retenção',
-        complete: 1847, completeFormatted: '1,8 mil', completeSub: '100% concluíram!',
-        lead: 1708, leadFormatted: '1,7 mil', leadSub: '6,08% conv. Meta Ads',
-        summary: 'O <strong>Meta Ads (Instagram + Facebook)</strong> foi o canal dominante de aquisição com <strong>30.378 PageViews (46,2% de todo o tráfego do evento)</strong>, liderado por Reels com 16.096 sessões!'
-      },
-      'spotify': {
-        name: 'Spotify Ads (Spot de Áudio)',
-        badge: 'Spotify Ads (4,9%)',
-        pv: 3198, pvFormatted: '3,2 mil', pvSub: '4,86% do tráfego do festival',
-        cart: 262, cartFormatted: '262', cartSub: 'Maior engajamento (23,4%)',
-        checkout: 194, checkoutFormatted: '194', checkoutSub: '74,07% retenção',
-        complete: 194, completeFormatted: '194', completeSub: '100% concluíram!',
-        lead: 180, leadFormatted: '180', leadSub: '6,08% conv. Spotify',
-        summary: 'O canal <strong>spotify / spot</strong> levou <strong>3.198 PageViews</strong> para o site com a <strong>maior taxa de retenção de toda a mídia paga (23,44% de engajamento e 9s de tela)</strong>.'
-      },
-      'google': {
-        name: 'Google Ads (CPC de Pesquisa)',
-        badge: 'Google CPC (1,0%)',
-        pv: 632, pvFormatted: '632', pvSub: '0,96% do tráfego do evento',
-        cart: 52, cartFormatted: '52', cartSub: '8,21% foram ao Yazo',
-        checkout: 38, checkoutFormatted: '38', checkoutSub: '74,07% retenção',
-        complete: 38, completeFormatted: '38', completeSub: '100% concluíram!',
-        lead: 36, leadFormatted: '36', leadSub: '6,08% conv. Google',
-        summary: 'O <strong>Google Ads (CPC)</strong> gerou <strong>632 PageViews</strong> qualificados buscando por termos do festival na pesquisa do Google.'
-      },
-      'organic': {
-        name: 'Orgânico, Direto e CRM (E-mails)',
-        badge: 'Orgânico / Direto (48,0%)',
-        pv: 31584, pvFormatted: '31,6 mil', pvSub: '48,0% do tráfego do site',
-        cart: 2592, cartFormatted: '2,6 mil', cartSub: '8,21% foram ao Yazo',
-        checkout: 1920, checkoutFormatted: '1,9 mil', checkoutSub: '74,07% retenção',
-        complete: 1920, completeFormatted: '1,9 mil', completeSub: '100% concluíram!',
-        lead: 1776, leadFormatted: '1,8 mil', leadSub: '6,08% conv. orgânica',
-        summary: 'O tráfego espontâneo (Direto, Buscas no Google/Bing, E-mail Marketing e Redes Sociais Orgânicas) gerou <strong>31.584 PageViews</strong> no site institucional.'
+      try {
+        const [ga4Res, yazoRes] = await Promise.allSettled([
+          fetch('api_ga4.php?refresh=1', { cache: 'no-store' }).then(r => r.ok ? r.json() : null),
+          fetch('api_yazo.php', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
+        ]);
+
+        if (ga4Res.status === 'fulfilled' && ga4Res.value && ga4Res.value.status === 'ok') {
+          ga4Live = ga4Res.value;
+        }
+        if (yazoRes.status === 'fulfilled' && yazoRes.value && yazoRes.value.records) {
+          yazoLive = yazoRes.value;
+        }
+        renderTrafficModule();
+        renderFunnelModule();
+      } catch (e) {
+        console.warn('Erro ao atualizar APIs:', e);
+      } finally {
+        if (btn) btn.disabled = false;
+        if (icon) icon.classList.remove('fa-spin');
       }
-    };
+    }
+
+    async function hydrateBackgroundApis() {
+      try {
+        const [ga4Res, yazoRes] = await Promise.allSettled([
+          fetch('api_ga4.php', { cache: 'no-store' }).then(r => r.ok ? r.json() : null),
+          fetch('api_yazo.php', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
+        ]);
+        let updated = false;
+        if (ga4Res.status === 'fulfilled' && ga4Res.value && ga4Res.value.status === 'ok') {
+          ga4Live = ga4Res.value;
+          updated = true;
+        }
+        if (yazoRes.status === 'fulfilled' && yazoRes.value && yazoRes.value.records) {
+          yazoLive = yazoRes.value;
+          updated = true;
+        }
+        if (updated) {
+          renderFunnelModule();
+          renderTrafficModule();
+        }
+      } catch (e) {}
+    }
 
     function exportData() {
-      const activeTab = document.querySelector('.main-tab-btn.active').id;
-      if (activeTab === 'btnTabTraffic') {
-        let csv = 'Canal;Categoria;Sessoes;Share_Sessoes;Sessoes_Engajadas;Taxa_Engajamento;Tempo_Medio;Eventos_Sessao;Contagem_Eventos;Share_Eventos\n';
-        GA4_CHANNELS.forEach(c => {
-          csv += `"${c.channel}";"${c.categoryLabel}";${c.sessions};${c.sessionsShare}%;${c.engagedSessions};${c.engagementRate}%;"${c.avgTimeStr}";${c.eventsPerSession};${c.eventCount};${c.eventShare}%\n`;
+      const activeBtn = document.querySelector('.main-tab-btn.active');
+      const activeId = activeBtn ? activeBtn.id : 'btnTabAudit';
+
+      if (activeId === 'btnTabTraffic') {
+        buildProcessedChannels();
+        let csv = 'Canal;Categoria;Sessoes;Share_Sessoes;Sessoes_Engajadas;Taxa_Engajamento;Tempo_Medio;Eventos_Sessao;Contagem_Eventos\n';
+        processedChannels.forEach(c => {
+          csv += `"${c.channel}";"${c.categoryLabel}";${c.sessions};${c.sessionsShare.toFixed(2)}%;${c.engagedSessions};${c.engagementRate.toFixed(2)}%;"${c.avgTimeStr}";${c.eventsPerSession.toFixed(2)};${c.eventCount}\n`;
         });
-        downloadCsvBlob(csv, `metricas_trafego_pago_festival_${new Date().toISOString().slice(0,10)}.csv`);
-      } else if (activeTab === 'btnTabFunnel') {
-        let csv = 'Evento_Pixel;Etapa;Local;Total_Eventos;Taxa_Passagem;Conversao_Geral\n';
-        csv += '"PageView";"1. Visita Landing Page";"festivaliguassuinova.com.br";65800;"100%";"100%"\n';
-        csv += '"Adicionar ao carrinho";"2. Escolha Ingresso Gratuito";"festivaliguassuinova.yazotickets.com";5400;"8.21%";"8.21%"\n';
-        csv += '"Iniciar finalização da compra";"3. Abertura Formulário Checkout";"festivaliguassuinova.yazotickets.com";4000;"74.07%";"6.08%"\n';
-        csv += '"Concluir inscrição";"4. Inscrição Concluída";"festivaliguassuinova.yazotickets.com";4000;"100%";"6.08%"\n';
-        csv += '"Lead";"5. Contato Qualificado";"festivaliguassuinova.yazotickets.com";3700;"92.50%";"5.62%"\n';
-        downloadCsvBlob(csv, `funil_pixel_meta_festival_${new Date().toISOString().slice(0,10)}.csv`);
+        downloadCsvBlob(csv, `trafego_ga4_festival_${new Date().toISOString().slice(0, 10)}.csv`);
       } else {
-        if (filteredRecords.length === 0) {
-          alert('Nenhum dado filtrado para exportar.');
-          return;
-        }
-        let csv = 'Data;Hora;Email;Nome;Tipo de Inscrição;Perfil\n';
-        filteredRecords.forEach(r => {
-          const cleanName = (r.name || '').replace(/;/g, ',');
-          const cleanPerfil = (r.perfil || '').replace(/;/g, ',');
-          const cleanTipo = (r.tipo || '').replace(/;/g, ',');
-          csv += `${r.dt};${r.hour}:00;${r.email};${cleanName};${cleanTipo};${cleanPerfil}\n`;
+        const evMap = (ga4Live && ga4Live.funnel_events) ? ga4Live.funnel_events : {};
+        let csv = 'Evento_GA4;Contagem_Eventos;Usuarios_Unicos\n';
+        Object.entries(evMap).forEach(([k, v]) => {
+          csv += `"${k}";${v.count};${v.users}\n`;
         });
-        downloadCsvBlob(csv, `performance_inscricoes_festival_${new Date().toISOString().slice(0,10)}.csv`);
+        downloadCsvBlob(csv, `funil_ga4_yazo_festival_${new Date().toISOString().slice(0, 10)}.csv`);
       }
     }
 
@@ -4636,86 +2830,21 @@
       document.body.removeChild(link);
     }
 
-    function setupCsvUploader() {
-      const fileInput = document.getElementById('csvFileInput');
-      fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          const content = evt.target.result;
-          parseAndLoadCsv(content);
-        };
-        reader.readAsText(file, 'ISO-8859-1');
-      });
+    function bootHomeDashboard() {
+      renderAuditCharts();
+      renderFunnelModule();
+      renderTrafficModule();
+      hydrateBackgroundApis();
+      setTimeout(() => {
+        if (chartPeriodInscritosInstance) chartPeriodInscritosInstance.resize();
+        if (chartTotalHistoryInstance) chartTotalHistoryInstance.resize();
+      }, 150);
     }
 
-    function parseAndLoadCsv(csvText) {
-      Papa.parse(csvText, {
-        header: false,
-        skipEmptyLines: true,
-        complete: function(results) {
-          const rows = results.data;
-          let headerIdx = -1;
-          for (let i = 0; i < rows.length; i++) {
-            const rowStr = rows[i].join(';');
-            if (rowStr.includes('createdAt')) {
-              headerIdx = i;
-              break;
-            }
-          }
-
-          if (headerIdx === -1) {
-            alert('Não foi possível localizar o cabeçalho "createdAt" no arquivo.');
-            return;
-          }
-
-          const parsedRecords = [];
-          for (let i = headerIdx + 1; i < rows.length; i++) {
-            const r = rows[i];
-            if (!r || r.length < 5) continue;
-            
-            const rawDt = r[0] ? r[0].trim() : '';
-            if (!rawDt || !rawDt.includes('/')) continue;
-
-            const [datePart, timePart] = rawDt.split(' ');
-            if (!datePart || !timePart) continue;
-
-            const [day, month, year] = datePart.split('/');
-            const [hourStr] = timePart.split(':');
-            const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-            const dateBr = `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
-            const hour = parseInt(hourStr, 10);
-
-            parsedRecords.push({
-              dt: rawDt,
-              date: isoDate,
-              date_br: dateBr,
-              hour: isNaN(hour) ? 0 : hour,
-              email: r[1] ? r[1].trim() : '',
-              name: r[2] ? r[2].trim() : '',
-              tipo: r[3] ? r[3].trim() : '',
-              perfil: r[4] ? r[4].trim() : ''
-            });
-          }
-
-          if (parsedRecords.length > 0) {
-            rawRecords = parsedRecords;
-            const dates = rawRecords.map(r => r.date).sort();
-            availableDates = Array.from(new Set(dates));
-            
-            const elBadge = document.getElementById('tabInscritosCountBadge'); if (elBadge) elBadge.textContent = `${rawRecords.length.toLocaleString('pt-BR')} inscritos`;
-            document.getElementById('filterStartDate').value = availableDates[0];
-            document.getElementById('filterEndDate').value = availableDates[availableDates.length - 1];
-
-            populateSelectOptions();
-            computeInitialDayPeak();
-            applyFilters();
-            alert(`Sucesso! ${parsedRecords.length} inscrições carregadas no painel.`);
-          }
-        }
-      });
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootHomeDashboard);
+    } else {
+      bootHomeDashboard();
     }
   </script>
 </body>

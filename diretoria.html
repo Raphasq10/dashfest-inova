@@ -1167,10 +1167,12 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    function initDiretoriaCharts() {
+      if (typeof Chart === 'undefined') return;
       // Gráfico 1: As 4.000 Inscrições no Período (08/10 a 06/11)
       const elPeriod = document.getElementById('chartPeriodInscritos');
       if (elPeriod) {
+        try { const ex = Chart.getChart(elPeriod); if (ex) ex.destroy(); } catch(e) {}
         new Chart(elPeriod.getContext('2d'), {
           type: 'doughnut',
           data: {
@@ -1273,7 +1275,13 @@
           }
         });
       }
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDiretoriaCharts);
+    } else {
+      initDiretoriaCharts();
+    }
   </script>
 </body>
 </html>
