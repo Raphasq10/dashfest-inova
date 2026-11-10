@@ -628,6 +628,72 @@ table.data-table tr:hover td {
   color: #FFFFFF !important;
 }
 
+.insight-callout {
+  background: #F6F7EB !important;
+  border-top: 1px solid #D8DCCB !important;
+  border-right: 1px solid #D8DCCB !important;
+  border-bottom: 1px solid #D8DCCB !important;
+  border-left-width: 5px !important;
+  border-left-style: solid !important;
+  border-left-color: var(--accent-cyan);
+  border-radius: var(--radius-md) !important;
+  padding: 18px 22px !important;
+  margin-top: 20px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 14px !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.insight-callout .insight-text h4 {
+  font-family: var(--font-heading) !important;
+  font-size: 0.95rem !important;
+  font-weight: 800 !important;
+  color: #1E2326 !important;
+  margin-bottom: 6px !important;
+}
+
+.insight-callout .insight-text p {
+  font-size: 0.86rem !important;
+  color: #393E41 !important;
+  line-height: 1.65 !important;
+}
+
+.insight-callout .insight-text p strong {
+  color: #1E2326 !important;
+  font-weight: 700 !important;
+}
+
+.insight-callout .insight-text code {
+  background: rgba(124, 58, 237, 0.1) !important;
+  color: #5B21B6 !important;
+  padding: 2px 6px !important;
+  border-radius: 5px !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="dark"] .insight-callout {
+  background: #1E2326 !important;
+  border-top-color: #3E464C !important;
+  border-right-color: #3E464C !important;
+  border-bottom-color: #3E464C !important;
+}
+
+[data-theme="dark"] .insight-callout .insight-text h4,
+[data-theme="dark"] .insight-callout .insight-text p strong {
+  color: #F6F7EB !important;
+}
+
+[data-theme="dark"] .insight-callout .insight-text p {
+  color: #B2BCC2 !important;
+}
+
+[data-theme="dark"] .insight-callout .insight-text code {
+  background: rgba(168, 85, 247, 0.2) !important;
+  color: #DDD6FE !important;
+}
+
 
 /* Altura obrigatória para containers de gráficos Chart.js */
 .canvas-container,

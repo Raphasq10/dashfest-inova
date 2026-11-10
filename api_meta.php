@@ -69,14 +69,19 @@ if (!$forceRefresh && file_exists($cacheFile) && (time() - filemtime($cacheFile)
     }
 }
 
-// 3. REQUISIÇÃO À GRAPH API DA META
+// 3. REQUISIÇÃO À GRAPH API DA META (Por padrão foca no ciclo 2026: desde 01/08/2026)
+$allTime = isset($_GET['all_time']) && ($_GET['all_time'] === '1' || $_GET['all_time'] === 'true');
 $params = [
     'level'        => 'campaign',
-    'date_preset'  => 'maximum',
     'limit'        => 100,
-    'fields'       => 'campaign_name,spend,impressions,clicks,cpc,ctr,actions',
+    'fields'       => 'campaign_name,date_start,date_stop,spend,impressions,clicks,cpc,ctr,actions',
     'access_token' => $accessToken
 ];
+if ($allTime) {
+    $params['date_preset'] = 'maximum';
+} else {
+    $params['time_range'] = json_encode(['since' => '2026-08-01', 'until' => date('Y-m-d')]);
+}
 
 $url = "https://graph.facebook.com/{$apiVersion}/{$adAccountId}/insights?" . http_build_query($params);
 
@@ -159,8 +164,18 @@ foreach ($rawCampaigns as $c) {
     $conversions = $purchases > 0 ? $purchases : ($completeRegistrations > 0 ? $completeRegistrations : $leads);
     $cpa = $conversions > 0 ? round($spend / $conversions, 2) : 0.0;
     
+    $lowerName = mb_strtolower($name, 'UTF-8');
+    $isLegacy = (strpos($lowerName, '[festival]') === 0) || (strpos($lowerName, '2024') !== false) || (strpos($lowerName, '2025') !== false);
+    $isOfficial2026 = !$isLegacy && (
+        strpos($lowerName, 'festival iguassu inova') !== false ||
+        strpos($lowerName, 'iguassu inova') !== false ||
+        (strpos($lowerName, 'festival') !== false && strpos($lowerName, '2026') !== false)
+    );
+
     $normalizedCampaigns[] = [
         'campaign_name'          => $name,
+        'date_start'             => $c['date_start'] ?? '',
+        'date_stop'              => $c['date_stop'] ?? '',
         'spend'                  => round($spend, 2),
         'impressions'            => $impressions,
         'clicks'                 => $clicks,
@@ -173,7 +188,7 @@ foreach ($rawCampaigns as $c) {
         'conversions'            => $conversions,
         'landing_page_views'     => $landingPageViews,
         'cpa'                    => $cpa,
-        'is_festival_official'   => stripos($name, 'FESTIVAL IGUASSU INOVA') !== false
+        'is_festival_official'   => $isOfficial2026
     ];
 }
 
@@ -222,7 +237,9 @@ $result = [
     'data' => $normalizedCampaigns
 ];
 
-// Salvar no cache
+// Salvar no cache e atualizar snapshot JS para modo estático/GitHub Pages
 file_put_contents($cacheFile, json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+$jsSnapshot = ['updated_at' => date('c'), 'data' => $normalizedCampaigns];
+file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'meta_data.js', 'window.META_MARKETING_DATA = ' . json_encode($jsSnapshot, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . ';');
 
 echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

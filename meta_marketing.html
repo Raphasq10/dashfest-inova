@@ -156,22 +156,23 @@
       box-shadow: 0 4px 14px rgba(0, 129, 251, 0.4);
     }
 
-    /* Target Campaign Highlight Box */
+    /* Target Campaign Highlight Box (Alto Contraste Urban Chic) */
     .target-campaign-banner {
-      background: linear-gradient(180deg, rgba(0, 129, 251, 0.12) 0%, rgba(17, 24, 39, 0.6) 100%);
-      border: 1px solid rgba(0, 129, 251, 0.4);
+      background: #FFFFFF;
+      border: 1px solid #D8DCCB;
       border-left: 6px solid #0081fb;
       border-radius: var(--radius-lg);
       padding: 24px 28px;
       margin: 24px 0;
       position: relative;
+      box-shadow: var(--shadow-card);
     }
 
     .target-tag {
       font-size: 0.75rem;
       font-weight: 800;
       text-transform: uppercase;
-      color: #38bdf8;
+      color: #0081fb;
       letter-spacing: 0.05em;
       display: flex;
       align-items: center;
@@ -181,22 +182,22 @@
 
     .target-title {
       font-family: var(--font-heading);
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       font-weight: 800;
-      color: #fff;
+      color: #1E2326;
       margin-bottom: 12px;
       word-break: break-word;
     }
 
     .target-stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 16px;
       margin-top: 14px;
-      background: rgba(11, 15, 23, 0.6);
-      border: 1px solid var(--border-subtle);
+      background: #F6F7EB;
+      border: 1px solid #D8DCCB;
       border-radius: var(--radius-md);
-      padding: 16px;
+      padding: 16px 20px;
     }
 
     .target-stat-item {
@@ -205,17 +206,18 @@
     }
 
     .target-stat-item span {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: 0.72rem;
+      color: #5A6267;
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 700;
+      margin-bottom: 3px;
     }
 
     .target-stat-item strong {
       font-family: var(--font-heading);
-      font-size: 1.4rem;
+      font-size: 1.38rem;
       font-weight: 800;
-      color: #fff;
+      color: #1E2326;
     }
 
     /* Filter Controls Bar */
@@ -489,40 +491,40 @@
     <!-- CAMPANHA EM FOCO (SOLICITADA PELO CLIENTE) -->
     <section class="target-campaign-banner">
       <div class="target-tag">
-        <i class="fa-solid fa-star"></i> Campanha Oficial de Ingressos do Festival (Meta Ads)
+        <i class="fa-solid fa-star"></i> Resumo Consolidado — Festival Iguassu Inova 2026 (Meta Ads)
       </div>
       <h2 class="target-title" id="targetCampaignTitle">
-        [TRÁFEGO - FESTIVAL IGUASSU INOVA - ITAIPU PARQUETEC - DIGIMAX/2026] - FACEBOOK E INSTAGRAM
+        Campanhas Oficiais 2026 (Tráfego 14/09–23/10 + Novas V3 Conversão &amp; Alcance)
       </h2>
       
       <div class="target-stats-grid">
         <div class="target-stat-item">
           <span>Investimento Oficial:</span>
-          <strong id="targetSpend" style="color: #38bdf8;">R$ 19.422,10</strong>
+          <strong id="targetSpend" style="color: #1C5A8A;">R$ 22.923,42</strong>
         </div>
         <div class="target-stat-item">
           <span>Impressões:</span>
-          <strong id="targetImpressions">4.237.439</strong>
+          <strong id="targetImpressions">4.563.534</strong>
         </div>
         <div class="target-stat-item">
           <span>Cliques no Link:</span>
-          <strong id="targetLinkClicks" style="color: var(--accent-emerald);">121.092</strong>
+          <strong id="targetLinkClicks" style="color: #0F5144;">123.775</strong>
         </div>
         <div class="target-stat-item">
           <span>Custo por Clique (CPC):</span>
-          <strong id="targetCpc" style="color: var(--accent-emerald);">R$ 0,14</strong>
+          <strong id="targetCpc" style="color: #0F5144;">R$ 0,16</strong>
         </div>
         <div class="target-stat-item">
           <span>Taxa de Cliques (CTR):</span>
-          <strong id="targetCtr">3,31%</strong>
+          <strong id="targetCtr">3,14%</strong>
         </div>
         <div class="target-stat-item">
           <span>Visitas na Landing Page:</span>
-          <strong id="targetLpv" style="color: var(--accent-amber);">49.600</strong>
+          <strong id="targetLpv" style="color: #D97706;">52.000+</strong>
         </div>
         <div class="target-stat-item">
           <span>Inscrições Pixel Yazo:</span>
-          <strong id="targetConversions" style="color: var(--accent-emerald);">284</strong>
+          <strong id="targetConversions" style="color: #0F5144;">463</strong>
         </div>
       </div>
     </section>
@@ -539,13 +541,18 @@
 
       <div class="filter-group">
         <button class="filter-btn active" id="btnFilterOfficial" onclick="setFilter('official')">
-          <i class="fa-solid fa-star"></i> Festival Iguassu Inova
+          <i class="fa-solid fa-star"></i> Festival Iguassu Inova (2026)
         </button>
         <button class="filter-btn" id="btnFilterAll" onclick="setFilter('all')">
-          <i class="fa-solid fa-layer-group"></i> Todas as Campanhas da Conta
+          <i class="fa-solid fa-layer-group"></i> Todas da Conta (Inclui Histórico 2024/25)
         </button>
         <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nome da campanha..." oninput="handleSearch()">
       </div>
+    </div>
+
+    <div id="metaTokenAlert" style="display: none; background: #FFFBEB; border: 1px solid #FDE68A; border-left: 5px solid #D97706; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; font-size: 0.85rem; color: #78350F;">
+      <strong><i class="fa-solid fa-circle-info"></i> Modo Snapshot Estático (Última coleta em 10/11/2026):</strong>
+      Exibindo o snapshot atualizado da Meta API (3 campanhas oficiais do Festival 2026). Para atualização ao vivo em tempo real, abra via servidor PHP local com <code>META_ACCESS_TOKEN</code> configurado no <code>.env.local</code>.
     </div>
 
     <!-- CARDS DE KPI DINÂMICOS -->
@@ -696,20 +703,37 @@
           allCampaigns = json.data;
           document.getElementById('apiStatusText').innerText = 'Meta API v21.0 (Live Backend PHP)';
           document.getElementById('lastUpdatedText').innerText = 'Atualizado agora: ' + new Date().toLocaleTimeString();
+          const al = document.getElementById('metaTokenAlert'); if (al) al.style.display = 'none';
         } else {
           throw new Error('Formato inválido retornado');
         }
       } catch (err) {
-        console.warn('Backend PHP não acessível diretamente, usando fallback estático:', err);
+        console.warn('Backend PHP não acessível diretamente ou token não configurado, usando fallback estático:', err);
         if (window.META_MARKETING_DATA && window.META_MARKETING_DATA.data) {
           allCampaigns = window.META_MARKETING_DATA.data;
-          document.getElementById('apiStatusText').innerText = 'Meta API v21.0 (Dados Normalizados)';
-          document.getElementById('lastUpdatedText').innerText = 'Base consolidada Meta API';
+          document.getElementById('apiStatusText').innerText = 'Meta API v21.0 (Snapshot 06/11)';
+          document.getElementById('lastUpdatedText').innerText = 'Base consolidada até 06/11';
+          const al = document.getElementById('metaTokenAlert'); if (al) al.style.display = 'block';
         }
       } finally {
         if (btn) btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Atualizar API';
         renderDashboard();
       }
+    }
+
+    function isFestival2026Campaign(c) {
+      const name = (c.campaign_name || '').toLowerCase();
+      // Exclui explicitamente campanhas legadas de edições anteriores ([Festival][Conversão], 2024, 2025)
+      if (name.startsWith('[festival]')) return false;
+      if (name.includes('2024') || name.includes('2025')) return false;
+      // Se vier date_start da API ao vivo anterior a agosto/2026, também exclui
+      if (c.date_start && c.date_start < '2026-08-01') return false;
+      return (
+        c.is_festival_official === true ||
+        name.includes('festival iguassu inova') ||
+        name.includes('iguassu inova') ||
+        (name.includes('festival') && name.includes('2026'))
+      );
     }
 
     function setFilter(filterType) {
@@ -729,10 +753,7 @@
       let filtered = allCampaigns;
 
       if (currentFilter === 'official') {
-        filtered = filtered.filter(c => 
-          c.campaign_name.toLowerCase().includes('festival iguassu inova') ||
-          c.campaign_name.toLowerCase().includes('festival')
-        );
+        filtered = filtered.filter(isFestival2026Campaign);
       }
 
       if (term) {
@@ -750,6 +771,7 @@
       let totalClicks = 0;
       let totalLinkClicks = 0;
       let totalConversions = 0;
+      let totalLpv = 0;
 
       campaigns.forEach(c => {
         totalSpend += c.spend;
@@ -757,11 +779,11 @@
         totalClicks += c.clicks;
         totalLinkClicks += c.link_clicks;
         totalConversions += c.conversions;
+        totalLpv += (c.landing_page_views || 0);
       });
 
       const avgCpc = totalClicks > 0 ? (totalSpend / totalClicks) : 0;
       const avgCtr = totalImpressions > 0 ? ((totalClicks / totalImpressions) * 100) : 0;
-      const avgCpa = totalConversions > 0 ? (totalSpend / totalConversions) : 0;
 
       document.getElementById('kpiSpend').innerText = totalSpend.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       document.getElementById('kpiImpressions').innerText = totalImpressions.toLocaleString('pt-BR');
@@ -772,8 +794,23 @@
       document.getElementById('kpiConversions').innerText = totalConversions.toLocaleString('pt-BR');
 
       document.getElementById('kpiSpendSub').innerText = currentFilter === 'official' 
-        ? 'Campanha Oficial do Festival' 
-        : campaigns.length + ' campanhas listadas';
+        ? `${campaigns.length} campanha(s) oficial(is) 2026` 
+        : `${campaigns.length} campanhas da conta`;
+
+      // Atualiza também o banner de destaque superior
+      const elTitle = document.getElementById('targetCampaignTitle');
+      if (elTitle) {
+        elTitle.innerText = currentFilter === 'official'
+          ? `Campanhas Oficiais Festival Iguassu Inova 2026 (${campaigns.length} campanhas ativas/histórico 2026)`
+          : `Todas as Campanhas da Conta (Agosto–Novembro/2026 • ${campaigns.length} campanhas)`;
+      }
+      const elTS = document.getElementById('targetSpend'); if (elTS) elTS.innerText = totalSpend.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      const elTI = document.getElementById('targetImpressions'); if (elTI) elTI.innerText = totalImpressions.toLocaleString('pt-BR');
+      const elTL = document.getElementById('targetLinkClicks'); if (elTL) elTL.innerText = totalLinkClicks.toLocaleString('pt-BR');
+      const elTC = document.getElementById('targetCpc'); if (elTC) elTC.innerText = avgCpc.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      const elTR = document.getElementById('targetCtr'); if (elTR) elTR.innerText = avgCtr.toFixed(2) + '%';
+      const elTP = document.getElementById('targetLpv'); if (elTP) elTP.innerText = totalLpv.toLocaleString('pt-BR');
+      const elTV = document.getElementById('targetConversions'); if (elTV) elTV.innerText = totalConversions.toLocaleString('pt-BR');
     }
 
     function renderTable(campaigns) {
@@ -781,31 +818,31 @@
       tbody.innerHTML = '';
 
       if (campaigns.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 24px; color: var(--text-dark);">Nenhuma campanha encontrada com o filtro atual.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 24px; color: #5A6267;">Nenhuma campanha 2026 encontrada com o filtro atual.</td></tr>';
         return;
       }
 
       campaigns.forEach(c => {
-        const isTarget = c.campaign_name.toLowerCase().includes('festival iguassu inova');
+        const isTarget = isFestival2026Campaign(c);
         const tr = document.createElement('tr');
         if (isTarget) tr.className = 'highlight-row';
 
         tr.innerHTML = `
           <td>
-            <div style="font-weight: 700; color: #fff; margin-bottom: 2px;">
+            <div style="font-weight: 700; color: #1E2326; margin-bottom: 3px;">
               ${c.campaign_name}
             </div>
-            ${isTarget ? '<span class="badge-pill official"><i class="fa-solid fa-star"></i> Oficial Festival Iguassu Inova</span>' : ''}
+            ${isTarget ? '<span class="badge-pill official"><i class="fa-solid fa-star"></i> Oficial Festival Iguassu Inova 2026</span>' : '<span class="badge-pill" style="background:#ECEEDD; color:#5A6267;">Outra / Histórico</span>'}
           </td>
-          <td style="font-weight: 700; color: #38bdf8;">
+          <td style="font-weight: 800; color: #1C5A8A;">
             ${c.spend.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
           </td>
           <td>${c.impressions.toLocaleString('pt-BR')}</td>
           <td>${c.clicks.toLocaleString('pt-BR')}</td>
-          <td style="font-weight: 700; color: var(--accent-emerald);">${c.link_clicks.toLocaleString('pt-BR')}</td>
+          <td style="font-weight: 700; color: #0F5144;">${c.link_clicks.toLocaleString('pt-BR')}</td>
           <td>${c.ctr.toFixed(2)}%</td>
           <td>${c.cpc.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-          <td><span class="badge-pill" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">${c.conversions.toLocaleString('pt-BR')}</span></td>
+          <td><span class="badge-pill" style="background: rgba(68, 187, 164, 0.16); color: #0F5144;">${c.conversions.toLocaleString('pt-BR')}</span></td>
           <td>${c.cpa > 0 ? c.cpa.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}</td>
         `;
         tbody.appendChild(tr);
@@ -814,11 +851,11 @@
 
     function renderChart(campaigns) {
       const ctx = document.getElementById('chartMetaCampaigns').getContext('2d');
-      const topCampaigns = campaigns.slice(0, 7); // Top 7
+      const topCampaigns = campaigns.slice(0, 7);
 
       const labels = topCampaigns.map(c => {
         const name = c.campaign_name;
-        return name.length > 32 ? name.substring(0, 30) + '...' : name;
+        return name.length > 36 ? name.substring(0, 34) + '...' : name;
       });
       const dataSpend = topCampaigns.map(c => c.spend);
       const dataLinkClicks = topCampaigns.map(c => c.link_clicks);
@@ -833,14 +870,14 @@
             {
               label: 'Investimento (R$)',
               data: dataSpend,
-              backgroundColor: '#0081fb',
+              backgroundColor: '#3F88C5',
               borderRadius: 6,
               yAxisID: 'y'
             },
             {
               label: 'Cliques no Link',
               data: dataLinkClicks,
-              backgroundColor: '#10b981',
+              backgroundColor: '#44BBA4',
               borderRadius: 6,
               yAxisID: 'y1'
             }
@@ -852,9 +889,12 @@
           plugins: {
             legend: {
               position: 'top',
-              labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } }
+              labels: { color: '#393E41', font: { family: 'Inter', size: 12, weight: 600 } }
             },
             tooltip: {
+              backgroundColor: '#282E32',
+              titleColor: '#F6F7EB',
+              bodyColor: '#FFFFFF',
               callbacks: {
                 label: function(context) {
                   if (context.datasetIndex === 0) {
@@ -868,25 +908,25 @@
           },
           scales: {
             x: {
-              ticks: { color: '#94a3b8', font: { family: 'Inter', size: 11 } },
-              grid: { color: '#1f293d' }
+              ticks: { color: '#393E41', font: { family: 'Inter', size: 11, weight: 600 } },
+              grid: { color: '#E2E5D5' }
             },
             y: {
               type: 'linear',
               display: true,
               position: 'left',
               ticks: {
-                color: '#94a3b8',
+                color: '#393E41',
                 callback: value => 'R$ ' + value.toLocaleString('pt-BR')
               },
-              grid: { color: '#1f293d' }
+              grid: { color: '#E2E5D5' }
             },
             y1: {
               type: 'linear',
               display: true,
               position: 'right',
               ticks: {
-                color: '#10b981',
+                color: '#0F5144',
                 callback: value => value.toLocaleString('pt-BR')
               },
               grid: { drawOnChartArea: false }

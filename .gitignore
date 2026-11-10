@@ -2,7 +2,14 @@
 .env
 .env.local
 
-# Cache temporário
+# Dados pessoais / Planilhas / Exportações brutas (LGPD - nunca versionar)
+*.csv
+*.xlsx
+*.xls
+*inscritos*
+data.js
+
+# Cache temporário e credenciais
 meta_cache.json
 yazo_cache.json
 ga4_cache.json

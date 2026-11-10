@@ -24,6 +24,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Strip sensitive files and enforce LGPD guard
+        run: |
+          rm -f *.csv *.xlsx *.xls *inscritos* data.js .env .env.local ga4-credentials.json *_cache.json
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
