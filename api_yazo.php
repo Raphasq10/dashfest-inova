@@ -83,12 +83,12 @@ if ($yazoToken === '') {
             exit;
         }
     }
-    http_response_code(400);
+    if (PHP_SAPI !== 'cli') http_response_code(400);
     echo json_encode([
         'status' => 'error',
         'message' => 'YAZO_API_TOKEN não configurado em .env.local e não foi informado.'
     ], JSON_UNESCAPED_UNICODE);
-    exit;
+    exit(PHP_SAPI === 'cli' ? 1 : 0);
 }
 
 $baseUrl = 'https://api.yazotickets.com/v1';
@@ -166,13 +166,14 @@ if (!$eventsResp['ok']) {
             exit;
         }
     }
-    http_response_code($eventsResp['code'] ?: 502);
+    if (PHP_SAPI !== 'cli') http_response_code($eventsResp['code'] ?: 502);
     echo json_encode([
         'status' => 'error',
+        'http_code' => $eventsResp['code'],
         'message' => 'Falha ao autenticar na Yazo API.',
-        'details' => $eventsResp['error']
+        'details' => substr((string)($eventsResp['error'] ?? ''), 0, 300)
     ], JSON_UNESCAPED_UNICODE);
-    exit;
+    exit(PHP_SAPI === 'cli' ? 1 : 0);
 }
 
 $eventsList = $eventsResp['data']['data'] ?? ($eventsResp['data']['items'] ?? []);
@@ -196,12 +197,14 @@ if (!$eventId && !empty($eventsList)) {
 // 2. Busca primeira página das inscrições e ingressos
 $firstPage = yazoGetSingle("{$baseUrl}/events/{$eventId}/registrations?page=1&size=100", $yazoToken);
 if (!$firstPage['ok']) {
-    http_response_code(502);
+    if (PHP_SAPI !== 'cli') http_response_code($firstPage['code'] ?: 502);
     echo json_encode([
         'status' => 'error',
-        'message' => 'Erro ao consultar inscrições do evento.'
+        'http_code' => $firstPage['code'],
+        'message' => 'Erro ao consultar inscrições do evento.',
+        'details' => substr((string)($firstPage['error'] ?? ''), 0, 300)
     ], JSON_UNESCAPED_UNICODE);
-    exit;
+    exit(PHP_SAPI === 'cli' ? 1 : 0);
 }
 
 $totalItems = (int)($firstPage['data']['total'] ?? 0);

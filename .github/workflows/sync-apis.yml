@@ -42,7 +42,11 @@ jobs:
         run: |
           if [ -n "$YAZO_API_TOKEN" ]; then
             echo "Sincronizando Yazo Tickets API..."
-            php api_yazo.php > /dev/null || echo "::warning::Falha ao sincronizar Yazo API"
+            if php api_yazo.php > /tmp/yazo_out.json 2>&1; then
+              php -r '$j=json_decode(file_get_contents("/tmp/yazo_out.json"),true); echo "Yazo OK: source=".($j["source"]??"?")." valid=".($j["total_valid"]??0)." sync=".($j["sync_time"]??"?")."\n";'
+            else
+              echo "::warning::Falha ao sincronizar Yazo API: $(cat /tmp/yazo_out.json)"
+            fi
           else
             echo "::notice::Secret YAZO_API_TOKEN não configurado; pulando Yazo."
           fi
@@ -51,7 +55,11 @@ jobs:
             echo "Sincronizando GA4 Data API..."
             printf '%s' "$GA4_CREDENTIALS_JSON" > ga4-credentials.json
             export GA4_CREDENTIALS_FILE=ga4-credentials.json
-            php api_ga4.php > /dev/null || echo "::warning::Falha ao sincronizar GA4 API"
+            if php api_ga4.php > /tmp/ga4_out.json 2>&1; then
+              php -r '$j=json_decode(file_get_contents("/tmp/ga4_out.json"),true); echo "GA4 OK: status=".($j["status"]??"?")." sync=".($j["sync_time"]??"?")."\n";'
+            else
+              echo "::warning::Falha ao sincronizar GA4 API: $(cat /tmp/ga4_out.json)"
+            fi
             rm -f ga4-credentials.json
           else
             echo "::notice::Secrets GA4_PROPERTY_ID/GA4_CREDENTIALS_JSON não configurados; pulando GA4."
@@ -59,12 +67,16 @@ jobs:
 
           if [ -n "$META_ACCESS_TOKEN" ]; then
             echo "Sincronizando Meta Marketing API..."
-            php api_meta.php > /dev/null || echo "::warning::Falha ao sincronizar Meta API"
+            if php api_meta.php > /tmp/meta_out.json 2>&1; then
+              php -r '$j=json_decode(file_get_contents("/tmp/meta_out.json"),true); echo "Meta OK: status=".($j["status"]??"?")." count=".count($j["data"]??[])."\n";'
+            else
+              echo "::warning::Falha ao sincronizar Meta API: $(cat /tmp/meta_out.json)"
+            fi
           else
             echo "::notice::Secret META_ACCESS_TOKEN não configurado; pulando Meta Ads."
           fi
 
-          rm -f ga4-credentials.json .env .env.local *_cache.json
+          rm -f /tmp/yazo_out.json /tmp/ga4_out.json /tmp/meta_out.json ga4-credentials.json .env .env.local *_cache.json
 
       - name: Commit & push updated snapshots
         id: commit_push
