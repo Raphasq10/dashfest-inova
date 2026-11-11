@@ -4,14 +4,16 @@
  * Festival Iguassu Inova 2026
  */
 
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+if (PHP_SAPI !== 'cli') {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+        http_response_code(200);
+        exit;
+    }
 }
 
 // 1. CARREGAR VARIÁVEIS DE AMBIENTE (.env.local ou .env)
@@ -56,7 +58,7 @@ if (empty($accessToken)) {
 // 2. SISTEMA DE CACHE (15 minutos para evitar Rate Limit da Meta)
 $cacheFile = __DIR__ . DIRECTORY_SEPARATOR . 'meta_cache.json';
 $cacheTTL  = 900; // 15 minutos em segundos
-$forceRefresh = isset($_GET['refresh']) && ($_GET['refresh'] === '1' || $_GET['refresh'] === 'true');
+$forceRefresh = (PHP_SAPI === 'cli') || (isset($_GET['refresh']) && ($_GET['refresh'] === '1' || $_GET['refresh'] === 'true'));
 
 if (!$forceRefresh && file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTTL)) {
     $cachedData = file_get_contents($cacheFile);

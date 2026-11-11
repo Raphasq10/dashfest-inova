@@ -1,0 +1,111 @@
+name: Sync APIs & Update GitHub Pages
+
+on:
+  schedule:
+    # Atualiza snapshots sanitizados automaticamente a cada 30 minutos
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "sync-and-pages"
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    outputs:
+      updated: ${{ steps.commit_push.outputs.updated }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2 (cURL & OpenSSL)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: curl, openssl, mbstring, json
+
+      - name: Sync Yazo, GA4 & Meta APIs
+        env:
+          YAZO_API_TOKEN: ${{ secrets.YAZO_API_TOKEN }}
+          YAZO_EVENT_ID: ${{ secrets.YAZO_EVENT_ID }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_CREDENTIALS_JSON: ${{ secrets.GA4_CREDENTIALS_JSON }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
+          META_API_VERSION: v21.0
+        run: |
+          if [ -n "$YAZO_API_TOKEN" ]; then
+            echo "Sincronizando Yazo Tickets API..."
+            php api_yazo.php > /dev/null || echo "::warning::Falha ao sincronizar Yazo API"
+          else
+            echo "::notice::Secret YAZO_API_TOKEN não configurado; pulando Yazo."
+          fi
+
+          if [ -n "$GA4_PROPERTY_ID" ] && [ -n "$GA4_CREDENTIALS_JSON" ]; then
+            echo "Sincronizando GA4 Data API..."
+            printf '%s' "$GA4_CREDENTIALS_JSON" > ga4-credentials.json
+            export GA4_CREDENTIALS_FILE=ga4-credentials.json
+            php api_ga4.php > /dev/null || echo "::warning::Falha ao sincronizar GA4 API"
+            rm -f ga4-credentials.json
+          else
+            echo "::notice::Secrets GA4_PROPERTY_ID/GA4_CREDENTIALS_JSON não configurados; pulando GA4."
+          fi
+
+          if [ -n "$META_ACCESS_TOKEN" ]; then
+            echo "Sincronizando Meta Marketing API..."
+            php api_meta.php > /dev/null || echo "::warning::Falha ao sincronizar Meta API"
+          else
+            echo "::notice::Secret META_ACCESS_TOKEN não configurado; pulando Meta Ads."
+          fi
+
+          rm -f ga4-credentials.json .env .env.local *_cache.json
+
+      - name: Commit & push updated snapshots
+        id: commit_push
+        run: |
+          if git diff --quiet -- yazo_operacao_data.js ga4_operacao_data.js meta_data.js; then
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+            echo "Nenhuma alteração nos snapshots."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add yazo_operacao_data.js ga4_operacao_data.js meta_data.js
+            git commit -m "chore(sync): atualizar snapshots Yazo, GA4 e Meta API"
+            git push
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: sync
+    if: needs.sync.outputs.updated == 'true' || github.event_name == 'workflow_dispatch'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Enforce LGPD guard
+        run: |
+          rm -f *.csv *.xlsx *.xls *inscritos* data.js .env .env.local ga4-credentials.json *_cache.json
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

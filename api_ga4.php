@@ -9,14 +9,16 @@
  */
 
 @set_time_limit(60);
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+if (PHP_SAPI !== 'cli') {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+        http_response_code(200);
+        exit;
+    }
 }
 
 date_default_timezone_set('America/Sao_Paulo');
@@ -50,7 +52,7 @@ $credPath = (strpos($credFileName, ':') !== false || strpos($credFileName, '/') 
 
 $cacheFile = __DIR__ . DIRECTORY_SEPARATOR . 'ga4_cache.json';
 $cacheTTL = 300; // 5 minutos
-$forceRefresh = isset($_GET['refresh']) && ($_GET['refresh'] === '1' || $_GET['refresh'] === 'true');
+$forceRefresh = (PHP_SAPI === 'cli') || (isset($_GET['refresh']) && ($_GET['refresh'] === '1' || $_GET['refresh'] === 'true'));
 
 if (!$forceRefresh && file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTTL)) {
     $cached = json_decode(file_get_contents($cacheFile), true);

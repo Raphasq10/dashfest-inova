@@ -2757,7 +2757,7 @@
       try {
         const [ga4Res, yazoRes] = await Promise.allSettled([
           fetch('api_ga4.php?refresh=1', { cache: 'no-store' }).then(r => r.ok ? r.json() : null),
-          fetch('api_yazo.php', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
+          fetch('api_yazo.php?refresh=1', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
         ]);
 
         if (ga4Res.status === 'fulfilled' && ga4Res.value && ga4Res.value.status === 'ok') {
@@ -2766,6 +2766,7 @@
         if (yazoRes.status === 'fulfilled' && yazoRes.value && yazoRes.value.records) {
           yazoLive = yazoRes.value;
         }
+        renderAuditCharts();
         renderTrafficModule();
         renderFunnelModule();
       } catch (e) {
@@ -2792,6 +2793,7 @@
           updated = true;
         }
         if (updated) {
+          renderAuditCharts();
           renderFunnelModule();
           renderTrafficModule();
         }

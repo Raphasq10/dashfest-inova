@@ -13,14 +13,16 @@
 @set_time_limit(120);
 @ini_set('memory_limit', '256M');
 
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, X-Yazo-Token');
+if (PHP_SAPI !== 'cli') {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, X-Yazo-Token');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+        http_response_code(200);
+        exit;
+    }
 }
 
 date_default_timezone_set('America/Sao_Paulo');
@@ -57,7 +59,7 @@ $eventId     = trim(getenv('YAZO_EVENT_ID') ?: ($_ENV['YAZO_EVENT_ID'] ?? ''));
 $cacheFile   = __DIR__ . DIRECTORY_SEPARATOR . 'yazo_cache.json';
 $staticJsFile = __DIR__ . DIRECTORY_SEPARATOR . 'yazo_operacao_data.js';
 $cacheTTL    = 300; // 5 minutos
-$forceRefresh = isset($_GET['refresh']) && ($_GET['refresh'] === '1' || $_GET['refresh'] === 'true');
+$forceRefresh = (PHP_SAPI === 'cli') || (isset($_GET['refresh']) && ($_GET['refresh'] === '1' || $_GET['refresh'] === 'true'));
 
 // Retorna cache válido se não forçado refresh
 if (!$forceRefresh && file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTTL)) {
