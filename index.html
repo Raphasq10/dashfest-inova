@@ -2762,9 +2762,15 @@
 
         if (ga4Res.status === 'fulfilled' && ga4Res.value && ga4Res.value.status === 'ok') {
           ga4Live = ga4Res.value;
+        } else if (typeof window.reloadFreshScript === 'function') {
+          await window.reloadFreshScript('ga4_operacao_data.js');
+          if (window.GA4_OPERACAO_DATA) ga4Live = window.GA4_OPERACAO_DATA;
         }
         if (yazoRes.status === 'fulfilled' && yazoRes.value && yazoRes.value.records) {
           yazoLive = yazoRes.value;
+        } else if (typeof window.reloadFreshScript === 'function') {
+          await window.reloadFreshScript('yazo_operacao_data.js');
+          if (window.YAZO_OPERACAO_DATA) yazoLive = window.YAZO_OPERACAO_DATA;
         }
         renderAuditCharts();
         renderTrafficModule();
@@ -2787,10 +2793,16 @@
         if (ga4Res.status === 'fulfilled' && ga4Res.value && ga4Res.value.status === 'ok') {
           ga4Live = ga4Res.value;
           updated = true;
+        } else if (typeof window.reloadFreshScript === 'function') {
+          await window.reloadFreshScript('ga4_operacao_data.js');
+          if (window.GA4_OPERACAO_DATA) { ga4Live = window.GA4_OPERACAO_DATA; updated = true; }
         }
         if (yazoRes.status === 'fulfilled' && yazoRes.value && yazoRes.value.records) {
           yazoLive = yazoRes.value;
           updated = true;
+        } else if (typeof window.reloadFreshScript === 'function') {
+          await window.reloadFreshScript('yazo_operacao_data.js');
+          if (window.YAZO_OPERACAO_DATA) { yazoLive = window.YAZO_OPERACAO_DATA; updated = true; }
         }
         if (updated) {
           renderAuditCharts();

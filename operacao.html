@@ -962,10 +962,16 @@
         if (icon) icon.classList.remove('fa-spin');
       }
 
-      // Fallback para snapshot estático (GitHub Pages ou abertura local direta)
+      // Fallback para snapshot estático (GitHub Pages ou abertura local direta) — força cache-busting para evitar cache de 10min do navegador
+      if (typeof window.reloadFreshScript === 'function') {
+        await window.reloadFreshScript('yazo_operacao_data.js');
+      }
       if (window.YAZO_OPERACAO_DATA && window.YAZO_OPERACAO_DATA.records) {
         yazoPayload = window.YAZO_OPERACAO_DATA;
         bootstrapDashboard();
+        if (forceRefresh) {
+          showToast(`Snapshot atualizado! ${yazoPayload.total_valid.toLocaleString('pt-BR')} inscritos (${yazoPayload.sync_time || '--'}).`);
+        }
       } else {
         document.getElementById('syncSourceLabel').textContent = 'Erro ao carregar base. Verifique api_yazo.php ou yazo_operacao_data.js.';
       }
@@ -1020,7 +1026,10 @@
           }
         }
       } catch (e) {
-        if (window.GA4_OPERACAO_DATA && !ga4Data) {
+        if (typeof window.reloadFreshScript === 'function') {
+          await window.reloadFreshScript('ga4_operacao_data.js');
+        }
+        if (window.GA4_OPERACAO_DATA) {
           ga4Data = window.GA4_OPERACAO_DATA;
           renderGa4Card();
         }

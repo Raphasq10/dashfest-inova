@@ -709,10 +709,15 @@
         }
       } catch (err) {
         console.warn('Backend PHP não acessível diretamente ou token não configurado, usando fallback estático:', err);
+        if (typeof window.reloadFreshScript === 'function') {
+          await window.reloadFreshScript('meta_data.js');
+        }
         if (window.META_MARKETING_DATA && window.META_MARKETING_DATA.data) {
           allCampaigns = window.META_MARKETING_DATA.data;
-          document.getElementById('apiStatusText').innerText = 'Meta API v21.0 (Snapshot 06/11)';
-          document.getElementById('lastUpdatedText').innerText = 'Base consolidada até 06/11';
+          const upAt = window.META_MARKETING_DATA.updated_at ? new Date(window.META_MARKETING_DATA.updated_at) : null;
+          const upStr = (upAt && !isNaN(upAt.getTime())) ? upAt.toLocaleString('pt-BR') : 'Snapshot estático';
+          document.getElementById('apiStatusText').innerText = 'Meta API v21.0 (Snapshot Atualizado)';
+          document.getElementById('lastUpdatedText').innerText = 'Sincronizado em: ' + upStr;
           const al = document.getElementById('metaTokenAlert'); if (al) al.style.display = 'block';
         }
       } finally {
