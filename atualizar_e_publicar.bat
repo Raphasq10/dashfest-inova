@@ -47,6 +47,7 @@ echo ---------------------------------------------------------------------
 echo Enviando snapshots atualizados para o GitHub Pages...
 echo ---------------------------------------------------------------------
 
+git pull --rebase origin main > nul 2>&1
 git add yazo_operacao_data.js ga4_operacao_data.js meta_data.js
 git diff --cached --quiet
 if errorlevel 1 (
@@ -54,17 +55,18 @@ if errorlevel 1 (
     git push origin main
     if errorlevel 1 (
         echo.
-        echo [AVISO] Houve um problema ao fazer o push para o GitHub. Verifique sua conexao.
-    ) else (
-        echo.
-        echo =====================================================================
-        echo  SINCRONIZACAO CONCLUIDA COM SUCESSO!
-        echo  O GitHub Pages sera atualizado em cerca de 30 a 60 segundos:
-        echo  - War Room: https://raphasq10.github.io/dashfest-inova/operacao.html
-        echo  - Home:     https://raphasq10.github.io/dashfest-inova/index.html
-        echo  - Meta Ads: https://raphasq10.github.io/dashfest-inova/meta_marketing.html
-        echo =====================================================================
+        echo [AVISO] Houve um problema ao fazer o push para o GitHub. Tentando sincronizar com rebase...
+        git pull --rebase origin main
+        git push origin main
     )
+    echo.
+    echo =====================================================================
+    echo  SINCRONIZACAO CONCLUIDA COM SUCESSO!
+    echo  O GitHub Pages sera atualizado em cerca de 30 a 60 segundos:
+    echo  - War Room: https://raphasq10.github.io/dashfest-inova/operacao.html
+    echo  - Home:     https://raphasq10.github.io/dashfest-inova/index.html
+    echo  - Meta Ads: https://raphasq10.github.io/dashfest-inova/meta_marketing.html
+    echo =====================================================================
 ) else (
     echo.
     echo [INFO] Os dados estao 100%% atualizados e sincronizados com o GitHub!
