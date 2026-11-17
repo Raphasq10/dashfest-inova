@@ -58,11 +58,14 @@ $eventId     = trim(getenv('YAZO_EVENT_ID') ?: ($_ENV['YAZO_EVENT_ID'] ?? ''));
 
 $cacheFile   = __DIR__ . DIRECTORY_SEPARATOR . 'yazo_cache.json';
 $staticJsFile = __DIR__ . DIRECTORY_SEPARATOR . 'yazo_operacao_data.js';
-$cacheTTL    = 300; // 5 minutos
-$forceRefresh = (PHP_SAPI === 'cli') || (isset($_GET['refresh']) && ($_GET['refresh'] === '1' || $_GET['refresh'] === 'true'));
+$cacheTTL    = 300; // 5 minutos web
+$isCli       = (PHP_SAPI === 'cli');
+$cliForce    = $isCli && (in_array('--refresh', $argv ?? []) || in_array('-f', $argv ?? []));
+$forceRefresh = $cliForce || (isset($_GET['refresh']) && ($_GET['refresh'] === '1' || $_GET['refresh'] === 'true'));
+$effectiveTTL = $isCli ? 120 : $cacheTTL; // No CLI, respeita 2 min para proteger contra rate limit acidental
 
 // Retorna cache válido se não forçado refresh
-if (!$forceRefresh && file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTTL)) {
+if (!$forceRefresh && file_exists($cacheFile) && (time() - filemtime($cacheFile) < $effectiveTTL)) {
     $cached = json_decode(file_get_contents($cacheFile), true);
     if ($cached && isset($cached['records'])) {
         $cached['source'] = 'cache';
