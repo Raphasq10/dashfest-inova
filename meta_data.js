@@ -1,5 +1,5 @@
 window.META_MARKETING_DATA = {
-    "updated_at": "2026-11-17T13:53:40+01:00",
+    "updated_at": "2026-11-17T13:55:51+01:00",
     "data": [
         {
             "campaign_name": "[TRÁFEGO - FESTIVAL IGUASSU INOVA - ITAIPU PARQUETEC - DIGIMAX\/2026] - FACEBOOK E INSTAGRAM",
@@ -41,8 +41,8 @@ window.META_MARKETING_DATA = {
             "campaign_name": "[RECONHECIMENTO - ITAIPU PARQUETEC - ATRAÇÕES MERCADO BARRAGEIRO - FOZ DO IGUAÇU - DIGIMAX\/2026] - FACEBOOK E INSTAGRAM",
             "date_start": "2026-08-01",
             "date_stop": "2026-11-17",
-            "spend": 5421.3,
-            "impressions": 3046635,
+            "spend": 5421.35,
+            "impressions": 3046647,
             "clicks": 9220,
             "link_clicks": 2090,
             "ctr": 0.3,
@@ -59,8 +59,8 @@ window.META_MARKETING_DATA = {
             "campaign_name": "[ALCANCE - ITAIPU PARQUETEC - MERCADO BARRAGEIRO - FOZ DO IGUAÇU - DIGIMAX\/2026] -  FACEBOOK E INSTAGRAM",
             "date_start": "2026-08-01",
             "date_stop": "2026-11-17",
-            "spend": 5210.78,
-            "impressions": 2729500,
+            "spend": 5210.88,
+            "impressions": 2729549,
             "clicks": 5362,
             "link_clicks": 2259,
             "ctr": 0.2,
@@ -96,7 +96,7 @@ window.META_MARKETING_DATA = {
             "date_start": "2026-08-01",
             "date_stop": "2026-11-17",
             "spend": 3252.92,
-            "impressions": 2172103,
+            "impressions": 2172115,
             "clicks": 3953,
             "link_clicks": 1586,
             "ctr": 0.18,
