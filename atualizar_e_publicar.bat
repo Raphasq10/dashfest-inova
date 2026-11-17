@@ -16,6 +16,14 @@ if not exist "%PHP_BIN%" (
 
 cd /d "%~dp0"
 
+:: 0. Limpa qualquer rebase/merge pendente e alinha com a versao remota
+git rebase --abort > nul 2>&1
+git merge --abort > nul 2>&1
+git checkout main > nul 2>&1
+git fetch origin main > nul 2>&1
+git reset --hard origin/main > nul 2>&1
+
+:: 1. Executa APIs com o IP local (fora do bloqueio da nuvem)
 echo [1/3] Consultando API Yazo Tickets (todas as inscricoes)...
 "%PHP_BIN%" api_yazo.php > nul
 if errorlevel 1 (
@@ -47,7 +55,6 @@ echo ---------------------------------------------------------------------
 echo Enviando snapshots atualizados para o GitHub Pages...
 echo ---------------------------------------------------------------------
 
-git pull --rebase origin main > nul 2>&1
 git add yazo_operacao_data.js ga4_operacao_data.js meta_data.js
 git diff --cached --quiet
 if errorlevel 1 (
@@ -55,8 +62,9 @@ if errorlevel 1 (
     git push origin main
     if errorlevel 1 (
         echo.
-        echo [AVISO] Houve um problema ao fazer o push para o GitHub. Tentando sincronizar com rebase...
-        git pull --rebase origin main
+        echo [AVISO] Tentando sincronizar com o branch remoto...
+        git fetch origin main
+        git rebase -X theirs origin/main
         git push origin main
     )
     echo.

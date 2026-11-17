@@ -10,8 +10,8 @@
  * - Gera snapshot sanitizado (sem PII) em yazo_operacao_data.js para uso offline / GitHub Pages
  */
 
-@set_time_limit(120);
-@ini_set('memory_limit', '256M');
+@set_time_limit(180);
+@ini_set('memory_limit', '768M');
 
 if (PHP_SAPI !== 'cli') {
     header('Content-Type: application/json; charset=utf-8');
@@ -148,6 +148,7 @@ function yazoGetMulti($urls, $token) {
         } else {
             $results[$key] = null;
         }
+        unset($body);
     }
     curl_multi_close($mh);
     return $results;
@@ -227,6 +228,8 @@ for ($p = 2; $p <= $totalPages; $p += $batchSize) {
             }
         }
     }
+    unset($responses);
+    unset($batchUrls);
 }
 
 // 3. Normaliza registros (sem PII) e computa métricas de status
