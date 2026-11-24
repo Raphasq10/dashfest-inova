@@ -279,8 +279,9 @@ foreach ($allItems as $item) {
     $st = $item['status'] ?? 'unknown';
     $statusCounts[$st] = ($statusCounts[$st] ?? 0) + 1;
 
-    // Painel contabiliza inscrições válidas confirmadas
-    if ($st !== 'valid') continue;
+    // Considera todas as inscrições da base (aprovadas, aguardando aprovação, reprovadas e canceladas)
+    // conforme solicitado pelo cliente
+    // if ($st !== 'valid') continue;
 
     $createdAt = $item['createdAt'] ?? '';
     if (!$createdAt) continue;
@@ -333,7 +334,8 @@ foreach ($allItems as $item) {
         'uc' => $utms['uc'],
         'c'  => $cidade,
         'i'  => $instituicao,
-        'u'  => $uid
+        'u'  => $uid,
+        'st' => $st
     ];
 }
 
