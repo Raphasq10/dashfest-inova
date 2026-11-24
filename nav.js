@@ -2,7 +2,7 @@
  * FESTIVAL IGUASSU INOVA 2026 - NAVEGAÇÃO GLOBAL UNIFICADA
  * Divide o ecossistema em 2 blocos lógicos:
  * 1. Executivo & Diretoria (Tomada de decisão, PDF e histórico de fases)
- * 2. Operação & Tempo Real (War Room Meta 30k com Yazo/GA4 + Meta Ads API)
+ * 2. Operação & Tempo Real (War Room Meta 33k com Yazo/GA4 + Meta Ads API)
  */
 (function() {
   const NAV_GROUPS = [
@@ -20,7 +20,7 @@
       id: 'operations',
       label: 'Operação & Tempo Real',
       items: [
-        { href: 'operacao.html', label: 'War Room • Meta 30k', icon: 'fa-solid fa-gauge-high', badge: 'Yazo + GA4', badgeTone: 'terra' },
+        { href: 'operacao.html', label: 'War Room • Meta 33k', icon: 'fa-solid fa-gauge-high', badge: 'Yazo + GA4', badgeTone: 'terra' },
         { href: 'meta_marketing.html', label: 'Meta Ads API', icon: 'fa-brands fa-meta', badge: 'v21.0', badgeTone: 'blue' }
       ]
     }

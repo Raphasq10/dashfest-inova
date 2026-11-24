@@ -503,7 +503,7 @@
         <div class="header-title">
           <h1>
             War Room Operacional & Horário
-            <span class="badge-warroom">Meta 30.000</span>
+            <span class="badge-warroom">Meta 33.000</span>
           </h1>
           <p>Painel pessoal de acompanhamento (48h / hora a hora / UTMs reais) conectado à API da Yazo Tickets</p>
         </div>
@@ -541,7 +541,7 @@
     </div>
 
     <!-- =====================================================================
-         BLOCO 1: TERMÔMETRO DA META 30.000 (RESPONDE À SUPERVISORA EM 10 SEGUNDOS)
+         BLOCO 1: TERMÔMETRO DA META 33.000 (RESPONDE À SUPERVISORA EM 10 SEGUNDOS)
          ===================================================================== -->
     <section class="kpi-grid-4">
       <div class="kpi-box accent-blue">
@@ -553,7 +553,7 @@
         <div class="progress-track">
           <div class="progress-fill" id="progressGoalFill" style="width: 0%; background: linear-gradient(90deg, #3F88C5, #44BBA4);"></div>
         </div>
-        <div class="kpi-meta" id="kpiGoalSub">Meta mínima: 30.000 inscritos</div>
+        <div class="kpi-meta" id="kpiGoalSub">Meta oficial: 33.000 inscritos</div>
       </div>
 
       <div class="kpi-box" style="border-top: 4px solid #7C3AED;">
@@ -695,7 +695,7 @@
         <div class="panel-header">
           <div class="panel-title">
             <h2><i class="fa-solid fa-chart-column" style="color: #3F88C5;"></i> Evolução Diária vs Meta Necessária</h2>
-            <p>Linha vermelha = meta diária necessária para atingir 30.000 até 25/11.</p>
+            <p>Linha vermelha = meta diária necessária para atingir 33.000 até 25/11.</p>
           </div>
         </div>
         <div class="chart-wrap-320">
@@ -708,14 +708,14 @@
     </section>
 
     <!-- =====================================================================
-         BLOCO 4: CURVA ACUMULADA (RUMO AOS 30K) & ORIGENS UTMs REAIS
+         BLOCO 4: CURVA ACUMULADA (RUMO AOS 33K) & ORIGENS UTMs REAIS
          ===================================================================== -->
     <section class="charts-2col">
       <!-- CURVA S ACUMULADA -->
       <div class="card-panel" style="margin-bottom: 0;">
         <div class="panel-header">
           <div class="panel-title">
-            <h2><i class="fa-solid fa-arrow-trend-up" style="color: #44BBA4;"></i> Curva S Acumulada (Realizado vs Meta 30.000)</h2>
+            <h2><i class="fa-solid fa-arrow-trend-up" style="color: #44BBA4;"></i> Curva S Acumulada (Realizado vs Meta 33.000)</h2>
             <p>Trajetória histórica acumulada e projeção se mantiver a média dos últimos 7 dias.</p>
           </div>
         </div>
@@ -889,7 +889,7 @@
   <div class="toast-copy" id="toastMsg">Resumo copiado para a área de transferência!</div>
 
   <script>
-    const GOAL_TOTAL = 30000;
+    const GOAL_TOTAL = 33000;
     const EVENT_START_DATE = '2026-11-25';
 
     let yazoPayload = null;
@@ -1185,7 +1185,7 @@
       document.getElementById('kpiTotalValid').textContent = totalValid.toLocaleString('pt-BR');
       document.getElementById('progressGoalFill').style.width = `${pct.toFixed(1)}%`;
       document.getElementById('kpiGoalSub').innerHTML =
-        `<strong>${pct.toFixed(1)}%</strong> da meta de 30.000 • Faltam <strong>${missing.toLocaleString('pt-BR')}</strong>`;
+        `<strong>${pct.toFixed(1)}%</strong> da meta de 33.000 • Faltam <strong>${missing.toLocaleString('pt-BR')}</strong>`;
 
       document.getElementById('kpiRequiredDaily').textContent = `${requiredDailyRate.toLocaleString('pt-BR')}/dia`;
       document.getElementById('kpiRequiredSub').innerHTML =
@@ -1466,7 +1466,7 @@
           labels,
           datasets: [
             {
-              label: 'Meta Mínima (30.000)',
+              label: 'Meta Oficial (33.000)',
               data: goalSeries,
               borderColor: '#E94F37',
               borderDash: [6, 4],
@@ -1705,7 +1705,7 @@
         <div class="warroom-box pos">
           <h3><i class="fa-solid fa-thumbs-up" style="color:#44BBA4;"></i> 1. Olhar Positivo (O que funciona)</h3>
           <ul>
-            <li>Base oficial validada na Yazo já alcançou <strong>${totalValid.toLocaleString('pt-BR')} inscritos</strong> (${((totalValid/GOAL_TOTAL)*100).toFixed(1)}% dos 30k).</li>
+            <li>Base oficial validada na Yazo já alcançou <strong>${totalValid.toLocaleString('pt-BR')} inscritos</strong> (${((totalValid/GOAL_TOTAL)*100).toFixed(1)}% dos 33k).</li>
             ${ga4SummaryHtml}
             <li>Nas últimas 48h entraram <strong>${(yestCount + todayCount).toLocaleString('pt-BR')} novos inscritos</strong> (Ontem: ${yestCount} | Hoje parcial: ${todayCount}).</li>
             <li>O pico horário de ontem ocorreu às <strong>${String(peakYH).padStart(2,'0')}h (${peakYV} inscritos)</strong>, comprovando resposta imediata nos horários de divulgação.</li>
@@ -1716,7 +1716,7 @@
         <div class="warroom-box crit">
           <h3><i class="fa-solid fa-triangle-exclamation" style="color:#E94F37;"></i> 2. Olhar Crítico (Onde ajustar agora)</h3>
           <ul>
-            <li><strong>Ritmo vs Meta 30k:</strong> Faltam <strong>${missing.toLocaleString('pt-BR')} inscritos</strong> em <strong>${diffDays} dias</strong>. Precisamos de <strong>${reqRate.toLocaleString('pt-BR')}/dia</strong>, mas a média dos últimos 7 dias está em <strong>${avg7d}/dia</strong>.</li>
+            <li><strong>Ritmo vs Meta 33k:</strong> Faltam <strong>${missing.toLocaleString('pt-BR')} inscritos</strong> em <strong>${diffDays} dias</strong>. Precisamos de <strong>${reqRate.toLocaleString('pt-BR')}/dia</strong>, mas a média dos últimos 7 dias está em <strong>${avg7d}/dia</strong>.</li>
             <li><strong>Projeção sem aceleração:</strong> Se continuarmos no ritmo atual, fecharemos o evento em ~<strong>${projected.toLocaleString('pt-BR')}</strong> (déficit de ${gapDaily}/dia frente à meta).</li>
             <li><strong>Perda de rastreio:</strong> ${noUtm48} das últimas 48h chegaram sem UTM na Yazo por falta de link direto ou repasse automático na Landing Page.</li>
           </ul>
@@ -1734,11 +1734,11 @@
       `;
 
       cachedMeetingText =
-`📊 *RESUMO WAR ROOM — FESTIVAL IGUASSU INOVA (META 30K)*
+`📊 *RESUMO WAR ROOM — FESTIVAL IGUASSU INOVA (META 33K)*
 Data de corte: ${formatDateBr(todayIso)} | Faltam ${diffDays} dias para 25/11
 
 1️⃣ *TERMÔMETRO DA META*
-• Inscritos validados (Yazo API): *${totalValid.toLocaleString('pt-BR')}* (${((totalValid/GOAL_TOTAL)*100).toFixed(1)}% de 30.000)
+• Inscritos validados (Yazo API): *${totalValid.toLocaleString('pt-BR')}* (${((totalValid/GOAL_TOTAL)*100).toFixed(1)}% de 33.000)
 • Faltam: *${missing.toLocaleString('pt-BR')}*
 • Meta diária necessária: *${reqRate.toLocaleString('pt-BR')}/dia*
 • Ritmo atual (média 7d): *${avg7d}/dia* (Ontem: ${yestCount} | Hoje: ${todayCount})
